@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.view.Menu;
 
 public class MainActivity extends Activity {
+	
+	//TEST-Kommentar... kann danach wieder gelöscht werden
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
