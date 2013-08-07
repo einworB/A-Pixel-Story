@@ -1,0 +1,25 @@
+#generated build files
+gen/
+bin/
+
+*.class
+
+*.dex
+
+*.apk
+*.ap_
+
+#Eclipse proguard folder
+proguard/
+
+#local paths (sdk, etc.)
+local.properties
+
+#IntelliJ project files
+*.iml
+*.ipr
+*.iws
+.idea/
+
+#Mac folder properties
+*.DS_Store
