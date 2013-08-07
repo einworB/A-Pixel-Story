@@ -1,33 +1,25 @@
-# System:
-Thumbs.db
-.DS_Store
-*.swp
-*~
-Desktop.ini
+#generated build files
+gen/
+bin/
 
-# Version Control Systems:
-.svn
-CVS
-.hg
-.bzr
+*.class
 
-# Android:
+*.dex
+
+*.apk
+*.ap_
+
+#Eclipse proguard folder
+proguard/
+
+#local paths (sdk, etc.)
 local.properties
-proguard/**
-target/**
-bin/**
-obj/**
-doc/**
-gen/**
-gdb.setup
-gdbserver
 
-# Eclipse:
-.settings
+#IntelliJ project files
+*.iml
+*.ipr
+*.iws
+.idea/
 
-# IntelliJ / Android Studio:
-idea/workspace.xml
-idea/tasks.xml
-
-# Crashlytics
-res/values/com_crashlytics_export_strings.xml
+#Mac folder properties
+*.DS_Store

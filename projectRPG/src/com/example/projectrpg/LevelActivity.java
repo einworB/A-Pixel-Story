@@ -72,6 +72,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		/* Create the sprite and add it to the scene. */
 		player = new AnimatedSprite(centerX, centerY, 48, 64, this.mPlayerTextureRegion, this.getVertexBufferObjectManager());		
 
+		scene.attachChild(player);
+		
 		return scene;
 	}
 
@@ -117,7 +119,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 			}
 		})));
-		scene.attachChild(player);
 	}
 
 }
