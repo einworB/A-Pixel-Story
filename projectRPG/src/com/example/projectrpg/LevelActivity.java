@@ -151,10 +151,13 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+		TMXTile startTile = tmxLayer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
 		TMXTile destinationTile = tmxLayer.getTMXTileAt(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
-		float destinationX = destinationTile.getTileX() - 16; // TODO: eliminate magic numbers(tilewidth/2)
-		float destinationY = destinationTile.getTileY() - 16; // TODO: eliminate magic numbers(tileheight/2)
-		Path path = Algorithm.calculatePath(player.getX(), player.getY(), destinationX, destinationY, pScene);
+		float destinationX = destinationTile.getTileX() - 16; // TODO: eliminate magic numbers (tilewidth/2)
+		float destinationY = destinationTile.getTileY() - 16; // TODO: eliminate magic numbers (tileheight/2)
+		Algorithm algo = new Algorithm(startTile, destinationTile, mTMXTiledMap);
+		algo.generatePathMap();
+		Path path = algo.updatePath();
 		if(!running) startPath(pScene, path);
 		return false;
 	}

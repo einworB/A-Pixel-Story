@@ -122,7 +122,7 @@ public class Algorithm {
 		if (path != null) {
 			Path lCurrentPath = new Path(path.getLength());
 			for (int i = 0; i < path.getLength(); i++) {
-				lCurrentPath.to(path.getX(i) * 32, path.getY(i) * 32); //TODO feste Größe angegeben..
+				lCurrentPath.to(path.getX(i) * 32, (path.getY(i) * 32) - 32); //TODO feste Größe angegeben..
 			}
 			return lCurrentPath;
 		}
