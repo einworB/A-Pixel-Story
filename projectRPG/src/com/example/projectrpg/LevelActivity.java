@@ -18,8 +18,17 @@ import org.andengine.entity.scene.background.RepeatingSpriteBackground;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.util.FPSLogger;
+import org.andengine.extension.tmx.TMXLayer;
+import org.andengine.extension.tmx.TMXLoader;
+import org.andengine.extension.tmx.TMXProperties;
+import org.andengine.extension.tmx.TMXTile;
+import org.andengine.extension.tmx.TMXTileProperty;
+import org.andengine.extension.tmx.TMXTiledMap;
+import org.andengine.extension.tmx.TMXLoader.ITMXTilePropertiesListener;
+import org.andengine.extension.tmx.util.exception.TMXLoadException;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.ITexture;
+import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.atlas.bitmap.source.AssetBitmapTextureAtlasSource;
@@ -31,9 +40,7 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.adt.io.in.IInputStreamOpener;
 import org.andengine.util.debug.Debug;
 
-import android.os.Bundle;
-import android.app.Activity;
-import android.view.Menu;
+import android.widget.Toast;
 
 public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTouchListener{
 
@@ -51,6 +58,12 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private ITexture obstacleTexture;
 	private ITextureRegion obstacleTextureRegion;
 	private Sprite obstacle;
+	
+	private int mCactusCount;
+	private TMXTiledMap mTMXTiledMap;
+	private TMXLayer tmxLayer;
+	
+	private boolean running;
 
 
 	@Override
@@ -85,10 +98,39 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 	@Override
 	public Scene onCreateScene() {
-		this.mEngine.registerUpdateHandler(new FPSLogger());
 		
 		final Scene scene = new Scene();
-		scene.setBackground(this.mGrassBackground);
+		
+		this.mEngine.registerUpdateHandler(new FPSLogger());
+		
+		running = false;
+		mCactusCount = 0;
+		
+		try {
+			final TMXLoader tmxLoader = new TMXLoader(this.getAssets(), this.mEngine.getTextureManager(), TextureOptions.BILINEAR_PREMULTIPLYALPHA, this.getVertexBufferObjectManager(), new ITMXTilePropertiesListener() {
+				@Override
+				public void onTMXTileWithPropertiesCreated(final TMXTiledMap pTMXTiledMap, final TMXLayer pTMXLayer, final TMXTile pTMXTile, final TMXProperties<TMXTileProperty> pTMXTileProperties) {
+					/* We are going to count the tiles that have the property "cactus=true" set.    */
+					if(pTMXTileProperties.containsTMXProperty("COLLISION", "true")) {
+						mCactusCount++;
+					}
+				}
+			});
+			this.mTMXTiledMap = tmxLoader.loadFromAsset("tmx/mytmx.tmx");
+			
+
+			this.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(LevelActivity.this, "Cactus count in this TMXTiledMap: " + LevelActivity.this.mCactusCount, Toast.LENGTH_LONG).show();
+				}
+			});
+		} catch (final TMXLoadException e) {
+			Debug.e(e);
+		}
+
+		tmxLayer = this.mTMXTiledMap.getTMXLayers().get(0);
+		scene.attachChild(tmxLayer);
 		
 		scene.setOnSceneTouchListener(this);
 
@@ -109,8 +151,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
-		Path path = Algorithm.calculatePath(player.getX(), player.getY(), pSceneTouchEvent.getX(), pSceneTouchEvent.getY(), pScene);
-		startPath(pScene, path);
+		TMXTile destinationTile = tmxLayer.getTMXTileAt(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
+		float destinationX = destinationTile.getTileX() - 16; // TODO: eliminate magic numbers(tilewidth/2)
+		float destinationY = destinationTile.getTileY() - 16; // TODO: eliminate magic numbers(tileheight/2)
+		Path path = Algorithm.calculatePath(player.getX(), player.getY(), destinationX, destinationY, pScene);
+		if(!running) startPath(pScene, path);
 		return false;
 	}
 
@@ -118,6 +163,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		player.registerEntityModifier(new LoopEntityModifier(new OurPathModifier(50, path, null, new IPathModifierListener() {
 			@Override
 			public void onPathStarted(final PathModifier pPathModifier, final IEntity pEntity) {
+				running = true;
 				float startX = path.getCoordinatesX()[0];
 				float startY = path.getCoordinatesY()[0];
 				float endX = path.getCoordinatesX()[path.getSize()-1];
@@ -153,6 +199,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			@Override
 			public void onPathFinished(final PathModifier pPathModifier, final IEntity pEntity) {
 				player.stopAnimation();
+				running = false;
 			}
 		}), 0));
 	}
