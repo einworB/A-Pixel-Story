@@ -17,7 +17,6 @@ import org.andengine.util.algorithm.path.IPathFinderMap;
 import org.andengine.util.algorithm.path.astar.AStarPathFinder;
 import org.andengine.util.algorithm.path.astar.EuclideanHeuristic;
 
-import android.content.Context;
 
 /**
  * Get the path the sprite should move.
@@ -49,16 +48,11 @@ public class Algorithm {
 	/** */
 	private ICostFunction<TMXLayer> costCallback;
 	
-	// context
-	/** the context of the activity that has called this class*/
-	private Context context;
 	
-	
-	public Algorithm(TMXTile startPosition, TMXTile endPosition, TMXTiledMap tmxTiledMap, Context context) {
+	public Algorithm(TMXTile startPosition, TMXTile endPosition, TMXTiledMap tmxTiledMap) {
 		this.endPosition = endPosition;
 		this.startPosition = startPosition;
 		this.tiledMap = tmxTiledMap;
-		this.context = context;
 	}
 	
 	public Algorithm generatePathMap() {
