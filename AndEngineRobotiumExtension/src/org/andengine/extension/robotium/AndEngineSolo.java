@@ -5,14 +5,14 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.anddev.andengine.engine.Engine;
-import org.anddev.andengine.engine.camera.Camera;
-import org.anddev.andengine.entity.IEntity;
-import org.anddev.andengine.entity.IEntity.IEntityMatcher;
-import org.anddev.andengine.input.touch.TouchEvent;
-import org.anddev.andengine.input.touch.controller.ITouchController;
-import org.anddev.andengine.ui.activity.BaseGameActivity;
-import org.anddev.andengine.util.constants.Constants;
+import org.andengine.engine.Engine;
+import org.andengine.engine.camera.Camera;
+import org.andengine.entity.IEntity;
+import org.andengine.entity.IEntityMatcher;
+import org.andengine.input.touch.TouchEvent;
+import org.andengine.input.touch.controller.ITouchController;
+import org.andengine.ui.activity.BaseGameActivity;
+import org.andengine.util.Constants;
 
 import android.app.Activity;
 import android.app.Instrumentation;
