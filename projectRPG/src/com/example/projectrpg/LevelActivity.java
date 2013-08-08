@@ -85,7 +85,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	}
 
 	private void startPath(Scene scene, Path path) {
-		player.registerEntityModifier(new LoopEntityModifier(new PathModifier(30, path, null, new IPathModifierListener() {
+		player.registerEntityModifier(new LoopEntityModifier(new PathModifier(3, path, null, new IPathModifierListener() {
 			@Override
 			public void onPathStarted(final PathModifier pPathModifier, final IEntity pEntity) {
 
@@ -118,7 +118,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			public void onPathFinished(final PathModifier pPathModifier, final IEntity pEntity) {
 
 			}
-		})));
+		}), 0));
 	}
 
 }
