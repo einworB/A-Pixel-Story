@@ -31,9 +31,11 @@ public class MainActivity extends Activity {
 	private ImageView optionsImageView;
 	private ImageView helpImageView;
 
-	private HorizontalScrollView parallaxMidlayer1;
+	private HorizontalScrollView parallaxMidLayer;
+	private HorizontalScrollView parallaxFrontLayer;
 	
 	private int scrolled1 = 0;
+	private int scrolled2 = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class MainActivity extends Activity {
 		setupUI();
 		setupClickListener();
 		new MyAsyncClouds().execute("blub");
+		new MyAsyncGround().execute("blub");
 	}
 
 	private void setupClickListener() {
@@ -81,7 +84,14 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		parallaxMidlayer1.setOnTouchListener(new OnTouchListener() {
+		parallaxMidLayer.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				return true;
+			}
+		});
+		
+		parallaxFrontLayer.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				return true;
@@ -113,7 +123,8 @@ public class MainActivity extends Activity {
 		loadGameImageView = (ImageView) findViewById(R.id.load_game_imageview);
 		optionsImageView = (ImageView) findViewById(R.id.options_imageview);
 		helpImageView = (ImageView) findViewById(R.id.help_imageview);
-		parallaxMidlayer1 = (HorizontalScrollView) findViewById(R.id.scroll);
+		parallaxMidLayer = (HorizontalScrollView) findViewById(R.id.scroll);
+		parallaxFrontLayer = (HorizontalScrollView) findViewById(R.id.scroll2);
 	}
 
 	@Override
@@ -156,11 +167,58 @@ public class MainActivity extends Activity {
 					runOnUiThread(new Runnable() {
 
 						public void run() {
-							parallaxMidlayer1.scrollBy(1, 0);
+							parallaxMidLayer.scrollBy(1, 0);
 							scrolled1++;
 							if (scrolled1 == 1280) {
-								parallaxMidlayer1.scrollBy(-1280, 0);
+								parallaxMidLayer.scrollBy(-1280, 0);
 								scrolled1 = 0;
+							}
+						}
+					});
+				}
+			}, 0, 45);
+		}
+
+	}
+	
+	class MyAsyncGround extends AsyncTask<String, String, String> {
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			publishProgress("b4");
+			return null;
+		}
+
+		@Override
+		protected void onProgressUpdate(String... values) {
+			super.onProgressUpdate(values);
+			timerTask();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			super.onPostExecute(result);
+		}
+
+		public void timerTask() {
+			Timer timer;
+			timer = new Timer();
+			timer.scheduleAtFixedRate(new TimerTask() {
+				public void run() {
+					runOnUiThread(new Runnable() {
+
+						public void run() {
+							parallaxFrontLayer.scrollBy(2, 0);
+							scrolled2 = scrolled2 + 2;
+							if (scrolled2 == 1280) {
+								parallaxFrontLayer.scrollBy(-1280, 0);
+								scrolled2 = 0;
 							}
 						}
 					});
