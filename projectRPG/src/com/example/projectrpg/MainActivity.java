@@ -2,11 +2,11 @@ package com.example.projectrpg;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.graphics.Typeface;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,10 +32,8 @@ public class MainActivity extends Activity {
 	private ImageView helpImageView;
 
 	private HorizontalScrollView parallaxMidlayer1;
-	private HorizontalScrollView parallaxMidlayer2;
 	
 	private int scrolled1 = 0;
-	private int scrolled2 = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +41,7 @@ public class MainActivity extends Activity {
 
 		setupUI();
 		setupClickListener();
+		new MyAsyncClouds().execute("blub");
 	}
 
 	private void setupClickListener() {
@@ -88,12 +87,6 @@ public class MainActivity extends Activity {
 				return true;
 			}
 		});
-		parallaxMidlayer2.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				return true;
-			}
-		});
 	}
 
 	private void setupUI() {
@@ -121,7 +114,6 @@ public class MainActivity extends Activity {
 		optionsImageView = (ImageView) findViewById(R.id.options_imageview);
 		helpImageView = (ImageView) findViewById(R.id.help_imageview);
 		parallaxMidlayer1 = (HorizontalScrollView) findViewById(R.id.scroll);
-		parallaxMidlayer2 = (HorizontalScrollView) findViewById(R.id.scroll2);
 	}
 
 	@Override
@@ -157,8 +149,6 @@ public class MainActivity extends Activity {
 		}
 
 		public void timerTask() {
-			parallaxMidlayer1.scrollBy(200, 0);
-			parallaxMidlayer2.scrollBy(20, 0);
 			Timer timer;
 			timer = new Timer();
 			timer.scheduleAtFixedRate(new TimerTask() {
@@ -167,22 +157,12 @@ public class MainActivity extends Activity {
 
 						public void run() {
 							parallaxMidlayer1.scrollBy(1, 0);
-							parallaxMidlayer2.scrollBy(1, 0);
 							scrolled1++;
-							scrolled2++;
-							if (scrolled1 == scrolled2 && scrolled1 == 928) {
-								parallaxMidlayer1.scrollBy(-1856, 0);
+							if (scrolled1 == 1280) {
+								parallaxMidlayer1.scrollBy(-1280, 0);
 								scrolled1 = 0;
-							} else if (scrolled1 == 1856) {
-								parallaxMidlayer1.scrollBy(-1856, 0);
-								scrolled1 = 0;
-							}
-							if (scrolled2 == 1860) {
-								parallaxMidlayer2.scrollBy(-1856, 0);
-								scrolled2 = 0;
 							}
 						}
-
 					});
 				}
 			}, 0, 45);
