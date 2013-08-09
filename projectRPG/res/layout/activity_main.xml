@@ -9,8 +9,96 @@
     tools:context=".MainActivity" >
 
     <TextView
+        android:id="@+id/title_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_centerHorizontal="true"
+        android:text="@string/startmenu_title"
+        android:textSize="50sp" />
+
+    <TableLayout
+        android:id="@+id/Tabelle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title_textview"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" >
+
+        <TableRow android:id="@+id/row_one" >
+
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:contentDescription="@string/description_start_game" />
+            
+            <TextView 
+                android:id="@+id/new_game_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:text="@string/new_game_string"
+                android:textSize="20sp"/>
+            
+            <View 
+                android:layout_width="100dp"
+                android:layout_height="50dp"/>
+            
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:contentDescription="@string/description_load_game" />
+            
+            <TextView 
+                android:id="@+id/load_game_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:text="@string/load_game_string"
+                android:textSize="20sp"/>
+            
+            
+        </TableRow>
+        
+        <TableRow android:id="@+id/row_two"
+            android:layout_marginTop="30dp" >
+
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:contentDescription="@string/description_options" />
+            
+            <TextView 
+                android:id="@+id/options_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:text="@string/options_string"
+                android:textSize="20sp"/>
+            
+            <View 
+                android:layout_width="100dp"
+                android:layout_height="50dp"/>
+            
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:contentDescription="@string/description_help" />
+            
+            <TextView 
+                android:id="@+id/help_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:text="@string/help_string"
+                android:textSize="20sp"/>
+            
+            
+        </TableRow>
+    </TableLayout>
 
 </RelativeLayout>

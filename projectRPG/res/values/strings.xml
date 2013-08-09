@@ -5,5 +5,14 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_level">LevelActivity</string>
+    <string name="startmenu_title">A PIXEL STORY</string>
+    <string name="description_start_game">starts the game</string>
+    <string name="description_load_game">loads the game</string>
+    <string name="description_options">shows optionsmenu</string>
+    <string name="description_help">shows helpmenu</string>
+    <string name="new_game_string">NEW GAME</string>
+    <string name="load_game_string">LOAD GAME</string>
+    <string name="options_string">OPTIONS</string>
+    <string name="help_string">HELP</string>
 
 </resources>
