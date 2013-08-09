@@ -14,5 +14,6 @@
     <string name="load_game_string">LOAD GAME</string>
     <string name="options_string">OPTIONS</string>
     <string name="help_string">HELP</string>
-
+    <string name="default_description"></string>
+    
 </resources>

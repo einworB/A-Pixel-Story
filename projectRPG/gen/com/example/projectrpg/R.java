@@ -21,18 +21,28 @@ public final class R {
         public static final int activity_vertical_margin=0x7f040001;
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
+        public static final int background_mainmenu=0x7f020000;
+        public static final int help_button=0x7f020001;
+        public static final int ic_launcher=0x7f020002;
+        public static final int load_game_button=0x7f020003;
+        public static final int new_game_button=0x7f020004;
     }
     public static final class id {
-        public static final int Tabelle=0x7f080001;
-        public static final int action_settings=0x7f080008;
-        public static final int help_textview=0x7f080007;
-        public static final int load_game_textview=0x7f080004;
-        public static final int new_game_textview=0x7f080003;
-        public static final int options_textview=0x7f080006;
-        public static final int row_one=0x7f080002;
-        public static final int row_two=0x7f080005;
-        public static final int title_textview=0x7f080000;
+        public static final int Tabelle=0x7f080003;
+        public static final int action_settings=0x7f08000e;
+        public static final int clouds4=0x7f080001;
+        public static final int help_imageview=0x7f08000c;
+        public static final int help_textview=0x7f08000d;
+        public static final int load_game_imageview=0x7f080007;
+        public static final int load_game_textview=0x7f080008;
+        public static final int new_game_imageview=0x7f080005;
+        public static final int new_game_textview=0x7f080006;
+        public static final int options_imageview=0x7f08000a;
+        public static final int options_textview=0x7f08000b;
+        public static final int row_one=0x7f080004;
+        public static final int row_two=0x7f080009;
+        public static final int scroll=0x7f080000;
+        public static final int title_textview=0x7f080002;
     }
     public static final class layout {
         public static final int activity_level=0x7f030000;
@@ -45,6 +55,7 @@ public final class R {
     public static final class string {
         public static final int action_settings=0x7f050001;
         public static final int app_name=0x7f050000;
+        public static final int default_description=0x7f05000d;
         public static final int description_help=0x7f050008;
         public static final int description_load_game=0x7f050006;
         public static final int description_options=0x7f050007;

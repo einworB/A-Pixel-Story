@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
@@ -15,12 +18,59 @@ public class MainActivity extends Activity {
 	private TextView loadGame;
 	private TextView options;
 	private TextView help;
+	
+	private ImageView newGameImageView;
+	private ImageView loadGameImageView;
+	private ImageView optionsImageView;
+	private ImageView helpImageView;
+	
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setupUI();
+		setupClickListener();
+	}
+
+	private void setupClickListener() {
+		newGameImageView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		loadGameImageView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		optionsImageView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		helpImageView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 	}
 
 	private void setupUI() {
@@ -43,6 +93,11 @@ public class MainActivity extends Activity {
 		
 		help = (TextView)findViewById(R.id.help_textview);
 		help.setTypeface(inhishan);
+		
+		newGameImageView = (ImageView)findViewById(R.id.new_game_imageview);
+		loadGameImageView = (ImageView)findViewById(R.id.load_game_imageview);
+		optionsImageView = (ImageView)findViewById(R.id.options_imageview);
+		helpImageView = (ImageView)findViewById(R.id.help_imageview); 
 	}
 
 	@Override
