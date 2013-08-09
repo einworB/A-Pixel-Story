@@ -26,23 +26,28 @@ public final class R {
         public static final int ic_launcher=0x7f020002;
         public static final int load_game_button=0x7f020003;
         public static final int new_game_button=0x7f020004;
+        public static final int parallax_background_layer_mid=0x7f020005;
     }
     public static final class id {
-        public static final int Tabelle=0x7f080003;
-        public static final int action_settings=0x7f08000e;
-        public static final int clouds4=0x7f080001;
-        public static final int help_imageview=0x7f08000c;
-        public static final int help_textview=0x7f08000d;
-        public static final int load_game_imageview=0x7f080007;
-        public static final int load_game_textview=0x7f080008;
-        public static final int new_game_imageview=0x7f080005;
-        public static final int new_game_textview=0x7f080006;
-        public static final int options_imageview=0x7f08000a;
-        public static final int options_textview=0x7f08000b;
-        public static final int row_one=0x7f080004;
-        public static final int row_two=0x7f080009;
+        public static final int Tabelle=0x7f080007;
+        public static final int action_settings=0x7f080012;
+        public static final int clouds1=0x7f080001;
+        public static final int clouds2=0x7f080002;
+        public static final int clouds3=0x7f080005;
+        public static final int clouds4=0x7f080004;
+        public static final int help_imageview=0x7f080010;
+        public static final int help_textview=0x7f080011;
+        public static final int load_game_imageview=0x7f08000b;
+        public static final int load_game_textview=0x7f08000c;
+        public static final int new_game_imageview=0x7f080009;
+        public static final int new_game_textview=0x7f08000a;
+        public static final int options_imageview=0x7f08000e;
+        public static final int options_textview=0x7f08000f;
+        public static final int row_one=0x7f080008;
+        public static final int row_two=0x7f08000d;
         public static final int scroll=0x7f080000;
-        public static final int title_textview=0x7f080002;
+        public static final int scroll2=0x7f080003;
+        public static final int title_textview=0x7f080006;
     }
     public static final class layout {
         public static final int activity_level=0x7f030000;
