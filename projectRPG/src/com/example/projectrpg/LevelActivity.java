@@ -49,8 +49,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private static final int CAMERA_HEIGHT = 480;
 
 	// fields
-	private RepeatingSpriteBackground mGrassBackground;
-
 	private BitmapTextureAtlas mBitmapTextureAtlas;
 	private TiledTextureRegion mPlayerTextureRegion;
 	private AnimatedSprite player;
@@ -79,7 +77,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 		this.mBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 128, 128);
 		this.mPlayerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "player.png", 0, 0, 3, 4);
-		this.mGrassBackground = new RepeatingSpriteBackground(CAMERA_WIDTH, CAMERA_HEIGHT, this.getTextureManager(), AssetBitmapTextureAtlasSource.create(this.getAssets(), "gfx/background_grass.png"), this.getVertexBufferObjectManager());
 		this.mBitmapTextureAtlas.load();
 		try {
 			this.obstacleTexture = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
@@ -153,8 +150,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
 		TMXTile startTile = tmxLayer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
 		TMXTile destinationTile = tmxLayer.getTMXTileAt(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
-		float destinationX = destinationTile.getTileX() - 16; // TODO: eliminate magic numbers (tilewidth/2)
-		float destinationY = destinationTile.getTileY() - 16; // TODO: eliminate magic numbers (tileheight/2)
 		Algorithm algo = new Algorithm(startTile, destinationTile, mTMXTiledMap);
 		algo.generatePathMap();
 		Path path = algo.updatePath();
@@ -167,10 +162,15 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			@Override
 			public void onPathStarted(final PathModifier pPathModifier, final IEntity pEntity) {
 				running = true;
-				float startX = path.getCoordinatesX()[0];
-				float startY = path.getCoordinatesY()[0];
-				float endX = path.getCoordinatesX()[path.getSize()-1];
-				float endY = path.getCoordinatesY()[path.getSize()-1];
+				
+			}
+
+			@Override
+			public void onPathWaypointStarted(final PathModifier pPathModifier, final IEntity pEntity, final int pWaypointIndex) {
+				float startX = path.getCoordinatesX()[pWaypointIndex];
+				float startY = path.getCoordinatesY()[pWaypointIndex];
+				float endX = path.getCoordinatesX()[pWaypointIndex+1];
+				float endY = path.getCoordinatesY()[pWaypointIndex+1];
 				float divX = Math.abs(startX - endX);
 				float divY = Math.abs(startY - endY);
 				
@@ -190,13 +190,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			}
 
 			@Override
-			public void onPathWaypointStarted(final PathModifier pPathModifier, final IEntity pEntity, final int pWaypointIndex) {
-				
-			}
-
-			@Override
 			public void onPathWaypointFinished(final PathModifier pPathModifier, final IEntity pEntity, final int pWaypointIndex) {
-				
+				player.stopAnimation();
 			}
 
 			@Override
