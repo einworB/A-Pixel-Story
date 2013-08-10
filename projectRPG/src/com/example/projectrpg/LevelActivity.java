@@ -1,8 +1,5 @@
 package com.example.projectrpg;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
@@ -14,33 +11,23 @@ import org.andengine.entity.modifier.PathModifier.IPathModifierListener;
 import org.andengine.entity.modifier.PathModifier.Path;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.RepeatingSpriteBackground;
 import org.andengine.entity.sprite.AnimatedSprite;
-import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.extension.tmx.TMXLayer;
 import org.andengine.extension.tmx.TMXLoader;
+import org.andengine.extension.tmx.TMXLoader.ITMXTilePropertiesListener;
 import org.andengine.extension.tmx.TMXProperties;
 import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTileProperty;
 import org.andengine.extension.tmx.TMXTiledMap;
-import org.andengine.extension.tmx.TMXLoader.ITMXTilePropertiesListener;
 import org.andengine.extension.tmx.util.exception.TMXLoadException;
 import org.andengine.input.touch.TouchEvent;
-import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.andengine.opengl.texture.atlas.bitmap.source.AssetBitmapTextureAtlasSource;
-import org.andengine.opengl.texture.bitmap.BitmapTexture;
-import org.andengine.opengl.texture.region.ITextureRegion;
-import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
-import org.andengine.util.adt.io.in.IInputStreamOpener;
 import org.andengine.util.debug.Debug;
-
-import android.widget.Toast;
 
 public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTouchListener{
 
@@ -53,11 +40,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private TiledTextureRegion mPlayerTextureRegion;
 	private AnimatedSprite player;
 	
-	private ITexture obstacleTexture;
-	private ITextureRegion obstacleTextureRegion;
-	private Sprite obstacle;
-	
-	private int mCactusCount;
 	private TMXTiledMap mTMXTiledMap;
 	private TMXLayer tmxLayer;
 	
@@ -78,19 +60,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		this.mBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 128, 128);
 		this.mPlayerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "player.png", 0, 0, 3, 4);
 		this.mBitmapTextureAtlas.load();
-		try {
-			this.obstacleTexture = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
-				@Override
-				public InputStream open() throws IOException {
-					return getAssets().open("gfx/grauerKlotz.png");
-				}
-			});
-
-			this.obstacleTexture.load();
-			this.obstacleTextureRegion = TextureRegionFactory.extractFromTexture(this.obstacleTexture);
-		} catch (IOException e) {
-			Debug.e(e);
-		}
 	}
 
 	@Override
@@ -101,27 +70,19 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 		
 		running = false;
-		mCactusCount = 0;
 		
 		try {
 			final TMXLoader tmxLoader = new TMXLoader(this.getAssets(), this.mEngine.getTextureManager(), TextureOptions.BILINEAR_PREMULTIPLYALPHA, this.getVertexBufferObjectManager(), new ITMXTilePropertiesListener() {
+
 				@Override
-				public void onTMXTileWithPropertiesCreated(final TMXTiledMap pTMXTiledMap, final TMXLayer pTMXLayer, final TMXTile pTMXTile, final TMXProperties<TMXTileProperty> pTMXTileProperties) {
-					/* We are going to count the tiles that have the property "cactus=true" set.    */
-					if(pTMXTileProperties.containsTMXProperty("COLLISION", "true")) {
-						mCactusCount++;
-					}
+				public void onTMXTileWithPropertiesCreated(TMXTiledMap pTMXTiledMap, TMXLayer pTMXLayer, TMXTile pTMXTile, TMXProperties<TMXTileProperty> pTMXTileProperties) {
+					// TODO Auto-generated method stub
+					
 				}
+				
 			});
 			this.mTMXTiledMap = tmxLoader.loadFromAsset("tmx/mytmx.tmx");
-			
-
-			this.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(LevelActivity.this, "Cactus count in this TMXTiledMap: " + LevelActivity.this.mCactusCount, Toast.LENGTH_LONG).show();
-				}
-			});
+		
 		} catch (final TMXLoadException e) {
 			Debug.e(e);
 		}
@@ -136,12 +97,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		final float centerY = (CAMERA_HEIGHT - this.mPlayerTextureRegion.getHeight()) / 2;
 
 		/* Create the sprite and add it to the scene. */
-		player = new AnimatedSprite(centerX, centerY, 48, 64, this.mPlayerTextureRegion, this.getVertexBufferObjectManager());		
-
-		obstacle = new Sprite(50, 50, obstacleTextureRegion, this.getVertexBufferObjectManager());
+		player = new AnimatedSprite(centerX, centerY, 48, 64, this.mPlayerTextureRegion, this.getVertexBufferObjectManager());
 		
 		scene.attachChild(player);
-		scene.attachChild(obstacle);
 		
 		return scene;
 	}
