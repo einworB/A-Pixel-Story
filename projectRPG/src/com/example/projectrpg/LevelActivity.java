@@ -1,6 +1,6 @@
 package com.example.projectrpg;
 
-import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
@@ -22,15 +22,14 @@ import org.andengine.extension.tmx.TMXTileProperty;
 import org.andengine.extension.tmx.TMXTiledMap;
 import org.andengine.extension.tmx.util.exception.TMXLoadException;
 import org.andengine.input.touch.TouchEvent;
+import org.andengine.input.touch.detector.PinchZoomDetector;
+import org.andengine.input.touch.detector.PinchZoomDetector.IPinchZoomDetectorListener;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.debug.Debug;
-
-import android.graphics.Point;
-import android.view.Display;
 
 /**
  * This is the Activity the Player spends most of the playtime in 
@@ -39,13 +38,24 @@ import android.view.Display;
  * @author Philip
  *
  */
-public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTouchListener{
+public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTouchListener, IPinchZoomDetectorListener{
 
 	/** constant for the camera width */
-	private static final int CAMERA_WIDTH = 2000;
+	private static final int CAMERA_WIDTH = 720;
 	/** constant for the camera height */
-	private static final int CAMERA_HEIGHT = 780;
-
+	private static final int CAMERA_HEIGHT = 480;
+	/** constant for maximal camera movement speed */
+	private static final float MAX_CAMERA_VELOCITY = 50;
+	/** constant for maximal velocity for changing the zoom factor of the camera */
+	private static final float MAX_ZOOM_FACTOR_CHANGE = 5;
+	
+	private static final float MAX_ZOOM_FACTOR = 1.5f;
+	
+	private static final float MIN_ZOOM_FACTOR = 0.5f;
+	
+	/** the smooth camera allowing smooth camera movements, bounds and zoom */
+	private SmoothCamera camera;
+	
 	/** used for loading bitmaps*/
 	private BitmapTextureAtlas bitmapTextureAtlas;
 	/** used for loading bitmaps*/
@@ -63,6 +73,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * and for getting and setting of other technical information
 	 */
 	private Controller controller;
+	
+	private PinchZoomDetector pinchZoomDetector;
+	private float initialTouchZoomFactor;
 
 	/**
 	 * sets up the camera and engine options like screen orientation 
@@ -70,12 +83,14 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 */
 	@Override
 	public EngineOptions onCreateEngineOptions() {
-		Display display = getWindowManager().getDefaultDisplay();
-		Point size = new Point();
-		display.getSize(size);
-		final Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+		
+		camera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT, MAX_CAMERA_VELOCITY, MAX_CAMERA_VELOCITY, MAX_ZOOM_FACTOR_CHANGE);
+		camera.setBounds(0, 0, 200*32, 200*32);
+		camera.setBoundsEnabled(true);
+		
+		controller = new Controller();
 
-		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(size.x, size.y), camera);
+		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
 	}
 
 	/**
@@ -117,6 +132,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		/* set the scene's on touch listener to the activity itself */
 		scene.setOnSceneTouchListener(this);
+		pinchZoomDetector = new PinchZoomDetector(this);
+		pinchZoomDetector.setEnabled(true);
 
 		/* Calculate the coordinates for the player sprite, so it's spawned in the center of the camera. */
 		final float centerX = (CAMERA_WIDTH - this.playerTextureRegion.getWidth()) / 2;
@@ -125,6 +142,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		/* Create the sprite and add it to the scene. */
 		player = new AnimatedSprite(centerX, centerY, 48, 64, this.playerTextureRegion, this.getVertexBufferObjectManager());		
 		scene.attachChild(player);
+		/* let the camera chase the player */
+		camera.setChaseEntity(player);
 		
 		return scene;
 	}
@@ -136,6 +155,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 */
 	@Override
 	public boolean onSceneTouchEvent(Scene scene, TouchEvent sceneTouchEvent) {
+		pinchZoomDetector.onTouchEvent(sceneTouchEvent);
 		if(!controller.isMoving()){
 			TMXTile startTile = tmxLayer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
 			TMXTile destinationTile = tmxLayer.getTMXTileAt(sceneTouchEvent.getX(), sceneTouchEvent.getY());
@@ -206,6 +226,28 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				controller.animationFinished();
 			}
 		}), 0));
+	}
+
+	@Override
+	public void onPinchZoomStarted(PinchZoomDetector pinchZoomDetector,
+			TouchEvent sceneTouchEvent) {
+		initialTouchZoomFactor = camera.getZoomFactor();
+	}
+
+	@Override
+	public void onPinchZoom(PinchZoomDetector pinchZoomDetector,
+			TouchEvent touchEvent, float zoomFactor) {
+		final float newZoomFactor = initialTouchZoomFactor * zoomFactor;
+		if(newZoomFactor < MAX_ZOOM_FACTOR && newZoomFactor > MIN_ZOOM_FACTOR){
+			camera.setZoomFactor(newZoomFactor);
+		}
+	}
+
+	@Override
+	public void onPinchZoomFinished(PinchZoomDetector pinchZoomDetector,
+			TouchEvent touchEvent, float zoomFactor) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
