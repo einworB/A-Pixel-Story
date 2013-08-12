@@ -85,6 +85,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private float initialTouchZoomFactor;
 	private boolean wasPinched;
 	private Handler handler;
+	private LoopEntityModifier pathModifier;
+	protected boolean stop;
 
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
@@ -182,15 +184,23 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			if(sceneTouchEvent.isActionUp()){
 				if(!wasPinched){
 					TMXTile startTile = tmxLayer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
-				TMXTile destinationTile = tmxLayer.getTMXTileAt(sceneTouchEvent.getX(), sceneTouchEvent.getY());
-				Path path = controller.getPath(startTile, destinationTile, tmxTiledMap);
-				
-				startPath(path);
+					TMXTile destinationTile = tmxLayer.getTMXTileAt(sceneTouchEvent.getX(), sceneTouchEvent.getY());
+					Path path = controller.getPath(startTile, destinationTile, tmxTiledMap);
+					
+					startPath(path);
 				}else wasPinched = false;
 			}
-		}			
+		} else{
+			if(sceneTouchEvent.isActionUp()){
+				if(!wasPinched){
+					stopPath();
+				}else wasPinched = false;
+			}
+		}
 		return true;
 	}
+
+	
 
 	/**
 	 * Responsible for moving the player along the given path 
@@ -199,7 +209,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * @param path - The path the player shall go to
 	 */
 	private void startPath(final Path path) {
-		player.registerEntityModifier(new LoopEntityModifier(new OurPathModifier(50, path, null, new IPathModifierListener() {
+		pathModifier = new LoopEntityModifier(new OurPathModifier(50, path, null, new IPathModifierListener() {
+
 			@Override
 			/**
 			 * called at the beginning of the movement, 
@@ -207,6 +218,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			 */
 			public void onPathStarted(final PathModifier pathModifier, final IEntity entity) {
 				controller.animationStarted();
+				stop = false;
 			}
 
 			@Override
@@ -214,30 +226,35 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			 * called whenever a new waypoint is started 
 			 * gets the correct type of animation from the controller and shows it
 			 */
-			public void onPathWaypointStarted(final PathModifier pathModifier, final IEntity entity, final int waypointIndex) {				
-				switch(controller.getAnimationType(path, waypointIndex)){
-					/* move left */
-					case 1:
-						player.animate(new long[]{200, 200, 200}, 9, 11, true);
-						break;
-					/* move right */
-					case 2:
-						player.animate(new long[]{200, 200, 200}, 3, 5, true);
-						break;
-					/* move up */
-					case 3:
-						player.animate(new long[]{200, 200, 200}, 0, 2, true);
-						break;
-					/* move down */
-					case 4:
-						player.animate(new long[]{200, 200, 200}, 6, 8, true);
-						break;
-				}				
+			public void onPathWaypointStarted(final PathModifier pathModifier, final IEntity entity, final int waypointIndex) {
+				if(!stop){
+					switch(controller.getAnimationType(path, waypointIndex)){
+						/* move left */
+						case 1:
+							player.animate(new long[]{200, 200, 200}, 9, 11, true);
+							break;
+						/* move right */
+						case 2:
+							player.animate(new long[]{200, 200, 200}, 3, 5, true);
+							break;
+						/* move up */
+						case 3:
+							player.animate(new long[]{200, 200, 200}, 0, 2, true);
+							break;
+						/* move down */
+						case 4:
+							player.animate(new long[]{200, 200, 200}, 6, 8, true);
+							break;
+					}	
+				}
+							
 			}
 			
 			@Override
 			/** called whenever a waypoint is finished, stops the animation */
-			public void onPathWaypointFinished(final PathModifier pathModifier, final IEntity entity, final int waypointIndex) {
+			public void onPathWaypointFinished(final PathModifier modifier, final IEntity entity, final int waypointIndex) {
+				if(stop) player.unregisterEntityModifier(pathModifier);
+				
 				player.stopAnimation();
 			}
 
@@ -251,7 +268,17 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				player.stopAnimation();
 				controller.animationFinished();
 			}
-		}), 0));
+		}), 0);
+		player.registerEntityModifier(pathModifier);
+	}
+	
+	/**
+	 * called when the player is already moving and the user touches the display
+	 * interrupts the current path
+	 */
+	private void stopPath() {
+		stop = true;
+		controller.animationFinished();
 	}
 
 	@Override
