@@ -31,6 +31,11 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.debug.Debug;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+
 /**
  * This is the Activity the Player spends most of the playtime in 
  * The player moves through the different levels in this activity 
@@ -39,6 +44,8 @@ import org.andengine.util.debug.Debug;
  *
  */
 public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTouchListener, IPinchZoomDetectorListener{
+
+	
 
 	/** constant for the camera width */
 	private static final int CAMERA_WIDTH = 720;
@@ -76,6 +83,14 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	
 	private PinchZoomDetector pinchZoomDetector;
 	private float initialTouchZoomFactor;
+	private boolean wasPinched;
+	private Handler handler;
+
+	@Override
+	protected void onCreate(Bundle pSavedInstanceState) {
+		super.onCreate(pSavedInstanceState);
+		handler = new Handler();
+	}
 
 	/**
 	 * sets up the camera and engine options like screen orientation 
@@ -85,10 +100,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	public EngineOptions onCreateEngineOptions() {
 		
 		camera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT, MAX_CAMERA_VELOCITY, MAX_CAMERA_VELOCITY, MAX_ZOOM_FACTOR_CHANGE);
-		camera.setBounds(0, 0, 200*32, 200*32);
-		camera.setBoundsEnabled(true);
 		
-		controller = new Controller();
 
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
 	}
@@ -103,6 +115,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		this.bitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 128, 128);
 		this.playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.bitmapTextureAtlas, this, "player.png", 0, 0, 3, 4);
 		this.bitmapTextureAtlas.load();
+
+		controller = new Controller();
+		wasPinched = false;
 	}
 
 	/**
@@ -129,6 +144,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		}
 		tmxLayer = this.tmxTiledMap.getTMXLayers().get(0);
 		scene.attachChild(tmxLayer);
+
+		camera.setBounds(0, 0, tmxLayer.getWidth(), tmxLayer.getHeight());
+		camera.setBoundsEnabled(true);
 		
 		/* set the scene's on touch listener to the activity itself */
 		scene.setOnSceneTouchListener(this);
@@ -154,20 +172,28 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * and starts the movement(if the player is not moving already)
 	 */
 	@Override
-	public boolean onSceneTouchEvent(Scene scene, TouchEvent sceneTouchEvent) {
+	public boolean onSceneTouchEvent(Scene scene, final TouchEvent sceneTouchEvent) {
 		pinchZoomDetector.onTouchEvent(sceneTouchEvent);
+		
+		Log.d("RPG", "down: "+sceneTouchEvent.isActionDown());
+		Log.d("RPG", "up: "+sceneTouchEvent.isActionUp());
+		Log.d("RPG", "move: "+sceneTouchEvent.isActionMove());
 		if(!controller.isMoving()){
-			TMXTile startTile = tmxLayer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
-			TMXTile destinationTile = tmxLayer.getTMXTileAt(sceneTouchEvent.getX(), sceneTouchEvent.getY());
-			Path path = controller.getPath(startTile, destinationTile, tmxTiledMap);
-			
-			startPath(path);
-		}		
-		return false;
+			if(sceneTouchEvent.isActionUp()){
+				if(!wasPinched){
+					TMXTile startTile = tmxLayer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
+				TMXTile destinationTile = tmxLayer.getTMXTileAt(sceneTouchEvent.getX(), sceneTouchEvent.getY());
+				Path path = controller.getPath(startTile, destinationTile, tmxTiledMap);
+				
+				startPath(path);
+				}else wasPinched = false;
+			}
+		}			
+		return true;
 	}
 
 	/**
-	 * Responsible fot moving the player along the given path 
+	 * Responsible for moving the player along the given path 
 	 * and for showing the correct animation
 	 * 
 	 * @param path - The path the player shall go to
@@ -246,8 +272,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	@Override
 	public void onPinchZoomFinished(PinchZoomDetector pinchZoomDetector,
 			TouchEvent touchEvent, float zoomFactor) {
-		// TODO Auto-generated method stub
-		
+		wasPinched = true;
 	}
 
 }
