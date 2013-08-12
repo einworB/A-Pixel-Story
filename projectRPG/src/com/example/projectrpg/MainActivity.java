@@ -6,8 +6,8 @@ import java.util.TimerTask;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Typeface;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
+	
+	//neuer Upload... Kommentare folgen noch...
 
 	private Typeface inhishan;
 
@@ -33,7 +35,7 @@ public class MainActivity extends Activity {
 
 	private HorizontalScrollView parallaxMidLayer;
 	private HorizontalScrollView parallaxFrontLayer;
-	
+
 	private int scrolled1 = 0;
 	private int scrolled2 = 0;
 
@@ -52,8 +54,8 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-
+				Intent i = new Intent(MainActivity.this, LevelActivity.class);
+				startActivity(i);
 			}
 		});
 
@@ -90,7 +92,7 @@ public class MainActivity extends Activity {
 				return true;
 			}
 		});
-		
+
 		parallaxFrontLayer.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -125,13 +127,6 @@ public class MainActivity extends Activity {
 		helpImageView = (ImageView) findViewById(R.id.help_imageview);
 		parallaxMidLayer = (HorizontalScrollView) findViewById(R.id.scroll);
 		parallaxFrontLayer = (HorizontalScrollView) findViewById(R.id.scroll2);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return false;
 	}
 
 	class MyAsyncClouds extends AsyncTask<String, String, String> {
@@ -180,7 +175,7 @@ public class MainActivity extends Activity {
 		}
 
 	}
-	
+
 	class MyAsyncGround extends AsyncTask<String, String, String> {
 
 		@Override
@@ -229,3 +224,4 @@ public class MainActivity extends Activity {
 	}
 
 }
+
