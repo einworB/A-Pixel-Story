@@ -1,17 +1,22 @@
 package com.example.projectrpg;
 
 import org.andengine.engine.camera.SmoothCamera;
+import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.IEntity;
+import org.andengine.entity.IEntityMatcher;
 import org.andengine.entity.modifier.LoopEntityModifier;
 import org.andengine.entity.modifier.PathModifier;
 import org.andengine.entity.modifier.PathModifier.IPathModifierListener;
 import org.andengine.entity.modifier.PathModifier.Path;
+import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.text.TickerText;
+import org.andengine.entity.text.TickerText.TickerTextOptions;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.extension.tmx.TMXLayer;
 import org.andengine.extension.tmx.TMXLoader;
@@ -24,17 +29,23 @@ import org.andengine.extension.tmx.util.exception.TMXLoadException;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.input.touch.detector.PinchZoomDetector;
 import org.andengine.input.touch.detector.PinchZoomDetector.IPinchZoomDetectorListener;
+import org.andengine.opengl.font.Font;
+import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.util.HorizontalAlign;
+import org.andengine.util.color.Color;
 import org.andengine.util.debug.Debug;
 
+import android.graphics.Point;
+import android.graphics.Typeface;
+import android.opengl.GLES20;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
+import android.view.Display;
+import android.view.Window;
 
 /**
  * This is the Activity the Player spends most of the playtime in 
@@ -84,14 +95,18 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private PinchZoomDetector pinchZoomDetector;
 	private float initialTouchZoomFactor;
 	private boolean wasPinched;
-	private Handler handler;
 	private LoopEntityModifier pathModifier;
 	protected boolean stop;
+	private Font font;
+	private Scene scene;
+	private boolean isInteracting;
+	private Rectangle rect;
+	private TickerText text;
+	private HUD hud;
 
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
 		super.onCreate(pSavedInstanceState);
-		handler = new Handler();
 	}
 
 	/**
@@ -117,6 +132,15 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		this.bitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 128, 128);
 		this.playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.bitmapTextureAtlas, this, "player.png", 0, 0, 3, 4);
 		this.bitmapTextureAtlas.load();
+		
+		this.font = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32);
+		this.font.load();
+		
+		
+		rect = new Rectangle(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-20, 100, this.getVertexBufferObjectManager());
+		rect.setColor(Color.WHITE);
+		
+		
 
 		controller = new Controller();
 		wasPinched = false;
@@ -128,7 +152,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	@Override
 	public Scene onCreateScene() {
 		/* create the scene */
-		final Scene scene = new Scene();
+		scene = new Scene();
 		
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 		
@@ -164,6 +188,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		scene.attachChild(player);
 		/* let the camera chase the player */
 		camera.setChaseEntity(player);
+		hud = new HUD();
+		camera.setHUD(hud);
 		
 		return scene;
 	}
@@ -177,17 +203,30 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	public boolean onSceneTouchEvent(Scene scene, final TouchEvent sceneTouchEvent) {
 		pinchZoomDetector.onTouchEvent(sceneTouchEvent);
 		
-		Log.d("RPG", "down: "+sceneTouchEvent.isActionDown());
-		Log.d("RPG", "up: "+sceneTouchEvent.isActionUp());
-		Log.d("RPG", "move: "+sceneTouchEvent.isActionMove());
+//		Log.d("RPG", "down: "+sceneTouchEvent.isActionDown());
+//		Log.d("RPG", "up: "+sceneTouchEvent.isActionUp());
+//		Log.d("RPG", "move: "+sceneTouchEvent.isActionMove());
+		
+		
+		
 		if(!controller.isMoving()){
 			if(sceneTouchEvent.isActionUp()){
 				if(!wasPinched){
+					if(isInteracting){
+						stopInteraction();
+						return true;
+					}
 					TMXTile startTile = tmxLayer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
 					TMXTile destinationTile = tmxLayer.getTMXTileAt(sceneTouchEvent.getX(), sceneTouchEvent.getY());
-					Path path = controller.getPath(startTile, destinationTile, tmxTiledMap);
+					if(controller.doAction(startTile, destinationTile, tmxTiledMap)){
+						Path path = controller.getPath(startTile, destinationTile, tmxTiledMap);
+						startPath(path);
+					} else{
+						String interActionText = controller.getInteractionText();
+						startInteraction(interActionText);
+					}
 					
-					startPath(path);
+					
 				}else wasPinched = false;
 			}
 		} else{
@@ -201,6 +240,25 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	}
 
 	
+
+
+	private void startInteraction(String interactionText) {
+		isInteracting = true;
+		
+		hud.attachChild(rect);
+		
+		text = new TickerText(rect.getX()+10, rect.getY()+10, font, interactionText, new TickerTextOptions(HorizontalAlign.CENTER, 10), this.getVertexBufferObjectManager());
+		text.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		
+		hud.attachChild(text);
+	}
+	
+	
+	private void stopInteraction() {
+		hud.detachChild(text);
+		hud.detachChild(rect);
+		isInteracting = false;
+	}
 
 	/**
 	 * Responsible for moving the player along the given path 

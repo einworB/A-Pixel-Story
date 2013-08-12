@@ -37,6 +37,16 @@ public class Controller {
 		algo.generatePathMap();
 		return algo.updatePath();
 	}
+	
+	public boolean doAction(TMXTile startTile, TMXTile destinationTile,
+			TMXTiledMap tmxTiledMap) {
+		InteractionDecider decider = new InteractionDecider();
+		if(decider.decide(startTile, destinationTile, tmxTiledMap)) return true;
+		
+		
+		
+		return false;
+	}
 
 	/**
 	 * calculates and returns the correct type of animation
@@ -97,5 +107,11 @@ public class Controller {
 	public boolean isMoving() {
 		return isMoving;
 	}
+
+	public String getInteractionText() {
+		return "Das ist ein Test";
+	}
+
+	
 
 }
