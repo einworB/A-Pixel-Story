@@ -1,6 +1,7 @@
 package com.example.projectrpg;
 
 import org.andengine.entity.modifier.PathModifier.Path;
+import org.andengine.entity.scene.Scene;
 import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTiledMap;
 
@@ -18,9 +19,12 @@ public class Controller {
 	/** boolean if the player is moving */
 	private boolean isMoving;
 	
+	private int level;
+	
 	/** constructor */
 	public Controller(){
 		isMoving = false;
+		level = 1;
 	}
 
 	/**
@@ -38,10 +42,9 @@ public class Controller {
 		return algo.updatePath();
 	}
 	
-	public boolean doAction(TMXTile startTile, TMXTile destinationTile,
-			TMXTiledMap tmxTiledMap) {
+	public boolean doAction(TMXTile startTile, TMXTile destinationTile, TMXTiledMap tmxTiledMap, Scene scene) {
 		InteractionDecider decider = new InteractionDecider();
-		if(decider.decide(startTile, destinationTile, tmxTiledMap)) return true;
+		if(decider.decide(startTile, destinationTile, tmxTiledMap, scene)) return true;
 		
 		
 		
@@ -110,6 +113,16 @@ public class Controller {
 
 	public String getInteractionText() {
 		return "Das ist ein Test";
+	}
+
+	public String getLevelPath() {
+		if(level==1) return "tmx/tmxLena.tmx";
+		if(level==2) return "tmx/mytmx.tmx";
+		else return null;
+	}
+
+	public void nextLevel() {
+		level++;
 	}
 
 	

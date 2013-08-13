@@ -8,6 +8,7 @@ import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.IEntityMatcher;
 import org.andengine.entity.modifier.LoopEntityModifier;
+import org.andengine.entity.modifier.MoveXModifier;
 import org.andengine.entity.modifier.PathModifier;
 import org.andengine.entity.modifier.PathModifier.IPathModifierListener;
 import org.andengine.entity.modifier.PathModifier.Path;
@@ -44,6 +45,7 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.Window;
 
@@ -63,7 +65,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/** constant for the camera height */
 	private static final int CAMERA_HEIGHT = 480;
 	/** constant for maximal camera movement speed */
-	private static final float MAX_CAMERA_VELOCITY = 50;
+	private static final float MAX_CAMERA_VELOCITY = 1000;
 	/** constant for maximal velocity for changing the zoom factor of the camera */
 	private static final float MAX_ZOOM_FACTOR_CHANGE = 5;
 	
@@ -103,6 +105,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private Rectangle rect;
 	private TickerText text;
 	private HUD hud;
+	private int moveCounter;
+	private float moveXStart;
+	private float moveYStart;
+	private AnimatedSprite player2;
 
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
@@ -144,6 +150,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 		controller = new Controller();
 		wasPinched = false;
+		moveCounter = 0;
+		moveXStart = 0;
+		moveYStart = 0;
 	}
 
 	/**
@@ -164,7 +173,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 					// TODO nothing...					
 				}				
 			});
-			this.tmxTiledMap = tmxLoader.loadFromAsset("tmx/mytmx.tmx");
+			this.tmxTiledMap = tmxLoader.loadFromAsset(controller.getLevelPath());
 		} catch (final TMXLoadException e) {
 			Debug.e(e);
 		}
@@ -185,9 +194,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 		/* Create the sprite and add it to the scene. */
 		player = new AnimatedSprite(centerX, centerY, 48, 64, this.playerTextureRegion, this.getVertexBufferObjectManager());		
+//		player2 = new AnimatedSprite(20, 20, 48, 64, this.playerTextureRegion, this.getVertexBufferObjectManager());
 		scene.attachChild(player);
-		/* let the camera chase the player */
-		camera.setChaseEntity(player);
+//		scene.attachChild(player2);
 		hud = new HUD();
 		camera.setHUD(hud);
 		
@@ -201,6 +210,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 */
 	@Override
 	public boolean onSceneTouchEvent(Scene scene, final TouchEvent sceneTouchEvent) {
+//		if(sceneTouchEvent.getX()<0 || sceneTouchEvent.getX()>CAMERA_WIDTH || sceneTouchEvent.getY()<0 ||sceneTouchEvent.getY()>CAMERA_HEIGHT) return false; -- funktioniert nicht(scene abhängige coords)
 		pinchZoomDetector.onTouchEvent(sceneTouchEvent);
 		
 //		Log.d("RPG", "down: "+sceneTouchEvent.isActionDown());
@@ -210,25 +220,36 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		
 		if(!controller.isMoving()){
-			if(sceneTouchEvent.isActionUp()){
-				if(!wasPinched){
+			if(!wasPinched){
+				if(sceneTouchEvent.isActionUp()){
+					if(moveCounter>10){
+						moveCounter = 0;
+						return true;
+					}
+					moveCounter = 0;
 					if(isInteracting){
 						stopInteraction();
 						return true;
 					}
 					TMXTile startTile = tmxLayer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
 					TMXTile destinationTile = tmxLayer.getTMXTileAt(sceneTouchEvent.getX(), sceneTouchEvent.getY());
-					if(controller.doAction(startTile, destinationTile, tmxTiledMap)){
+					if(controller.doAction(startTile, destinationTile, tmxTiledMap, scene)){
 						Path path = controller.getPath(startTile, destinationTile, tmxTiledMap);
 						startPath(path);
 					} else{
 						String interActionText = controller.getInteractionText();
 						startInteraction(interActionText);
+					}					
+				} else if(sceneTouchEvent.isActionMove()){
+					if(moveCounter==0){
+						moveXStart = camera.getCenterX();
+						moveYStart = camera.getCenterY();
 					}
-					
-					
-				}else wasPinched = false;
-			}
+					moveCounter++;
+					if(moveCounter>10) moveCamera(sceneTouchEvent.getX(), sceneTouchEvent.getY());
+					return true;
+				}
+			}else wasPinched = false;
 		} else{
 			if(sceneTouchEvent.isActionUp()){
 				if(!wasPinched){
@@ -241,6 +262,16 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 	
 
+
+	private void moveCamera(float touchX, float touchY) {
+		float divX = Math.abs(moveXStart - touchX);
+		float divY = Math.abs(moveYStart - touchY);
+		if(divX>10 && divY>10){
+			float destinationX = moveXStart + (moveXStart - touchX);
+			float destinationY = moveYStart + (moveYStart - touchY);
+			camera.setCenter(destinationX, destinationY);
+		}			
+	}
 
 	private void startInteraction(String interactionText) {
 		isInteracting = true;
@@ -277,6 +308,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			public void onPathStarted(final PathModifier pathModifier, final IEntity entity) {
 				controller.animationStarted();
 				stop = false;
+				/* let the camera chase the player */
+				camera.setChaseEntity(player);
 			}
 
 			@Override
@@ -325,11 +358,24 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			public void onPathFinished(final PathModifier pathModifier, final IEntity entity) {
 				player.stopAnimation();
 				controller.animationFinished();
+				camera.setChaseEntity(null);
+				
+				TMXTile tile = tmxLayer.getTMXTileAt(player.getX(), player.getY());
+				if(tile.getTMXTileProperties(tmxTiledMap)!=null){
+					if(tile.getTMXTileProperties(tmxTiledMap).containsTMXProperty("TRANSITION", "true")) startNewLevel();
+				}
 			}
 		}), 0);
 		player.registerEntityModifier(pathModifier);
 	}
 	
+	private void startNewLevel() {
+		controller.nextLevel();
+		scene.reset();
+		Log.d("RPG", "NEW LEVEL");
+		this.mEngine.setScene(onCreateScene());
+	}
+
 	/**
 	 * called when the player is already moving and the user touches the display
 	 * interrupts the current path
@@ -337,6 +383,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private void stopPath() {
 		stop = true;
 		controller.animationFinished();
+		camera.setChaseEntity(null);
 	}
 
 	@Override
