@@ -58,7 +58,7 @@ import android.view.Window;
  */
 public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTouchListener, IPinchZoomDetectorListener{
 
-	
+//=======================================================================CONSTANTS========================================================================================	
 
 	/** constant for the camera width */
 	private static final int CAMERA_WIDTH = 720;
@@ -68,11 +68,12 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private static final float MAX_CAMERA_VELOCITY = 1000;
 	/** constant for maximal velocity for changing the zoom factor of the camera */
 	private static final float MAX_ZOOM_FACTOR_CHANGE = 5;
-	
+	/** constant for the maximal zoom factor */
 	private static final float MAX_ZOOM_FACTOR = 1.5f;
-	
+	/** constant for the minimal zoom factor */
 	private static final float MIN_ZOOM_FACTOR = 0.5f;
-	
+
+//=======================================================================FIELDS========================================================================================	
 	/** the smooth camera allowing smooth camera movements, bounds and zoom */
 	private SmoothCamera camera;
 	
@@ -94,21 +95,41 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 */
 	private Controller controller;
 	
+	/** a detector for reacting to pinch zooms */
 	private PinchZoomDetector pinchZoomDetector;
+	/** var for the zoom factor before the pinch zoom began */
 	private float initialTouchZoomFactor;
+	/** boolean to help the onscenetouch listener to decide if the screen was touched to zoom(and not to move the player) */
 	private boolean wasPinched;
+	
+	/** necessary as var to be able to stop an already started path */
 	private LoopEntityModifier pathModifier;
-	protected boolean stop;
+	/** necessary as var to be able to stop an already started path */
+	private boolean stop;
+	
+	/** the font for the dialog text */
 	private Font font;
+	
+	/** the current scene */
 	private Scene scene;
+	/** boolean stating if the player is interacting at the moment */
 	private boolean isInteracting;
+	
+	/** rect for the dialog window */
 	private Rectangle rect;
+	/** tickertext for the dialog window */
 	private TickerText text;
+	/** only needed for the dialog at the moment */
 	private HUD hud;
+	
+	/** needed to determine if the screen is dragged or only touched */
 	private int moveCounter;
+	/** the X position of the camera center before dragging */
 	private float moveXStart;
+	/** the Y position of the camera center before dragging */
 	private float moveYStart;
-	private AnimatedSprite player2;
+	
+//	private AnimatedSprite player2;
 
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
@@ -262,7 +283,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 	
 
-
+	/**
+	 * called when the user drags the screen, moves the camera accordingly
+	 * @param touchX - the current X location of the touch event
+	 * @param touchY - the current y location of the touch event
+	 */
 	private void moveCamera(float touchX, float touchY) {
 		float divX = Math.abs(moveXStart - touchX);
 		float divY = Math.abs(moveYStart - touchY);
@@ -273,6 +298,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		}			
 	}
 
+	/**
+	 * adds the dialog window(consisting of a rect and a tickertext) to the hud
+	 * @param interactionText - the string to show in the dialog
+	 */
 	private void startInteraction(String interactionText) {
 		isInteracting = true;
 		
@@ -284,7 +313,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		hud.attachChild(text);
 	}
 	
-	
+	/**
+	 * detaches dialog window(consisting of a rect and a tickertext) fromt he hud
+	 */
 	private void stopInteraction() {
 		hud.detachChild(text);
 		hud.detachChild(rect);
@@ -369,6 +400,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		player.registerEntityModifier(pathModifier);
 	}
 	
+	/**
+	 * notifies the controller to start a new level and recreate the scene
+	 */
 	private void startNewLevel() {
 		controller.nextLevel();
 		scene.reset();
@@ -386,12 +420,18 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		camera.setChaseEntity(null);
 	}
 
+	/**
+	 * called when the user begins to pinch
+	 */
 	@Override
 	public void onPinchZoomStarted(PinchZoomDetector pinchZoomDetector,
 			TouchEvent sceneTouchEvent) {
 		initialTouchZoomFactor = camera.getZoomFactor();
 	}
 
+	/**
+	 * called during the pinch zoom, zooms the camera accordingly
+	 */
 	@Override
 	public void onPinchZoom(PinchZoomDetector pinchZoomDetector,
 			TouchEvent touchEvent, float zoomFactor) {
@@ -401,6 +441,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		}
 	}
 
+	/**
+	 * calles when the user has stopped pinching
+	 */
 	@Override
 	public void onPinchZoomFinished(PinchZoomDetector pinchZoomDetector,
 			TouchEvent touchEvent, float zoomFactor) {

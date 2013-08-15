@@ -42,13 +42,19 @@ public class Controller {
 		return algo.updatePath();
 	}
 	
+	/**
+	 * creates an Interaction decider to determine if the player should move to or interact
+	 * 
+	 * @param startTile - the tile the player is located
+	 * @param destinationTile - the tile the user has clicked
+	 * @param tmxTiledMap - the map containing those tiles
+	 * @param scene - the scene containing the map
+	 * @returns true if the player shall move to the tile, false if he shall interac
+	 */
 	public boolean doAction(TMXTile startTile, TMXTile destinationTile, TMXTiledMap tmxTiledMap, Scene scene) {
 		InteractionDecider decider = new InteractionDecider();
-		if(decider.decide(startTile, destinationTile, tmxTiledMap, scene)) return true;
-		
-		
-		
-		return false;
+		if(decider.decide(startTile, destinationTile, tmxTiledMap, scene)) return true;		
+		else return false;
 	}
 
 	/**
@@ -111,16 +117,24 @@ public class Controller {
 		return isMoving;
 	}
 
+	/**
+	 * gets the string to show in the dialog from the database in future versions
+	 * @returns the String to show in the dialog
+	 */
 	public String getInteractionText() {
 		return "Das ist ein Test";
 	}
 
+	/** 
+	 * @returns the path to the tmx file according to the current level
+	 */
 	public String getLevelPath() {
 		if(level==1) return "tmx/tmxLena.tmx";
 		if(level==2) return "tmx/mytmx.tmx";
 		else return null;
 	}
 
+	/** increments the level counter */
 	public void nextLevel() {
 		level++;
 	}
