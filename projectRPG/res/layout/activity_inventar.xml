@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+    
+    <TableLayout
+        android:id="@+id/stats_table"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" >
+
+        <TableRow android:id="@+id/stats_row" >
+
+            <ImageView 
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/stats_attack"
+                android:contentDescription="@string/default_description"/>
+            
+            <TextView 
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center_vertical"
+                android:text="20"/>
+            
+            <ImageView 
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:contentDescription="@string/default_description"
+                android:background="@drawable/stats_attack"/>
+            
+            <TextView 
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center_vertical"
+                android:text="20"/>
+            
+            <ImageView 
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:contentDescription="@string/default_description"
+                android:background="@drawable/stats_attack"/>
+            
+            <TextView 
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center_vertical"
+                android:text="20"/>
+            
+            <ImageView 
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:contentDescription="@string/default_description"
+                android:background="@drawable/stats_attack"/>
+            
+            <TextView 
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center_vertical"
+                android:text="20"/>
+            
+            <ImageView 
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:contentDescription="@string/default_description"
+                android:background="@drawable/stats_attack"/>
+            
+            <TextView 
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center_vertical"
+                android:text="20"/>
+            
+        </TableRow>
+    </TableLayout>
+    
+    
+    
+    <TableLayout
+        android:id="@+id/slots_table"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/stats_table"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp" >
+
+        <TableRow android:id="@+id/slots_row_one" >
+            
+            <ImageButton
+                android:id="@+id/inventar_slot1"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/background_slot"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot2"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/background_slot"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot3"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/background_slot"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot4"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/background_slot"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot5"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/background_slot"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+        </TableRow>
+        <TableRow android:id="@+id/slots_row_two" >
+            
+            <ImageButton 
+                android:id="@+id/inventar_slot6"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/background_slot"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot7"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/background_slot"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot8"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/background_slot"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot9"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/background_slot"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot10"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/background_slot"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+        </TableRow>
+    </TableLayout>
+
+</RelativeLayout>
