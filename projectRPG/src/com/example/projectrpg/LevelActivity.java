@@ -256,7 +256,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 					TMXTile destinationTile = tmxLayer.getTMXTileAt(sceneTouchEvent.getX(), sceneTouchEvent.getY());
 					if(controller.doAction(startTile, destinationTile, tmxTiledMap, scene)){
 						Path path = controller.getPath(startTile, destinationTile, tmxTiledMap);
-						startPath(path);
+						if(path!=null) startPath(path);
 					} else{
 						String interActionText = controller.getInteractionText();
 						startInteraction(interActionText);

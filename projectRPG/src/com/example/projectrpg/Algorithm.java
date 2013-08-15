@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.andengine.entity.modifier.PathModifier.Path;
-import org.andengine.entity.scene.Scene;
 import org.andengine.extension.tmx.TMXLayer;
 import org.andengine.extension.tmx.TMXObject;
 import org.andengine.extension.tmx.TMXObjectGroup;
@@ -16,6 +15,8 @@ import org.andengine.util.algorithm.path.ICostFunction;
 import org.andengine.util.algorithm.path.IPathFinderMap;
 import org.andengine.util.algorithm.path.astar.AStarPathFinder;
 import org.andengine.util.algorithm.path.astar.EuclideanHeuristic;
+
+import android.util.Log;
 
 
 /**
@@ -35,6 +36,8 @@ public class Algorithm {
 	/** the position where the sprite stands actually*/
 	private TMXTile startPosition;
 	private ArrayList<TMXObjectGroup> tmxGroupObjects;
+	private TMXLayer layer;
+	
 	
 	// variables to get the path
 	/** the a star path the sprite should go*/
@@ -53,6 +56,7 @@ public class Algorithm {
 		this.endPosition = endPosition;
 		this.startPosition = startPosition;
 		this.tiledMap = tmxTiledMap;
+		this.layer = tiledMap.getTMXLayers().get(0);
 	}
 	
 	public Algorithm generatePathMap() {
@@ -86,151 +90,172 @@ public class Algorithm {
 		costCallback = new ICostFunction<TMXLayer>(){
             @Override
             public float getCost(IPathFinderMap<TMXLayer> pPathFinderMap,
-            		int pFromX, int pFromY, int pToX, int pToY, TMXLayer pEntity) {
-				return 0;
-        }
-    };
-	return this;
+            		 final int pFromX, final int pFromY, final int pToX, final int pToY, TMXLayer pEntity) {
+            	final float dX = pToX - pFromX;
+        		final float dY = pToY - pFromY;
+
+        		return (float) Math.sqrt(dX * dX + dY * dY);
+	        }
+	    };
+		return this;
 	}
 	
 	/*
 	 * Updates the path
 	 */
 	public Path updatePath() {	
-		// Get the tile the feet of the player are currently waking on. 
-		TMXTile playerPosition = startPosition;
-		
 		// Sets the A* path from the player location to the touched location.
-		if(pathFinderMap.isBlocked(endPosition.getTileColumn(), endPosition.getTileRow(), tiledMap.getTMXLayers().get(0))){	
-			endPosition = getNextTile(playerPosition, endPosition);
+		if(pathFinderMap.isBlocked(endPosition.getTileColumn(), endPosition.getTileRow(), layer)) {
+			//TODO abfangen ob außenrum alle blockiert sind
+			Log.d("projekt", ""+ isReachable(endPosition));
+			if(isReachable(endPosition)) {
+				endPosition = getNextTile(startPosition, endPosition);
+			} else {
+				return null;
+			}
 		}
 		
         // Determine the tile locations
-        int FromCol = playerPosition.getTileColumn();
-        int FromRow = playerPosition.getTileRow();
+        int FromCol = startPosition.getTileColumn();
+        int FromRow = startPosition.getTileRow();
         int ToCol = endPosition.getTileColumn();
         int ToRow = endPosition.getTileRow();
         // Find the path. This needs to be refreshed
-        path = aStarPathFinder.findPath(pathFinderMap, 0, 0, tiledMap.getTileColumns()-1, tiledMap.getTileRows()-1, tiledMap.getTMXLayers().get(0), 
+        path = aStarPathFinder.findPath(pathFinderMap, 0, 0, tiledMap.getTileColumns()-1, tiledMap.getTileRows()-1, layer, 
         		FromCol, FromRow, ToCol, ToRow, false, heuristic, costCallback);
-
+        Log.d("projekt", "" + path.toString());
     	//Moves the sprite along the path
     	return loadPathFound();
 	}
-	
+
+	private boolean isReachable(TMXTile tile) {
+		TMXTile[] testTiles = new TMXTile[4];
+
+		testTiles[0] = layer.getTMXTile((tile.getTileColumn()), (tile.getTileRow() - 1));
+		testTiles[1] = layer.getTMXTile((tile.getTileColumn()), (tile.getTileRow() + 1));
+		testTiles[2] = layer.getTMXTile((tile.getTileColumn() - 1), (tile.getTileRow()));
+//		testTiles[3] = layer.getTMXTile((tile.getTileColumn() - 1), (tile.getTileRow() - 1));
+//		testTiles[4] = layer.getTMXTile((tile.getTileColumn() - 1), (tile.getTileRow() + 1));
+		testTiles[3] = layer.getTMXTile((tile.getTileColumn() + 1), (tile.getTileRow()));
+//		testTiles[6] = layer.getTMXTile((tile.getTileColumn() + 1), (tile.getTileRow() - 1));
+//		testTiles[7] = layer.getTMXTile((tile.getTileColumn() + 1), (tile.getTileRow() + 1));
+		
+		for(int i = 0; i < testTiles.length; i++) {
+			if(!pathFinderMap.isBlocked(testTiles[i].getTileColumn(), testTiles[i].getTileRow(), layer)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
 	private Path loadPathFound() {
 		if (path != null) {
-			Path lCurrentPath = new Path(path.getLength());
+			Path currentPath = new Path(path.getLength());
 			for (int i = 0; i < path.getLength(); i++) {
-				lCurrentPath.to(path.getX(i) * 32, (path.getY(i) * 32) - 32); //TODO feste Größe angegeben..
+				currentPath.to(path.getX(i) * 32, (path.getY(i) * 32) - 32); //TODO feste Größe angegeben..
 			}
-			return lCurrentPath;
+			return currentPath;
 		}
 		
 		return null;
 	}
 	
-	/*
-	 * Finds the next best tile if the final tile was blocked
-	 */
-	private TMXTile getNextTile(TMXTile pPlayerPosition, TMXTile pFinalPosition){
-		List<TMXTile> playerAltTiles = new ArrayList<TMXTile>();
-		List<TMXTile> removeAltTiles = new ArrayList<TMXTile>();//This is necessary to avoid concurrent errors
-		List<Float> distanceAltTiles = new ArrayList<Float>();
-		TMXTile playerAltTile = null;
-		final int MAX_DISTANCE = 1;//This is the range it will search for the new tile
+	/** Finds the next best tile if the final tile was blocked*/
+	private TMXTile getNextTile(TMXTile playerPosition, TMXTile finalPosition){
+		List<TMXTile> playerTiles = new ArrayList<TMXTile>();
+		List<TMXTile> removeTiles = new ArrayList<TMXTile>(); //This is necessary to avoid concurrent errors
+		List<Float> distanceTiles = new ArrayList<Float>();
+		TMXTile playerTile = null;
+		final int MAX_DISTANCE = 1; //This is the range it will search for the new tile
+		
 		
 		//if the tile was blocked then get the next best one
 		//finds the next walkable tile if blocked
-		OUTERMOST: for (int i = 1; i <= MAX_DISTANCE; i++) {
+		for (int i = 1; i <= MAX_DISTANCE; i++) {
 			TMXLayer TMXMapLayer = tiledMap.getTMXLayers().get(0);
 			//Create a buffer on your map the same thickness as max distance, or reduce max distance
 			//LEFT
-			if(pFinalPosition.getTileColumn() - i >= 0)
-				playerAltTiles.add(TMXMapLayer.getTMXTile(pFinalPosition.getTileColumn() - i, pFinalPosition.getTileRow()));
+			if(finalPosition.getTileColumn() - i >= 0)
+				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn() - i, finalPosition.getTileRow()));
 			//UP
-			if(pFinalPosition.getTileRow() - i >= 0)
-				playerAltTiles.add(TMXMapLayer.getTMXTile(pFinalPosition.getTileColumn(), pFinalPosition.getTileRow() - i));
+			if(finalPosition.getTileRow() - i >= 0)
+				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn(), finalPosition.getTileRow() - i));
 			//RIGHT
-			if(pFinalPosition.getTileColumn() + i <= TMXMapLayer.getTileColumns())
-				playerAltTiles.add(TMXMapLayer.getTMXTile(pFinalPosition.getTileColumn() + i, pFinalPosition.getTileRow()));
+			if(finalPosition.getTileColumn() + i <= TMXMapLayer.getTileColumns())
+				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn() + i, finalPosition.getTileRow()));
 			//DOWN
-			if(pFinalPosition.getTileRow() + i <= TMXMapLayer.getTileRows())
-				playerAltTiles.add(TMXMapLayer.getTMXTile(pFinalPosition.getTileColumn(), pFinalPosition.getTileRow() + i));
+			if(finalPosition.getTileRow() + i <= TMXMapLayer.getTileRows())
+				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn(), finalPosition.getTileRow() + i));
 
-			for (TMXTile tmxTile : playerAltTiles) {
+			for (TMXTile tmxTile : playerTiles) {
 				//If tile is over a blocked tile or out of bounds then remove
 				if (pathFinderMap.isBlocked(tmxTile.getTileColumn(), tmxTile.getTileRow(), TMXMapLayer) 
 						|| tmxTile.getTileX() >= TMXMapLayer.getWidth()
 						|| tmxTile.getTileY() >= TMXMapLayer.getHeight() 
 						|| tmxTile.getTileX() < 0
 						|| tmxTile.getTileY() < 0 ) {	
-					removeAltTiles.add(tmxTile);
+					removeTiles.add(tmxTile);
 				}									
 			}
 			//If any of the above tiles went outside of the blocked tile then stop looping
-			if(playerAltTiles.size() >= 1){
-				break OUTERMOST;
+			if(playerTiles.size() >= 1){
+				break;
 			}
 		}
 
 		//Remove all offending tiles
-		playerAltTiles.removeAll(removeAltTiles);
+		playerTiles.removeAll(removeTiles);
 		
-		for (TMXTile tmxTile2 : playerAltTiles) {
+		for (TMXTile tmxTile2 : playerTiles) {
 			//This is the distance formula for each tile from the player to the alternate tile
-			distanceAltTiles.add((float)Math.sqrt(((Math.pow(tmxTile2.getTileX() - pPlayerPosition.getTileX() , 2) 
-					+ Math.pow(tmxTile2.getTileY() - pPlayerPosition.getTileY() , 2)))));						
+			distanceTiles.add((float)Math.sqrt(((Math.pow(tmxTile2.getTileX() - playerPosition.getTileX() , 2) 
+					+ Math.pow(tmxTile2.getTileY() - playerPosition.getTileY() , 2)))));						
 		}
 
 		//Gets the index of the smallest distance
-		int tempIndex = distanceAltTiles.indexOf(Collections.min(distanceAltTiles));
+		int tempIndex = distanceTiles.indexOf(Collections.min(distanceTiles));
 
 		//The tile that was outside is the tile we move to
-		playerAltTile = playerAltTiles.get(tempIndex);
+		playerTile = playerTiles.get(tempIndex);
 		
-		return playerAltTile;
+
+		return playerTile;
 	}
 	
 	
 	private ArrayList<TMXTile> getCollideTiles() {
 		tmxGroupObjects = new ArrayList<TMXObjectGroup>();
-		for (final TMXObjectGroup pGroup : tiledMap.getTMXObjectGroups()) {
-			tmxGroupObjects.add(pGroup); 
+		for (final TMXObjectGroup group : tiledMap.getTMXObjectGroups()) {
+			tmxGroupObjects.add(group); 
 		}
-		return this.getObjectGroupPropertyTiles("COLLIDE",  tmxGroupObjects);
+		return this.getObjectGroupPropertyTiles("COLLISION",  tmxGroupObjects);
 	}
 
-	public ArrayList<TMXTile> getObjectGroupPropertyTiles(String pName, ArrayList<TMXObjectGroup> tmxObjectGroups){
-		ArrayList<TMXTile> ObjectTile = new ArrayList<TMXTile>();
-		for (final TMXObjectGroup pObjectGroups : tmxObjectGroups) {
+	public ArrayList<TMXTile> getObjectGroupPropertyTiles(String name, ArrayList<TMXObjectGroup> tmxObjectGroups){
+		ArrayList<TMXTile> objectTile = new ArrayList<TMXTile>();
+		for (final TMXObjectGroup objectGroups : tmxObjectGroups) {
 			// Iterates through the properties and assigns them to the new variable
-			for (final TMXObjectGroupProperty pGroupProperties : pObjectGroups.getTMXObjectGroupProperties()) {
+			for (final TMXObjectGroupProperty groupProperties : objectGroups.getTMXObjectGroupProperties()) {
 				//Sees if any of the elements have this condition
-				if (pGroupProperties.getName().contains(pName)) {
-					for (final TMXObject pObjectTiles : pObjectGroups.getTMXObjects()) {
-						int ObjectX = pObjectTiles.getX();
-						int ObjectY = pObjectTiles.getY();
+				if (groupProperties.getName().contains(name)) {
+					for (final TMXObject objectTiles : objectGroups.getTMXObjects()) {
+						int objectX = objectTiles.getX();
+						int objectY = objectTiles.getY();
 						// Gets the number of rows and columns in the object
-						int ObjectRows = pObjectTiles.getHeight() / 32; //TODO feste Größe angegeben..
-						int ObjectColumns = pObjectTiles.getWidth() / 32; //TODO feste Größe angegeben..
+						int objectRows = objectTiles.getHeight() / 32; //TODO feste Größe angegeben..
+						int objectColumns = objectTiles.getWidth() / 32; //TODO feste Größe angegeben..
 						
-						for (int TileRow = 0; TileRow < ObjectRows; TileRow++) {
-							for (int TileColumn = 0; TileColumn < ObjectColumns; TileColumn++) {
-								float lObjectTileX = ObjectX + TileColumn * 32; //TODO feste Größe angegeben..
-								float lObjectTileY = ObjectY + TileRow * 32; //TODO feste Größe angegeben..
-								ObjectTile.add(tiledMap.getTMXLayers().get(0).getTMXTileAt(lObjectTileX, lObjectTileY));						
+						for (int tileRow = 0; tileRow < objectRows; tileRow++) {
+							for (int tileColumn = 0; tileColumn < objectColumns; tileColumn++) {
+								float objectTileX = objectX + tileColumn * 32; //TODO feste Größe angegeben..
+								float objectTileY = objectY + tileRow * 32; //TODO feste Größe angegeben..
+								objectTile.add(tiledMap.getTMXLayers().get(0).getTMXTileAt(objectTileX, objectTileY));						
 							}							 
 						}
 					}
 				}			
 			}
 		}
-		return ObjectTile;
-	}
-	
-	public static Path calculatePath(float startX, float startY, float endX, float endY, Scene scene) {
-		final Path path = new Path(2).to(startX, startY).to(endX, endY);
-		return path;
+		return objectTile;
 	}
 }
