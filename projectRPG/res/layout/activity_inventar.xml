@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_inventar"
     android:padding="20dp">
     
     <TableLayout
@@ -19,6 +20,7 @@
                 android:contentDescription="@string/default_description"/>
             
             <TextView 
+                android:id="@+id/text_attack"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
                 android:gravity="center_vertical"
@@ -91,35 +93,35 @@
                 android:id="@+id/inventar_slot1"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:background="@drawable/background_slot"
+                android:background="@drawable/slot_unmarked"
                 android:contentDescription="@string/default_description"
                 android:gravity="center"/>
             <ImageButton 
                 android:id="@+id/inventar_slot2"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:background="@drawable/background_slot"
+                android:background="@drawable/slot_unmarked"
                 android:contentDescription="@string/default_description"
                 android:gravity="center"/>
             <ImageButton 
                 android:id="@+id/inventar_slot3"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:background="@drawable/background_slot"
+                android:background="@drawable/slot_unmarked"
                 android:contentDescription="@string/default_description"
                 android:gravity="center"/>
             <ImageButton 
                 android:id="@+id/inventar_slot4"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:background="@drawable/background_slot"
+                android:background="@drawable/slot_unmarked"
                 android:contentDescription="@string/default_description"
                 android:gravity="center"/>
             <ImageButton 
                 android:id="@+id/inventar_slot5"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:background="@drawable/background_slot"
+                android:background="@drawable/slot_unmarked"
                 android:contentDescription="@string/default_description"
                 android:gravity="center"/>
         </TableRow>
@@ -129,35 +131,121 @@
                 android:id="@+id/inventar_slot6"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:background="@drawable/background_slot"
+                android:background="@drawable/slot_unmarked"
                 android:contentDescription="@string/default_description"
                 android:gravity="center"/>
             <ImageButton 
                 android:id="@+id/inventar_slot7"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:background="@drawable/background_slot"
+                android:background="@drawable/slot_unmarked"
                 android:contentDescription="@string/default_description"
                 android:gravity="center"/>
             <ImageButton 
                 android:id="@+id/inventar_slot8"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:background="@drawable/background_slot"
+                android:background="@drawable/slot_unmarked"
                 android:contentDescription="@string/default_description"
                 android:gravity="center"/>
             <ImageButton 
                 android:id="@+id/inventar_slot9"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:background="@drawable/background_slot"
+                android:background="@drawable/slot_unmarked"
                 android:contentDescription="@string/default_description"
                 android:gravity="center"/>
             <ImageButton 
                 android:id="@+id/inventar_slot10"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:background="@drawable/background_slot"
+                android:background="@drawable/slot_unmarked"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+        </TableRow>
+    </TableLayout>
+    
+    <TableLayout
+        android:id="@+id/slots_table_item_images"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/stats_table"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp" >
+
+        <TableRow android:id="@+id/slots_item_images_row_one" >
+            
+            <ImageButton
+                android:id="@+id/inventar_slot1_item_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/transparent"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot2_item_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/transparent"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot3_item_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/transparent"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot4_item_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/transparent"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot5_item_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/transparent"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+        </TableRow>
+        <TableRow android:id="@+id/slots_item_images_row_two" >
+            
+            <ImageButton 
+                android:id="@+id/inventar_slot6_item_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/transparent"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot7_item_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/transparent"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot8_item_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/transparent"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot9_item_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/transparent"
+                android:contentDescription="@string/default_description"
+                android:gravity="center"/>
+            <ImageButton 
+                android:id="@+id/inventar_slot10_item_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/transparent"
                 android:contentDescription="@string/default_description"
                 android:gravity="center"/>
         </TableRow>

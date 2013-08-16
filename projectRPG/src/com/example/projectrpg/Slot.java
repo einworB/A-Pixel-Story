@@ -6,17 +6,17 @@ public class Slot {
 	String itemName;
 	String itemType;
 	boolean marked;
-	int numberOfItems;
+	String numberOfItems;
 	
 	public Slot(){
 		slotID = 0;
 		itemName = "";
 		itemType = "";
 		marked = false;
-		numberOfItems = 0;
+		numberOfItems = "0";
 	}
 	
-	public Slot(int slotID, String itemName, String itemType, int numberOfItems) {
+	public Slot(int slotID, String itemName, String itemType, String numberOfItems) {
 		this.slotID = slotID;
 		this.itemName = itemName;
 		this.itemType = itemType;
@@ -60,11 +60,11 @@ public class Slot {
 		return marked;
 	}
 	
-	public void setNumberOfItems(int numberOfItems){
+	public void setNumberOfItems(String numberOfItems){
 		this.numberOfItems = numberOfItems;
 	}
 	
-	public int getNumberOfItems(){
+	public String getNumberOfItems(){
 		return numberOfItems;
 	}
 

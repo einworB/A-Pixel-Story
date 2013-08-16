@@ -12,10 +12,14 @@ import android.widget.TextView;
 public class InventarActivity extends Activity {
 	
 	//hat noch bugs
+	
+	private Slot testSlot;
+	private Slot testSlot2;
+	private Slot testSlot3;
 
-	private TextView statsPlayerlevel;
+	//private TextView statsPlayerlevel;
 	private TextView statsAttack;
-	private TextView statsDefense;
+	//private TextView statsDefense;
 
 	private ImageButton slot1Background;
 	private ImageButton slot2Background;
@@ -27,20 +31,24 @@ public class InventarActivity extends Activity {
 	private ImageButton slot8Background;
 	private ImageButton slot9Background;
 	private ImageButton slot10Background;
-
-	private Slot slot1;
-	private Slot slot2;
-	private Slot slot3;
-	private Slot slot4;
-	private Slot slot5;
-	private Slot slot6;
-	private Slot slot7;
-	private Slot slot8;
-	private Slot slot9;
-	private Slot slot10;
+	
+	private ImageButton slot1ItemImage;
+	private ImageButton slot2ItemImage;
+	private ImageButton slot3ItemImage;
+	private ImageButton slot4ItemImage;
+	private ImageButton slot5ItemImage;
+	private ImageButton slot6ItemImage;
+	private ImageButton slot7ItemImage;
+	private ImageButton slot8ItemImage;
+	private ImageButton slot9ItemImage;
+	private ImageButton slot10ItemImage;
 
 	private InventarDatabase inventarDatabase;
+	
 	private ArrayList<Slot> slotList = null;
+	private ArrayList<ImageButton> slotBackgroundList = null;
+	private ArrayList<ImageButton> slotItemImageList = null;
+	
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,20 +56,31 @@ public class InventarActivity extends Activity {
 		setupDatabaseConnection();
 		setupUI();
 		getSavedSlots();
+		putItemsOnSlots();
 		setupAllClickListeners();
 	}
 
+	private void putItemsOnSlots() {
+
+		statsAttack.setText(slotList.get(0).getNumberOfItems());
+		
+		for(int i=0; i<10; i++){
+			if (slotList.get(i).getItemName().equalsIgnoreCase("Schwert")){
+			//	if (slotList.get(i).getNumberOfItems() == "1"){
+					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_one));
+			//	}
+				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("2")){
+					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_two));
+				}
+			}
+		}
+		
+	}
+
 	private void setupAllClickListeners() {
-		setupOnClickListener(slot1Background, slot1);
-		setupOnClickListener(slot2Background, slot2);
-		setupOnClickListener(slot3Background, slot3);
-		setupOnClickListener(slot4Background, slot4);
-		setupOnClickListener(slot5Background, slot5);
-		setupOnClickListener(slot6Background, slot6);
-		setupOnClickListener(slot7Background, slot7);
-		setupOnClickListener(slot8Background, slot8);
-		setupOnClickListener(slot9Background, slot9);
-		setupOnClickListener(slot10Background, slot10);
+		for(int i=0; i<10; i++ ){
+			setupOnClickListener(slotBackgroundList.get(i), slotItemImageList.get(i), slotList.get(i));
+		}
 	}
 
 	private void setupDatabaseConnection() {
@@ -69,6 +88,49 @@ public class InventarActivity extends Activity {
 		inventarDatabase.open();
 	}
 
+	
+
+	private void getSavedSlots() {
+		try {
+			slotList = inventarDatabase.getAllSlots();
+			Thread.sleep(2000);
+		} catch (Exception e) {
+		}
+	}
+
+	private void setupOnClickListener(final ImageButton slotBackground, final ImageButton slotItem,
+			final Slot slot) {
+		slotItem.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (slot.getNumberOfItems() != "0") {
+					markThisSlot(slotBackground);
+					slot.setMarked();
+				}
+			}
+		});
+	}
+
+	private void markThisSlot(ImageButton slotBackground) {
+		setSlotsUnmarked();
+		slotBackground.setBackgroundDrawable(getResources().getDrawable(R.drawable.slot_marked));
+
+	}
+
+	private void setSlotsUnmarked() {
+		
+		for(int i=0; i<10; i++ ){
+			slotBackgroundList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.slot_unmarked));		
+			slotList.get(i).setUnmarked();
+		}
+	}
+
+	public void onDestroy() {
+		super.onDestroy();
+		inventarDatabase.close();
+	}
+	
 	private void setupUI() {
 		setContentView(R.layout.activity_inventar);
 
@@ -82,118 +144,61 @@ public class InventarActivity extends Activity {
 		slot8Background = (ImageButton) findViewById(R.id.inventar_slot8);
 		slot9Background = (ImageButton) findViewById(R.id.inventar_slot9);
 		slot10Background = (ImageButton) findViewById(R.id.inventar_slot10);
-
-		slot1 = new Slot();
-		slot2 = new Slot();
-		slot3 = new Slot();
-		slot4 = new Slot();
-		slot5 = new Slot();
-		slot6 = new Slot();
-		slot7 = new Slot();
-		slot8 = new Slot();
-		slot9 = new Slot();
-		slot10 = new Slot();
+		
+		slot1ItemImage = (ImageButton) findViewById(R.id.inventar_slot1_item_image);
+		slot2ItemImage = (ImageButton) findViewById(R.id.inventar_slot2_item_image);
+		slot3ItemImage = (ImageButton) findViewById(R.id.inventar_slot3_item_image);
+		slot4ItemImage = (ImageButton) findViewById(R.id.inventar_slot4_item_image);
+		slot5ItemImage = (ImageButton) findViewById(R.id.inventar_slot5_item_image);
+		slot6ItemImage = (ImageButton) findViewById(R.id.inventar_slot6_item_image);
+		slot7ItemImage = (ImageButton) findViewById(R.id.inventar_slot7_item_image);
+		slot8ItemImage = (ImageButton) findViewById(R.id.inventar_slot8_item_image);
+		slot9ItemImage = (ImageButton) findViewById(R.id.inventar_slot9_item_image);
+		slot10ItemImage = (ImageButton) findViewById(R.id.inventar_slot10_item_image);
 
 		slotList = new ArrayList<Slot>();
+		
+		slotBackgroundList = new ArrayList<ImageButton>();
+		slotBackgroundList.add(slot1Background);
+		slotBackgroundList.add(slot2Background);
+		slotBackgroundList.add(slot3Background);
+		slotBackgroundList.add(slot4Background);
+		slotBackgroundList.add(slot5Background);
+		slotBackgroundList.add(slot6Background);
+		slotBackgroundList.add(slot7Background);
+		slotBackgroundList.add(slot8Background);
+		slotBackgroundList.add(slot9Background);
+		slotBackgroundList.add(slot10Background);
+		
+		slotItemImageList = new ArrayList<ImageButton>();
+		slotItemImageList.add(slot1ItemImage);
+		slotItemImageList.add(slot2ItemImage);
+		slotItemImageList.add(slot3ItemImage);
+		slotItemImageList.add(slot4ItemImage);
+		slotItemImageList.add(slot5ItemImage);
+		slotItemImageList.add(slot6ItemImage);
+		slotItemImageList.add(slot7ItemImage);
+		slotItemImageList.add(slot8ItemImage);
+		slotItemImageList.add(slot9ItemImage);
+		slotItemImageList.add(slot10ItemImage);
+		
+		testSlot = new Slot(0, "Schwert", "Waffe", "2");
+		testSlot2 = new Slot(1, "Schild", "Waffe", "1");
+		testSlot3 = new Slot(0, "Schwert", "Waffe", "1");
+		
+		inventarDatabase.removeAll();
+		inventarDatabase.insertSlotItem(testSlot);
+		inventarDatabase.insertSlotItem(testSlot2);
+		inventarDatabase.insertSlotItem(testSlot);
+		inventarDatabase.insertSlotItem(testSlot2);
+		inventarDatabase.insertSlotItem(testSlot);
+		inventarDatabase.insertSlotItem(testSlot3);
+		inventarDatabase.insertSlotItem(testSlot);
+		inventarDatabase.insertSlotItem(testSlot3);
+		inventarDatabase.insertSlotItem(testSlot);
+		inventarDatabase.insertSlotItem(testSlot2);
 
+		statsAttack = (TextView)findViewById(R.id.text_attack);
 	}
-
-	private void getSavedSlots() {
-		try {
-			slotList = inventarDatabase.getAllSlots();
-			Thread.sleep(2000);
-		} catch (Exception e) {
-		}
-		runOnUiThread(notifyList);
-	}
-
-	private Runnable notifyList = new Runnable() {
-
-		@Override
-		public void run() {
-			if (slotList != null && slotList.size() > 0) {
-				for (int i = 0; i < slotList.size(); i++) {
-					if (i == 0) {
-						slot1 = slotList.get(i);
-					}
-					if (i == 1) {
-						slot2 = slotList.get(i);
-					}
-					if (i == 2) {
-						slot3 = slotList.get(i);
-					}
-					if (i == 3) {
-						slot4 = slotList.get(i);
-					}
-					if (i == 4) {
-						slot5 = slotList.get(i);
-					}
-					if (i == 5) {
-						slot6 = slotList.get(i);
-					}
-					if (i == 6) {
-						slot7 = slotList.get(i);
-					}
-					if (i == 7) {
-						slot8 = slotList.get(i);
-					}
-					if (i == 8) {
-						slot9 = slotList.get(i);
-					}
-					if (i == 9) {
-						slot10 = slotList.get(i);
-					}
-				}
-			}
-		}
-	};
-
-	private void setupOnClickListener(final ImageButton slotImage,
-			final Slot slot) {
-		slotImage.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (slot.getNumberOfItems() != 0) {
-					markThisSlot(slotImage);
-					slot.setMarked();
-				}
-			}
-		});
-	}
-
-	private void markThisSlot(ImageButton slotBackground) {
-		setSlotsUnmarked();
-		slotBackground
-				.setBackgroundColor(getResources().getColor(R.color.blue));
-
-	}
-
-	private void setSlotsUnmarked() {
-		slot1Background.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.background_slot));
-		slot2Background.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.background_slot));
-		slot3Background.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.background_slot));
-		slot4Background.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.background_slot));
-		slot5Background.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.background_slot));
-		slot6Background.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.background_slot));
-		slot7Background.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.background_slot));
-		slot8Background.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.background_slot));
-		slot9Background.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.background_slot));
-		slot10Background.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.background_slot));
-	}
-
-	public void onDestroy() {
-		super.onDestroy();
-		inventarDatabase.close();
-	}
+	
 }
