@@ -214,8 +214,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		clickDetector = new ClickDetector(this);
 
 		/* Calculate the coordinates for the player sprite, so it's spawned in the center of the camera. */
-		final float centerX = (CAMERA_WIDTH - this.playerTextureRegion.getWidth()) / 2;
-		final float centerY = (CAMERA_HEIGHT - this.playerTextureRegion.getHeight()) / 2;
+		final TMXTile centerTile = tmxLayer.getTMXTileAt((CAMERA_WIDTH - this.playerTextureRegion.getWidth()) / 2, (CAMERA_HEIGHT - this.playerTextureRegion.getHeight()) / 2);
+		final float centerX = centerTile.getTileX() + 4;
+		final float centerY = centerTile.getTileY();
 
 		/* Create the sprite and add it to the scene. */
 		player = new AnimatedSprite(centerX, centerY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager());		
