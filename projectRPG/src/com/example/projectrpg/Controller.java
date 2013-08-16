@@ -122,7 +122,7 @@ public class Controller {
 	 * @returns the String to show in the dialog
 	 */
 	public String getInteractionText() {
-		return "Das ist ein Test";
+		return "Das ist ein Text";
 	}
 
 	/** 

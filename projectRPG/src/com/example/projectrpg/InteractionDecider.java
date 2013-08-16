@@ -30,14 +30,14 @@ public class InteractionDecider {
 		for(int i = 0; i<scene.getChildCount(); i++){
 			IEntity entity = scene.getChildByIndex(i);
 			// check if they are AnimatedSprites
-			if(!(entity instanceof AnimatedSprite)) continue;
-			// check if the current entity is located at the destination tile
-			float entityX = entity.getX();
-			float entityY = entity.getY();
-			TMXTile tile = tiledMap.getTMXLayers().get(0).getTMXTileAt(entityX, entityY);
-			if(destinationTile.equals(tile)){
-				collide = true;
-				break;
+			if(entity instanceof AnimatedSprite){
+				float entityX = entity.getX();
+				float entityY = entity.getY();
+				TMXTile tile = tiledMap.getTMXLayers().get(0).getTMXTileAt(entityX+12, entityY+16); // TODO: 16 evtl durch PLAYER_WIDTH/HEUGHT ersetzen
+				if(destinationTile.equals(tile)){
+					collide = true;
+					break;
+				}
 			}
 		}
 		// no collision -> nothing on destination tile -> no interaction, move to tile

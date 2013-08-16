@@ -28,6 +28,8 @@ import org.andengine.extension.tmx.TMXTileProperty;
 import org.andengine.extension.tmx.TMXTiledMap;
 import org.andengine.extension.tmx.util.exception.TMXLoadException;
 import org.andengine.input.touch.TouchEvent;
+import org.andengine.input.touch.detector.ClickDetector;
+import org.andengine.input.touch.detector.ClickDetector.IClickDetectorListener;
 import org.andengine.input.touch.detector.PinchZoomDetector;
 import org.andengine.input.touch.detector.PinchZoomDetector.IPinchZoomDetectorListener;
 import org.andengine.opengl.font.Font;
@@ -56,7 +58,7 @@ import android.view.Window;
  * @author Philip
  *
  */
-public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTouchListener, IPinchZoomDetectorListener{
+public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTouchListener, IPinchZoomDetectorListener, IClickDetectorListener{
 
 //=======================================================================CONSTANTS========================================================================================	
 
@@ -69,9 +71,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/** constant for maximal velocity for changing the zoom factor of the camera */
 	private static final float MAX_ZOOM_FACTOR_CHANGE = 5;
 	/** constant for the maximal zoom factor */
-	private static final float MAX_ZOOM_FACTOR = 1.5f;
+	private static final float MAX_ZOOM_FACTOR = 3.0f;
 	/** constant for the minimal zoom factor */
-	private static final float MIN_ZOOM_FACTOR = 0.5f;
+	private static final float MIN_ZOOM_FACTOR = 1.0f;
 
 //=======================================================================FIELDS========================================================================================	
 	/** the smooth camera allowing smooth camera movements, bounds and zoom */
@@ -101,6 +103,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private float initialTouchZoomFactor;
 	/** boolean to help the onscenetouch listener to decide if the screen was touched to zoom(and not to move the player) */
 	private boolean wasPinched;
+	private ClickDetector clickDetector;
 	
 	/** necessary as var to be able to stop an already started path */
 	private LoopEntityModifier pathModifier;
@@ -124,10 +127,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	
 	/** needed to determine if the screen is dragged or only touched */
 	private int moveCounter;
-	/** the X position of the camera center before dragging */
-	private float moveXStart;
-	/** the Y position of the camera center before dragging */
-	private float moveYStart;
+//	/** the X position of the camera center before dragging */
+//	private float moveXStart;
+//	/** the Y position of the camera center before dragging */
+//	private float moveYStart;
 	
 //	private AnimatedSprite player2;
 
@@ -144,7 +147,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	public EngineOptions onCreateEngineOptions() {
 		
 		camera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT, MAX_CAMERA_VELOCITY, MAX_CAMERA_VELOCITY, MAX_ZOOM_FACTOR_CHANGE);
-		
+		camera.setZoomFactorDirect(1.5f);
 
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
 	}
@@ -172,8 +175,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		controller = new Controller();
 		wasPinched = false;
 		moveCounter = 0;
-		moveXStart = 0;
-		moveYStart = 0;
+//		moveXStart = 0;
+//		moveYStart = 0;
 	}
 
 	/**
@@ -208,16 +211,21 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		scene.setOnSceneTouchListener(this);
 		pinchZoomDetector = new PinchZoomDetector(this);
 		pinchZoomDetector.setEnabled(true);
+		clickDetector = new ClickDetector(this);
 
 		/* Calculate the coordinates for the player sprite, so it's spawned in the center of the camera. */
 		final float centerX = (CAMERA_WIDTH - this.playerTextureRegion.getWidth()) / 2;
 		final float centerY = (CAMERA_HEIGHT - this.playerTextureRegion.getHeight()) / 2;
 
 		/* Create the sprite and add it to the scene. */
-		player = new AnimatedSprite(centerX, centerY, 48, 64, this.playerTextureRegion, this.getVertexBufferObjectManager());		
+		player = new AnimatedSprite(centerX, centerY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager());		
 //		player2 = new AnimatedSprite(20, 20, 48, 64, this.playerTextureRegion, this.getVertexBufferObjectManager());
 		scene.attachChild(player);
 //		scene.attachChild(player2);
+		
+		/* let the camera chase the player */
+		camera.setChaseEntity(player);
+		
 		hud = new HUD();
 		camera.setHUD(hud);
 		
@@ -231,71 +239,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 */
 	@Override
 	public boolean onSceneTouchEvent(Scene scene, final TouchEvent sceneTouchEvent) {
-//		if(sceneTouchEvent.getX()<0 || sceneTouchEvent.getX()>CAMERA_WIDTH || sceneTouchEvent.getY()<0 ||sceneTouchEvent.getY()>CAMERA_HEIGHT) return false; -- funktioniert nicht(scene abhängige coords)
+//		if(sceneTouchEvent.getX()<0 || sceneTouchEvent.getX()>scene || sceneTouchEvent.getY()<0 ||sceneTouchEvent.getY()>CAMERA_HEIGHT) return false; -- funktioniert nicht(scene abhängige coords)
 		pinchZoomDetector.onTouchEvent(sceneTouchEvent);
+		clickDetector.onTouchEvent(sceneTouchEvent);
 		
-//		Log.d("RPG", "down: "+sceneTouchEvent.isActionDown());
-//		Log.d("RPG", "up: "+sceneTouchEvent.isActionUp());
-//		Log.d("RPG", "move: "+sceneTouchEvent.isActionMove());
-		
-		
-		
-		if(!controller.isMoving()){
-			if(!wasPinched){
-				if(sceneTouchEvent.isActionUp()){
-					if(moveCounter>10){
-						moveCounter = 0;
-						return true;
-					}
-					moveCounter = 0;
-					if(isInteracting){
-						stopInteraction();
-						return true;
-					}
-					TMXTile startTile = tmxLayer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
-					TMXTile destinationTile = tmxLayer.getTMXTileAt(sceneTouchEvent.getX(), sceneTouchEvent.getY());
-					if(controller.doAction(startTile, destinationTile, tmxTiledMap, scene)){
-						Path path = controller.getPath(startTile, destinationTile, tmxTiledMap);
-						if(path!=null) startPath(path);
-					} else{
-						String interActionText = controller.getInteractionText();
-						startInteraction(interActionText);
-					}					
-				} else if(sceneTouchEvent.isActionMove()){
-					if(moveCounter==0){
-						moveXStart = camera.getCenterX();
-						moveYStart = camera.getCenterY();
-					}
-					moveCounter++;
-					if(moveCounter>10) moveCamera(sceneTouchEvent.getX(), sceneTouchEvent.getY());
-					return true;
-				}
-			}else wasPinched = false;
-		} else{
-			if(sceneTouchEvent.isActionUp()){
-				if(!wasPinched){
-					stopPath();
-				}else wasPinched = false;
-			}
-		}
 		return true;
-	}
-
-	
-
-	/**
-	 * called when the user drags the screen, moves the camera accordingly
-	 * @param touchX - the current X location of the touch event
-	 * @param touchY - the current y location of the touch event
-	 */
-	private void moveCamera(float touchX, float touchY) {
-		float divX = Math.abs(moveXStart - touchX);
-		float divY = Math.abs(moveYStart - touchY);
-		if(divX>10 && divY>10){
-			float destinationX = moveXStart + (moveXStart - touchX);
-			float destinationY = moveYStart + (moveYStart - touchY);
-			camera.setCenter(destinationX, destinationY);
-		}			
 	}
 
 	/**
@@ -339,8 +287,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			public void onPathStarted(final PathModifier pathModifier, final IEntity entity) {
 				controller.animationStarted();
 				stop = false;
-				/* let the camera chase the player */
-				camera.setChaseEntity(player);
 			}
 
 			@Override
@@ -375,7 +321,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			@Override
 			/** called whenever a waypoint is finished, stops the animation */
 			public void onPathWaypointFinished(final PathModifier modifier, final IEntity entity, final int waypointIndex) {
-				if(stop) player.unregisterEntityModifier(pathModifier);
+				if(stop){
+					player.unregisterEntityModifier(pathModifier);
+					controller.animationFinished();
+				}
 				
 				player.stopAnimation();
 			}
@@ -389,7 +338,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			public void onPathFinished(final PathModifier pathModifier, final IEntity entity) {
 				player.stopAnimation();
 				controller.animationFinished();
-				camera.setChaseEntity(null);
+//				camera.setChaseEntity(null);
 				
 				TMXTile tile = tmxLayer.getTMXTileAt(player.getX(), player.getY());
 				if(tile.getTMXTileProperties(tmxTiledMap)!=null){
@@ -397,6 +346,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				}
 			}
 		}), 0);
+		pathModifier.setAutoUnregisterWhenFinished(false);
 		player.registerEntityModifier(pathModifier);
 	}
 	
@@ -416,8 +366,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 */
 	private void stopPath() {
 		stop = true;
-		controller.animationFinished();
-		camera.setChaseEntity(null);
 	}
 
 	/**
@@ -448,6 +396,27 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	public void onPinchZoomFinished(PinchZoomDetector pinchZoomDetector,
 			TouchEvent touchEvent, float zoomFactor) {
 		wasPinched = true;
+	}
+
+	@Override
+	public void onClick(ClickDetector clickDetector, int pointerID,
+			float sceneX, float sceneY) {
+		if(!controller.isMoving()){
+			if(isInteracting){
+				stopInteraction();
+			}
+			TMXTile startTile = tmxLayer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
+			TMXTile destinationTile = tmxLayer.getTMXTileAt(sceneX, sceneY);
+			if(controller.doAction(startTile, destinationTile, tmxTiledMap, scene)){
+				Path path = controller.getPath(startTile, destinationTile, tmxTiledMap);
+				if(path!=null) startPath(path);
+			} else{
+				String interActionText = controller.getInteractionText();
+				startInteraction(interActionText);
+			}					
+		} else{
+			stopPath();
+		}
 	}
 
 }
