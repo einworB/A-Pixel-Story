@@ -103,7 +103,7 @@ public class Algorithm {
 	/*
 	 * Updates the path
 	 */
-	public Path updatePath() {	
+	public Path updatePath() {
 		// Sets the A* path from the player location to the touched location.
 		if(pathFinderMap.isBlocked(endPosition.getTileColumn(), endPosition.getTileRow(), layer)) {
 			//TODO abfangen ob außenrum alle blockiert sind
@@ -114,7 +114,9 @@ public class Algorithm {
 				return null;
 			}
 		}
-		
+		if(startPosition.equals(endPosition)) {
+			return null;
+		}
         // Determine the tile locations
         int FromCol = startPosition.getTileColumn();
         int FromRow = startPosition.getTileRow();
@@ -123,26 +125,31 @@ public class Algorithm {
         // Find the path. This needs to be refreshed
         path = aStarPathFinder.findPath(pathFinderMap, 0, 0, tiledMap.getTileColumns()-1, tiledMap.getTileRows()-1, layer, 
         		FromCol, FromRow, ToCol, ToRow, false, heuristic, costCallback);
-        Log.d("projekt", "" + path.toString());
-    	//Moves the sprite along the path
+        //Moves the sprite along the path
     	return loadPathFound();
 	}
 
 	private boolean isReachable(TMXTile tile) {
 		TMXTile[] testTiles = new TMXTile[4];
-
-		testTiles[0] = layer.getTMXTile((tile.getTileColumn()), (tile.getTileRow() - 1));
-		testTiles[1] = layer.getTMXTile((tile.getTileColumn()), (tile.getTileRow() + 1));
-		testTiles[2] = layer.getTMXTile((tile.getTileColumn() - 1), (tile.getTileRow()));
-//		testTiles[3] = layer.getTMXTile((tile.getTileColumn() - 1), (tile.getTileRow() - 1));
-//		testTiles[4] = layer.getTMXTile((tile.getTileColumn() - 1), (tile.getTileRow() + 1));
-		testTiles[3] = layer.getTMXTile((tile.getTileColumn() + 1), (tile.getTileRow()));
-//		testTiles[6] = layer.getTMXTile((tile.getTileColumn() + 1), (tile.getTileRow() - 1));
-//		testTiles[7] = layer.getTMXTile((tile.getTileColumn() + 1), (tile.getTileRow() + 1));
+		if(tile.getTileColumn() > 0 ) {
+			testTiles[0] = layer.getTMXTile((tile.getTileColumn() - 1), (tile.getTileRow()));			
+		}
+		if(tile.getTileRow() > 0 ) {
+			testTiles[1] = layer.getTMXTile((tile.getTileColumn()), (tile.getTileRow() - 1));
+		}
+		if(tile.getTileRow() < (layer.getTileRows() - 1) ) {
+			testTiles[2] = layer.getTMXTile((tile.getTileColumn()), (tile.getTileRow() + 1));
+		}
+		if(tile.getTileColumn() < (layer.getTileColumns() - 1) ) {
+			testTiles[3] = layer.getTMXTile((tile.getTileColumn() + 1), (tile.getTileRow()));			
+		}
 		
 		for(int i = 0; i < testTiles.length; i++) {
-			if(!pathFinderMap.isBlocked(testTiles[i].getTileColumn(), testTiles[i].getTileRow(), layer)) {
-				return true;
+			if(testTiles[i] != null) {
+				if(!pathFinderMap.isBlocked(testTiles[i].getTileColumn(), testTiles[i].getTileRow(), layer)) {
+					return true;
+				}
+				
 			}
 		}
 		
@@ -152,7 +159,7 @@ public class Algorithm {
 		if (path != null) {
 			Path currentPath = new Path(path.getLength());
 			for (int i = 0; i < path.getLength(); i++) {
-				currentPath.to(path.getX(i) * 32, (path.getY(i) * 32) - 32); //TODO feste Größe angegeben..
+				currentPath.to(path.getX(i) * 32, (path.getY(i) * 32)); //TODO feste Größe angegeben..
 			}
 			return currentPath;
 		}
