@@ -5,7 +5,12 @@
   <tile id="6">
    <properties>
     <property name="COLLISION" value="true"/>
-   </properties>
+   </properties>   
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="TRANSITION" value="LEVEL1"/>
+   </properties>   
   </tile>
  </tileset>
  <layer name="Ground" width="200" height="200">
@@ -16,7 +21,7 @@
    <tile gid="1"/>
    <tile gid="1"/>
    <tile gid="1"/>
-   <tile gid="1"/>
+   <tile gid="3"/>
    <tile gid="1"/>
    <tile gid="1"/>
    <tile gid="1"/>

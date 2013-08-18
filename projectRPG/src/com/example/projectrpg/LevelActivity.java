@@ -23,6 +23,7 @@ import org.andengine.extension.tmx.TMXLayer;
 import org.andengine.extension.tmx.TMXLoader;
 import org.andengine.extension.tmx.TMXLoader.ITMXTilePropertiesListener;
 import org.andengine.extension.tmx.TMXProperties;
+import org.andengine.extension.tmx.TMXProperty;
 import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTileProperty;
 import org.andengine.extension.tmx.TMXTiledMap;
@@ -86,10 +87,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/** the players sprite */
 	private AnimatedSprite player;
 	
-	/** the TMX tiled map */
-	private TMXTiledMap tmxTiledMap;
-	/** the first and only layer of the TMX map */
-	private TMXLayer tmxLayer;
 	
 	/**
 	 * the controller responsible for communication between the Activity and the Algorithm 
@@ -102,7 +99,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/** var for the zoom factor before the pinch zoom began */
 	private float initialTouchZoomFactor;
 	/** boolean to help the onscenetouch listener to decide if the screen was touched to zoom(and not to move the player) */
-	private boolean wasPinched;
 	private ClickDetector clickDetector;
 	
 	/** necessary as var to be able to stop an already started path */
@@ -112,9 +108,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	
 	/** the font for the dialog text */
 	private Font font;
-	
-	/** the current scene */
-	private Scene scene;
+
 	/** boolean stating if the player is interacting at the moment */
 	private boolean isInteracting;
 	
@@ -125,14 +119,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/** only needed for the dialog at the moment */
 	private HUD hud;
 	
-	/** needed to determine if the screen is dragged or only touched */
-	private int moveCounter;
-//	/** the X position of the camera center before dragging */
-//	private float moveXStart;
-//	/** the Y position of the camera center before dragging */
-//	private float moveYStart;
-	
-//	private AnimatedSprite player2;
+
 
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
@@ -173,8 +160,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 
 		controller = new Controller();
-		wasPinched = false;
-		moveCounter = 0;
 //		moveXStart = 0;
 //		moveYStart = 0;
 	}
@@ -184,45 +169,41 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 */
 	@Override
 	public Scene onCreateScene() {
-		/* create the scene */
-		scene = new Scene();
 		
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 		
-		/* load the tmx tiled map */
-		try {
-			final TMXLoader tmxLoader = new TMXLoader(this.getAssets(), this.mEngine.getTextureManager(), TextureOptions.BILINEAR_PREMULTIPLYALPHA, this.getVertexBufferObjectManager(), new ITMXTilePropertiesListener() {
-				@Override
-				public void onTMXTileWithPropertiesCreated(TMXTiledMap tmxTiledMap, TMXLayer tmxLayer, TMXTile tmxTile, TMXProperties<TMXTileProperty> tmxTileProperties) {
-					// TODO nothing...					
-				}				
-			});
-			this.tmxTiledMap = tmxLoader.loadFromAsset(controller.getLevelPath());
-		} catch (final TMXLoadException e) {
-			Debug.e(e);
+		
+		for(int i=1; i<3; i++){			
+			TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i);
+			OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
+			controller.addSceneToManager(scene);
 		}
-		tmxLayer = this.tmxTiledMap.getTMXLayers().get(0);
-		scene.attachChild(tmxLayer);
 
-		camera.setBounds(0, 0, tmxLayer.getWidth(), tmxLayer.getHeight());
+		camera.setBounds(0, 0, 50*32, 50*32);	// TODO: insert constants
 		camera.setBoundsEnabled(true);
 		
 		/* set the scene's on touch listener to the activity itself */
-		scene.setOnSceneTouchListener(this);
+//		scene.setOnSceneTouchListener(this);
 		pinchZoomDetector = new PinchZoomDetector(this);
 		pinchZoomDetector.setEnabled(true);
 		clickDetector = new ClickDetector(this);
-
+		clickDetector.setEnabled(true);
+		
 		/* Calculate the coordinates for the player sprite, so it's spawned in the center of the camera. */
-		final TMXTile centerTile = tmxLayer.getTMXTileAt((CAMERA_WIDTH - this.playerTextureRegion.getWidth()) / 2, (CAMERA_HEIGHT - this.playerTextureRegion.getHeight()) / 2);
-		final float centerX = centerTile.getTileX() + 4;
-		final float centerY = centerTile.getTileY();
+		/** BEKOMMT FALSCHE SCENE ZURÜCK????!!!!!????!!! WIESO?????!!!!!!!*/
+		OurScene scene = controller.getCurrentScene();
+		Log.d("RPG", "Scene: "+scene.getID());
+		Log.d("RPG", "Hashmap: "+scene.getSpawns());
+		float[] coords = scene.getSpawn("SPAWN");
+		Log.d("RPG", ""+coords[0]+","+coords[1]);
+		TMXLayer layer = controller.getTMXLayer();
+		final TMXTile spawnTile = layer.getTMXTileAt(coords[0], coords[1]);
+		final float spawnX = spawnTile.getTileX() + 4;
+		final float spawnY = spawnTile.getTileY();
 
 		/* Create the sprite and add it to the scene. */
-		player = new AnimatedSprite(centerX, centerY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager());		
-//		player2 = new AnimatedSprite(20, 20, 48, 64, this.playerTextureRegion, this.getVertexBufferObjectManager());
-		scene.attachChild(player);
-//		scene.attachChild(player2);
+		player = new AnimatedSprite(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager());
+		controller.getCurrentScene().attachChild(player);
 		
 		/* let the camera chase the player */
 		camera.setChaseEntity(player);
@@ -230,7 +211,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		hud = new HUD();
 		camera.setHUD(hud);
 		
-		return scene;
+		return controller.getCurrentScene();
 	}
 
 	/**
@@ -240,7 +221,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 */
 	@Override
 	public boolean onSceneTouchEvent(Scene scene, final TouchEvent sceneTouchEvent) {
-//		if(sceneTouchEvent.getX()<0 || sceneTouchEvent.getX()>scene || sceneTouchEvent.getY()<0 ||sceneTouchEvent.getY()>CAMERA_HEIGHT) return false; -- funktioniert nicht(scene abhängige coords)
 		pinchZoomDetector.onTouchEvent(sceneTouchEvent);
 		clickDetector.onTouchEvent(sceneTouchEvent);
 		
@@ -278,6 +258,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * @param path - The path the player shall go to
 	 */
 	private void startPath(final Path path) {
+		Log.d("RPG", "Run to: "+path.getCoordinatesX()[path.getSize()-1]+", "+path.getCoordinatesY()[path.getSize()-1]);
 		pathModifier = new LoopEntityModifier(new OurPathModifier(50, path, null, new IPathModifierListener() {
 
 			@Override
@@ -341,9 +322,14 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				controller.animationFinished();
 //				camera.setChaseEntity(null);
 				
-				TMXTile tile = tmxLayer.getTMXTileAt(player.getX(), player.getY());
-				if(tile.getTMXTileProperties(tmxTiledMap)!=null){
-					if(tile.getTMXTileProperties(tmxTiledMap).containsTMXProperty("TRANSITION", "true")) startNewLevel();
+				TMXTile tile = controller.getTMXLayer().getTMXTileAt(player.getX(), player.getY());
+				TMXTiledMap map = controller.getCurrentScene().getMap();
+				if(tile.getTMXTileProperties(map)!=null){
+					TMXProperties<TMXTileProperty> properties = tile.getTMXTileProperties(map);
+					for(int i=0; i<properties.size(); i++) {
+						TMXTileProperty property = properties.get(i);
+						if(property.getName().contentEquals("TRANSITION")) startNewLevel(property.getValue());
+					}
 				}
 			}
 		}), 0);
@@ -353,12 +339,28 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	
 	/**
 	 * notifies the controller to start a new level and recreate the scene
+	 * @param id 
 	 */
-	private void startNewLevel() {
-		controller.nextLevel();
-		scene.reset();
+	private void startNewLevel(String nextIdString) {
 		Log.d("RPG", "NEW LEVEL");
-		this.mEngine.setScene(onCreateScene());
+		int nextId = Integer.parseInt(nextIdString.substring(nextIdString.length()-1));
+		OurScene scene = controller.getCurrentScene();
+		int currentId = scene.getID();
+		scene.detachChild(player);
+		if(nextId>currentId) controller.nextLevel();
+		else controller.previousLevel();
+		scene = controller.getCurrentScene();
+		scene.attachChild(player);
+		
+		/* Calculate the coordinates for the player sprite, so it's spawned in the center of the camera. */
+		final float[] coords = scene.getSpawn("LEVEL"+currentId);
+		final TMXTile spawnTile = controller.getTMXLayer().getTMXTileAt(coords[0], coords[1]);
+		final float spawnX = spawnTile.getTileX() + 4;
+		final float spawnY = spawnTile.getTileY();
+		player.setX(spawnX);
+		player.setY(spawnY);
+		
+		this.mEngine.setScene(scene);
 	}
 
 	/**
@@ -396,7 +398,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	@Override
 	public void onPinchZoomFinished(PinchZoomDetector pinchZoomDetector,
 			TouchEvent touchEvent, float zoomFactor) {
-		wasPinched = true;
+
 	}
 
 	@Override
@@ -406,10 +408,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			if(isInteracting){
 				stopInteraction();
 			}
-			TMXTile startTile = tmxLayer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
-			TMXTile destinationTile = tmxLayer.getTMXTileAt(sceneX, sceneY);
-			if(controller.doAction(startTile, destinationTile, tmxTiledMap, scene)){
-				Path path = controller.getPath(startTile, destinationTile, tmxTiledMap);
+			TMXTile startTile = ((TMXLayer) mEngine.getScene().getChildByIndex(0)).getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
+			TMXTile destinationTile = ((TMXLayer) mEngine.getScene().getChildByIndex(0)).getTMXTileAt(sceneX, sceneY);
+			OurScene scene = controller.getCurrentScene();
+			if(controller.doAction(startTile, destinationTile, scene.getMap(), scene)){
+				Path path = controller.getPath(startTile, destinationTile, scene.getMap());
 				if(path!=null) startPath(path);
 			} else{
 				String interActionText = controller.getInteractionText();

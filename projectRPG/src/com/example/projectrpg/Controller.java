@@ -1,9 +1,17 @@
 package com.example.projectrpg;
 
+import java.util.HashMap;
+
+import org.andengine.engine.Engine;
 import org.andengine.entity.modifier.PathModifier.Path;
 import org.andengine.entity.scene.Scene;
+import org.andengine.extension.tmx.TMXLayer;
 import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTiledMap;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
+
+import android.content.res.AssetManager;
+import android.util.Log;
 
 /**
  * Controller class responsible for communication 
@@ -20,9 +28,15 @@ public class Controller {
 	private boolean isMoving;
 	
 	private int level;
+
+	private TMXMapLoader mapLoader;
+
+	private SceneManager sceneManager;
 	
 	/** constructor */
 	public Controller(){
+		mapLoader = new TMXMapLoader(this);
+		sceneManager = new SceneManager();
 		isMoving = false;
 		level = 1;
 	}
@@ -128,15 +142,42 @@ public class Controller {
 	/** 
 	 * @returns the path to the tmx file according to the current level
 	 */
-	public String getLevelPath() {
-		if(level==1) return "tmx/tmxLena.tmx";
-		if(level==2) return "tmx/mytmx.tmx";
+	public String getLevelPath(int index) {
+		if(index==1) return "tmx/tmxLena.tmx";
+		if(index==2) return "tmx/mytmx.tmx";
 		else return null;
 	}
 
 	/** increments the level counter */
 	public void nextLevel() {
 		level++;
+	}
+
+	public void previousLevel() {
+		level--;
+	}
+
+	public TMXLayer getTMXLayer() {
+		return getCurrentScene().getMap().getTMXLayers().get(0);
+	}
+
+	public void addSceneToManager(OurScene scene) {
+		sceneManager.addScene(scene);
+	}
+
+	public TMXTiledMap loadTMXMap(AssetManager assets, Engine engine,
+			VertexBufferObjectManager vertexBufferObjectManager, int index) {
+		return mapLoader.loadTMXMap(assets, engine, vertexBufferObjectManager, getLevelPath(index));
+	}
+
+
+	public HashMap<String, float[]> getSpawn() {
+		return mapLoader.getSpawn();
+	}
+	
+	public OurScene getCurrentScene(){
+		Log.d("RPG", level+"");
+		return sceneManager.getScene(level);
 	}
 
 	
