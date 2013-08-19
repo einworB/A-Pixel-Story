@@ -159,7 +159,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		
 
-		controller = new Controller();
+		controller = new Controller(this);
+		
+		
 //		moveXStart = 0;
 //		moveYStart = 0;
 	}
@@ -179,7 +181,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			controller.addSceneToManager(scene);
 		}
 
-		camera.setBounds(0, 0, 50*32, 50*32);	// TODO: insert constants
+		camera.setBounds(0, 0, 30*32, 30*32);	// TODO: insert constants
 		camera.setBoundsEnabled(true);
 		
 		/* set the scene's on touch listener to the activity itself */
@@ -195,7 +197,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		Log.d("RPG", "Scene: "+scene.getID());
 		Log.d("RPG", "Hashmap: "+scene.getSpawns());
 		float[] coords = scene.getSpawn("SPAWN");
-		Log.d("RPG", ""+coords[0]+","+coords[1]);
+		Log.d("RPG", "Koords: "+coords[0]+","+coords[1]);
 		TMXLayer layer = controller.getTMXLayer();
 		final TMXTile spawnTile = layer.getTMXTileAt(coords[0], coords[1]);
 		final float spawnX = spawnTile.getTileX() + 4;
@@ -328,7 +330,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 					TMXProperties<TMXTileProperty> properties = tile.getTMXTileProperties(map);
 					for(int i=0; i<properties.size(); i++) {
 						TMXTileProperty property = properties.get(i);
-						if(property.getName().contentEquals("TRANSITION")) startNewLevel(property.getValue());
+						if(property.getName().contentEquals("TRANSITION") && !property.getValue().contentEquals("SPAWN")) startNewLevel(property.getValue());
 					}
 				}
 			}
@@ -342,7 +344,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * @param id 
 	 */
 	private void startNewLevel(String nextIdString) {
-		Log.d("RPG", "NEW LEVEL");
+		Log.d("RPG", "NEW LEVEL: "+nextIdString);
 		int nextId = Integer.parseInt(nextIdString.substring(nextIdString.length()-1));
 		OurScene scene = controller.getCurrentScene();
 		int currentId = scene.getID();
@@ -414,6 +416,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			if(controller.doAction(startTile, destinationTile, scene.getMap(), scene)){
 				Path path = controller.getPath(startTile, destinationTile, scene.getMap());
 				if(path!=null) startPath(path);
+				else Log.d("RPG", "path=null");
 			} else{
 				String interActionText = controller.getInteractionText();
 				startInteraction(interActionText);

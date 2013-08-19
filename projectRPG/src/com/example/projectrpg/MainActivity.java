@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(MainActivity.this, InventarActivity.class);
+				Intent i = new Intent(MainActivity.this, LevelActivity.class);
 				startActivity(i);
 			}
 		});

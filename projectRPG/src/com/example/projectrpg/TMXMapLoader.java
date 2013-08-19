@@ -1,5 +1,6 @@
 package com.example.projectrpg;
 
+import java.io.InputStream;
 import java.util.HashMap;
 
 import org.andengine.engine.Engine;
@@ -29,7 +30,7 @@ public class TMXMapLoader {
 		
 	}
 
-	public TMXTiledMap loadTMXMap(AssetManager assetManager, Engine mEngine, VertexBufferObjectManager vertexBufferObjectManager, String levelPath){
+	public TMXTiledMap loadTMXMap(AssetManager assetManager, Engine mEngine, VertexBufferObjectManager vertexBufferObjectManager, InputStream inputStream){
 		spawns = new HashMap<String, float[]>();
 		/* load the tmx tiled map */
 		try {
@@ -48,8 +49,8 @@ public class TMXMapLoader {
 					
 				}				
 			});
-			Log.d("RPG", levelPath);
-			this.tmxMap = tmxLoader.loadFromAsset(levelPath);
+			Log.d("RPG", "InputStream: "+inputStream.toString());
+			this.tmxMap = tmxLoader.load(inputStream);
 		} catch (final TMXLoadException e) {
 			Debug.e(e);
 		}
@@ -57,7 +58,7 @@ public class TMXMapLoader {
 	}
 	
 	public HashMap<String, float[]> getSpawn(){
-		Log.d("RPG", spawns+"");
+		Log.d("RPG", "spawns: "+spawns);
 		return spawns;
 	}
 }

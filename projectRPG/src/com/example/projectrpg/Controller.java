@@ -1,5 +1,6 @@
 package com.example.projectrpg;
 
+import java.io.InputStream;
 import java.util.HashMap;
 
 import org.andengine.engine.Engine;
@@ -10,6 +11,7 @@ import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTiledMap;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
 
@@ -32,13 +34,16 @@ public class Controller {
 	private TMXMapLoader mapLoader;
 
 	private SceneManager sceneManager;
+
+	private Context context;
 	
 	/** constructor */
-	public Controller(){
+	public Controller(Context context){
 		mapLoader = new TMXMapLoader(this);
 		sceneManager = new SceneManager();
 		isMoving = false;
 		level = 1;
+		this.context = context;
 	}
 
 	/**
@@ -142,10 +147,10 @@ public class Controller {
 	/** 
 	 * @returns the path to the tmx file according to the current level
 	 */
-	public String getLevelPath(int index) {
-		if(index==1) return "tmx/tmxLena.tmx";
-		if(index==2) return "tmx/mytmx.tmx";
-		else return null;
+	public InputStream getLevelPath(int index) {
+		RandomMapGenerator gen = new RandomMapGenerator(context, context.getAssets());
+		if(index < 1 || index > 2) return null;
+		else return gen.createMap(index);
 	}
 
 	/** increments the level counter */
@@ -176,7 +181,7 @@ public class Controller {
 	}
 	
 	public OurScene getCurrentScene(){
-		Log.d("RPG", level+"");
+		Log.d("RPG", "level: "+level);
 		return sceneManager.getScene(level);
 	}
 
