@@ -26,7 +26,14 @@
         </activity>
         <activity
             android:name="com.example.projectrpg.LevelActivity"
-            android:label="@string/title_activity_level" >
+            android:label="@string/title_activity_level"
+            android:configChanges="orientation|screenSize" >
+        </activity>
+        <activity
+            android:name="com.example.projectrpg.InventarActivity"
+            android:screenOrientation="landscape"
+            android:label="@string/title_activity_level"
+            >
         </activity>
     </application>
 
