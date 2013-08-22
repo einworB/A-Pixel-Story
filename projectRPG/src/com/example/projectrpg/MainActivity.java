@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 	
-	//neuer Upload... Kommentare folgen noch...
+	//neuer Upload... Kommentare folgen noch
 
 	private Typeface inhishan;
 
