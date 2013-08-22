@@ -2,6 +2,8 @@ package com.example.projectrpg;
 
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
@@ -16,6 +18,7 @@ import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TickerText;
 import org.andengine.entity.text.TickerText.TickerTextOptions;
 import org.andengine.entity.util.FPSLogger;
@@ -119,6 +122,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/** only needed for the dialog at the moment */
 	private HUD hud;
 	private boolean fleeing;
+	private Text playerLife;
+	private Text opponentLife;
+	private Font lifeFont;
 	
 
 
@@ -153,6 +159,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		this.font = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32);
 		this.font.load();
+		this.lifeFont = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 12);
+		this.lifeFont.load();
 		
 		
 		rect = new Rectangle(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-20, 100, this.getVertexBufferObjectManager());
@@ -204,6 +212,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 		/* Create the sprite and add it to the scene. */
 		player = new Player(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager());
+		playerLife = new Text(player.getX()+20, player.getY(), lifeFont, ""+player.getHealth(), 10, this.getVertexBufferObjectManager());
 		int column = spawnTile.getTileColumn();
 		int row = spawnTile.getTileRow();
 		Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
@@ -213,8 +222,24 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(12);
 		
 		controller.getCurrentScene().attachChild(player);
-		Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager());
+		controller.getCurrentScene().attachChild(playerLife);
+		final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager());
+		opponentLife = new Text(opponent.getX()+20, opponent.getY(), lifeFont, ""+opponent.getHealth(), 10, this.getVertexBufferObjectManager());
 		controller.getCurrentScene().attachChild(opponent);
+		controller.getCurrentScene().attachChild(opponentLife);
+		
+		// update Healthlabels every second
+		scene.registerUpdateHandler(new TimerHandler(1.0f/30, true, new ITimerCallback() {			
+			@Override
+			public void onTimePassed(TimerHandler pTimerHandler) {
+				playerLife.setX(player.getX()+20);
+				playerLife.setY(player.getY());
+				playerLife.setText(""+player.getHealth());
+				opponentLife.setX(opponent.getX()+20);
+				opponentLife.setY(opponent.getY());
+				opponentLife.setText(""+opponent.getHealth());
+			}
+		}));
 		
 		/* let the camera chase the player */
 		camera.setChaseEntity(player);
@@ -506,6 +531,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 	private void fightWon(Opponent opponent) {
 		controller.getCurrentScene().detachChild(opponent);
+		controller.getCurrentScene().detachChild(opponentLife);
 	}
 
 }
