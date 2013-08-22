@@ -70,10 +70,9 @@ public class Controller {
 	 * @param scene - the scene containing the map
 	 * @returns true if the player shall move to the tile, false if he shall interac
 	 */
-	public boolean doAction(TMXTile startTile, TMXTile destinationTile, TMXTiledMap tmxTiledMap, Scene scene) {
+	public int doAction(TMXTile startTile, TMXTile destinationTile, TMXTiledMap tmxTiledMap, Scene scene) {
 		InteractionDecider decider = new InteractionDecider();
-		if(decider.decide(startTile, destinationTile, tmxTiledMap, scene)) return true;		
-		else return false;
+		return decider.decide(startTile, destinationTile, tmxTiledMap, scene);
 	}
 
 	/**
@@ -148,7 +147,7 @@ public class Controller {
 	 * @returns the path to the tmx file according to the current level
 	 */
 	public InputStream getLevelPath(int index) {
-		RandomMapGenerator gen = new RandomMapGenerator(context, context.getAssets());
+		RandomMapGenerator gen = new RandomMapGenerator(context);
 		if(index < 1 || index > 2) return null;
 		else return gen.createMap(index);
 	}
@@ -183,6 +182,10 @@ public class Controller {
 	public OurScene getCurrentScene(){
 		Log.d("RPG", "level: "+level);
 		return sceneManager.getScene(level);
+	}
+
+	public int fight(Player player, Opponent opponent) {
+		return FightHelper.fight(player, opponent);
 	}
 
 	

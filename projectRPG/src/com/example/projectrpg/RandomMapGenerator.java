@@ -1,33 +1,27 @@
 package com.example.projectrpg;
 
-import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.util.Random;
 
 import org.xmlpull.v1.XmlSerializer;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.util.Log;
 import android.util.Xml;
 
 public class RandomMapGenerator {
 
 	private Context context;
-	private AssetManager assetManager;
-	private Random rand = new Random();
+	private OurRandomGenerator rand = new OurRandomGenerator();
 	private XmlSerializer serializer;
 	private int index;
 
-	public RandomMapGenerator(Context context, AssetManager assetManager){
+	public RandomMapGenerator(Context context){
 		this.context = context;
-		this.assetManager = assetManager;
 	}
 	
 	public InputStream createMap(int index){
@@ -41,7 +35,7 @@ public class RandomMapGenerator {
 			writer.close();
 			
 			
-			InputStream fin = context.openFileInput(filename);//assetManager.open("tmx/mytmx.tmx");
+			InputStream fin = context.openFileInput(filename);
 			return fin;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -162,22 +156,68 @@ public class RandomMapGenerator {
 		for (int i=0; i<900; i++){
 			kindOfTile[i] = -1;
 		}
-		boolean[] spawnSet = new boolean[2];
+		boolean spawnSet = false;
+    	while(true){
+    		// rand[0,28)+1 to exclude edges
+    		int randomInt = rand.nextInt(28);
+    		randomInt++;
+    		int num = 0;
+    		switch(rand.nextInt(4)){
+        		case 0:
+        			num = randomInt;
+        			break;
+        		case 1:
+        			num = randomInt*30;
+        			break;
+        		case 2:
+        			num = (randomInt+1)*30 - 1;
+        			break;
+        		case 3:
+        			num = 870 + randomInt;
+        			break;
+    		}
+    		if(kindOfTile[num]==-1){
+    			if(index==1 && !spawnSet){
+    				kindOfTile[num] = 23;
+    				if(num<30) kindOfTile[num+30] = 1;
+    				else if(num%30==0) kindOfTile[num+1] = 1;
+    				else if((num+1)%30==0) kindOfTile[num-1] = 1;
+    				else if(num>870) kindOfTile[num-30] = 1;
+    				spawnSet = true;
+    				continue;
+    			}
+				kindOfTile[num] = 13;
+				if(num<30) kindOfTile[num+30] = 1;
+				else if(num%30==0) kindOfTile[num+1] = 1;
+				else if((num+1)%30==0) kindOfTile[num-1] = 1;
+				else if(num>870) kindOfTile[num-30] = 1;
+				
+    			break;
+    		}
+    	}
+        
+        kindOfTile[0] = 2;
+        kindOfTile[29] = 2;
+        kindOfTile[870] = 2;
+        kindOfTile[899] = 2;
+//		boolean[] spawnSet = new boolean[2];
 	    for (int i=0; i<900; i++){
 			serializer.startTag("", "tile");
-            double randomDouble = rand.nextDouble();
 //	            Log.d("RANDOMDOUBLE", ""+randomDouble);
-            if(i<30 || i%30==0 || (i+1)%30==0 || i>870){
-            	setEdgeTile(randomDouble, spawnSet, kindOfTile, i);
-            	
-            } else{
-            	if(kindOfTile[i]==-1){
+//            if(i==868 || i==867) kindOfTile[i] = 1;
+//            else if(i<30 || i%30==0 || (i+1)%30==0 || i>870){
+//            	setEdgeTile(randomDouble, spawnSet, kindOfTile, i);
+//            	
+//            }
+//            ) && i!=0 && i!=29 && i!=870 && i!=899){
+        	if(kindOfTile[i]==-1){
+        		if(!(i<30 || i%30==0 || (i+1)%30==0 || i>870)){
             		int counter = 0;
-	            	if(kindOfTile[i-1]>1 && kindOfTile[i-1]!=13 && kindOfTile[i-1]!=13) counter++;
-	            	if(kindOfTile[i+1]>1 && kindOfTile[i+1]!=13 && kindOfTile[i+1]!=13) counter++;
-	            	if(kindOfTile[i+30]>1 && kindOfTile[i+30]!=13 && kindOfTile[i+30]!=13) counter++;
-	            	if(kindOfTile[i-30]>1 && kindOfTile[i-30]!=13 && kindOfTile[i-30]!=13) counter++;
-	            	if(counter>2 || randomDouble<0.9) kindOfTile[i] = 1;
+	            	if(kindOfTile[i-1]>1 && kindOfTile[i-1]!=13 && kindOfTile[i-1]!=23) counter++;
+	            	if(kindOfTile[i+1]>1 && kindOfTile[i+1]!=13 && kindOfTile[i+1]!=23) counter++;
+	            	if(kindOfTile[i+30]>1 && kindOfTile[i+30]!=13 && kindOfTile[i+30]!=23) counter++;
+	            	if(kindOfTile[i-30]>1 && kindOfTile[i-30]!=13 && kindOfTile[i-30]!=23) counter++;
+	            	if(counter>2 || rand.getBoolean(0.9)) kindOfTile[i] = 1;
 	            	else{
 	            		int randomInt = rand.nextInt(30);
 	            		if(randomInt<15) kindOfTile[i] = 2;
@@ -206,43 +246,55 @@ public class RandomMapGenerator {
 	            		}
 	            		
 	            	}
-            	}
-            	serializer.attribute("", "gid", ""+kindOfTile[i]);
+            	} else kindOfTile[i] = 2;
+            	
             }
-            
+            serializer.attribute("", "gid", ""+kindOfTile[i]);
             
             
             serializer.endTag("", "tile");
         }
 	}
 
-	private void setEdgeTile(double randomDouble, boolean[] spawnSet, int[] kindOfTile, int i) throws IllegalArgumentException, IllegalStateException, IOException {
-		if(index==1){
-    		if((!spawnSet[0] || !spawnSet[1]) && randomDouble<0.05 && i!=0 && i!=29 && i!=899 && i!=870){
-				if(!spawnSet[0]){
-					spawnSet[0] = true;
-					kindOfTile[i] = 13;
-					freeNeighboringTile(i, kindOfTile);
-				} else{
-					spawnSet[1] = true;
-					kindOfTile[i] = 23;
-					freeNeighboringTile(i, kindOfTile);
-				}
-    		} else kindOfTile[i] = 2;
-    	} else{
-    		if(!spawnSet[0] && rand.nextDouble()<0.05 && i!=0 && i!=29 && i!=899 && i!=870){
-				spawnSet[0] = true;
-				kindOfTile[i] = 13;
-				freeNeighboringTile(i, kindOfTile);
-    		} else kindOfTile[i] = 2;
-    	}
-		serializer.attribute("", "gid", ""+kindOfTile[i]);		
-	}
-
-	private void freeNeighboringTile(int i, int[] kindOfTile) {
-		if(i<30) kindOfTile[i+30] = 1;
-		else if(i%30==0) kindOfTile[i+1] = 1;
-		else if((i+1)%30==0) kindOfTile[i-1] = 1;
-		else if(i>870) kindOfTile[i-30] = 1;
-	}
+//	private void setEdgeTile(double randomDouble, boolean[] spawnSet, int[] kindOfTile, int i) throws IllegalArgumentException, IllegalStateException, IOException {
+//		if(i>896 && (!spawnSet[0] || !spawnSet[1])){
+//			if(index==1){
+//				if(!spawnSet[0]){
+//					spawnSet[0] = true;
+//					kindOfTile[i] = 13;
+//				} else{
+//					spawnSet[1] = true;
+//					kindOfTile[i] = 23;
+//				}
+//			}
+//		}
+//		if(index==1){
+//    		if((!spawnSet[0] || !spawnSet[1]) && randomDouble<0.05 && i!=0 && i!=29 && i!=899 && i!=870){
+//				if(((i+1)%30==0  && kindOfTile[i-1]==1) || (i>870 && kindOfTile[i-30]==1) || ((i+1)%30!=0 && i<870)){
+//    				if(!spawnSet[0]){
+//						spawnSet[0] = true;
+//						kindOfTile[i] = 13;
+//						freeNeighboringTile(i, kindOfTile);
+//					} else{
+//						spawnSet[1] = true;
+//						kindOfTile[i] = 23;
+//						freeNeighboringTile(i, kindOfTile);
+//					}
+//				} else kindOfTile[i] = 2;
+//    		} else kindOfTile[i] = 2;
+//    	} else{
+//    		if(!spawnSet[0] && rand.nextDouble()<0.05 && i!=0 && i!=29 && i!=899 && i!=870){
+//    			if(((i+1)%30==0  && kindOfTile[i-1]==1) || (i>870 && kindOfTile[i-30]==1) || (i+1)%30!=0 || i<870){
+//					spawnSet[0] = true;
+//					kindOfTile[i] = 13;
+//					freeNeighboringTile(i, kindOfTile);
+//    			} else kindOfTile[i] = 2;
+//    		} else kindOfTile[i] = 2;
+//    	}		
+//	}
+//
+//	private void freeNeighboringTile(int i, int[] kindOfTile) {
+//		if(i<30) kindOfTile[i+30] = 1;
+//		else if(i%30==0) kindOfTile[i+1] = 1;
+//	}
 }

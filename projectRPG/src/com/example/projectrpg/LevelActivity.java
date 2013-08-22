@@ -85,7 +85,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/** used for loading bitmaps*/
 	private TiledTextureRegion playerTextureRegion;
 	/** the players sprite */
-	private AnimatedSprite player;
+	private Player player;
 	
 	
 	/**
@@ -118,6 +118,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private TickerText text;
 	/** only needed for the dialog at the moment */
 	private HUD hud;
+	private boolean fleeing;
 	
 
 
@@ -147,7 +148,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
 		this.bitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 128, 128);
-		this.playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.bitmapTextureAtlas, this, "player.png", 0, 0, 3, 4);
+		this.playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.bitmapTextureAtlas, this, "player4x4.png", 0, 0, 4, 4);
 		this.bitmapTextureAtlas.load();
 		
 		this.font = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32);
@@ -156,7 +157,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		rect = new Rectangle(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-20, 100, this.getVertexBufferObjectManager());
 		rect.setColor(Color.WHITE);
-		
 		
 
 		controller = new Controller(this);
@@ -192,7 +192,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		clickDetector.setEnabled(true);
 		
 		/* Calculate the coordinates for the player sprite, so it's spawned in the center of the camera. */
-		/** BEKOMMT FALSCHE SCENE ZURÜCK????!!!!!????!!! WIESO?????!!!!!!!*/
 		OurScene scene = controller.getCurrentScene();
 		Log.d("RPG", "Scene: "+scene.getID());
 		Log.d("RPG", "Hashmap: "+scene.getSpawns());
@@ -204,11 +203,22 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		final float spawnY = spawnTile.getTileY();
 
 		/* Create the sprite and add it to the scene. */
-		player = new AnimatedSprite(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager());
+		player = new Player(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager());
+		int column = spawnTile.getTileColumn();
+		int row = spawnTile.getTileRow();
+		Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
+		if(column==0) player.setCurrentTileIndex(4);
+		else if(row==0) player.setCurrentTileIndex(0);
+		else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(8);
+		else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(12);
+		
 		controller.getCurrentScene().attachChild(player);
+		Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager());
+		controller.getCurrentScene().attachChild(opponent);
 		
 		/* let the camera chase the player */
 		camera.setChaseEntity(player);
+		camera.setCenterDirect(spawnX, spawnY);
 		
 		hud = new HUD();
 		camera.setHUD(hud);
@@ -258,8 +268,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * and for showing the correct animation
 	 * 
 	 * @param path - The path the player shall go to
+	 * @param destinationTile 
 	 */
-	private void startPath(final Path path) {
+	private void startPath(final Path path, final TMXTile destinationTile) {
 		Log.d("RPG", "Run to: "+path.getCoordinatesX()[path.getSize()-1]+", "+path.getCoordinatesY()[path.getSize()-1]);
 		pathModifier = new LoopEntityModifier(new OurPathModifier(50, path, null, new IPathModifierListener() {
 
@@ -283,19 +294,19 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 					switch(controller.getAnimationType(path, waypointIndex)){
 						/* move left */
 						case 1:
-							player.animate(new long[]{200, 200, 200}, 9, 11, true);
+							player.animate(new long[]{200, 200, 200, 200}, 12, 15, true);
 							break;
 						/* move right */
 						case 2:
-							player.animate(new long[]{200, 200, 200}, 3, 5, true);
+							player.animate(new long[]{200, 200, 200, 200}, 4, 7, true);
 							break;
 						/* move up */
 						case 3:
-							player.animate(new long[]{200, 200, 200}, 0, 2, true);
+							player.animate(new long[]{200, 200, 200, 200}, 8, 11, true);
 							break;
 						/* move down */
 						case 4:
-							player.animate(new long[]{200, 200, 200}, 6, 8, true);
+							player.animate(new long[]{200, 200, 200, 200}, 0, 3, true);
 							break;
 					}	
 				}
@@ -324,45 +335,78 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				controller.animationFinished();
 //				camera.setChaseEntity(null);
 				
-				TMXTile tile = controller.getTMXLayer().getTMXTileAt(player.getX(), player.getY());
+				TMXTile endTile = controller.getTMXLayer().getTMXTileAt(player.getX(), player.getY());
 				TMXTiledMap map = controller.getCurrentScene().getMap();
-				if(tile.getTMXTileProperties(map)!=null){
-					TMXProperties<TMXTileProperty> properties = tile.getTMXTileProperties(map);
+				turnToTile(player, destinationTile, endTile, map);
+				if(endTile.getTMXTileProperties(map)!=null){
+					TMXProperties<TMXTileProperty> properties = endTile.getTMXTileProperties(map);
 					for(int i=0; i<properties.size(); i++) {
 						TMXTileProperty property = properties.get(i);
 						if(property.getName().contentEquals("TRANSITION") && !property.getValue().contentEquals("SPAWN")) startNewLevel(property.getValue());
 					}
 				}
+				if(fleeing) fleeing = false;
 			}
 		}), 0);
 		pathModifier.setAutoUnregisterWhenFinished(false);
 		player.registerEntityModifier(pathModifier);
 	}
 	
+	private void turnToTile(AnimatedSprite sprite, TMXTile destinationTile, TMXTile playerTile, TMXTiledMap map) {
+		if(destinationTile!=playerTile){
+			int divColumns = destinationTile.getTileColumn() - playerTile.getTileColumn();
+			int divRows = destinationTile.getTileRow() - playerTile.getTileRow();
+			if(divColumns==0){
+				if(divRows<0) sprite.setCurrentTileIndex(8);
+				else sprite.setCurrentTileIndex(0);
+			} else{
+				if(divColumns<0) sprite.setCurrentTileIndex(12);
+				else sprite.setCurrentTileIndex(4);
+			}
+		}
+	}
+
 	/**
 	 * notifies the controller to start a new level and recreate the scene
 	 * @param id 
 	 */
-	private void startNewLevel(String nextIdString) {
-		Log.d("RPG", "NEW LEVEL: "+nextIdString);
-		int nextId = Integer.parseInt(nextIdString.substring(nextIdString.length()-1));
-		OurScene scene = controller.getCurrentScene();
-		int currentId = scene.getID();
-		scene.detachChild(player);
-		if(nextId>currentId) controller.nextLevel();
-		else controller.previousLevel();
-		scene = controller.getCurrentScene();
-		scene.attachChild(player);
+	private void startNewLevel(final String nextIdString) {
 		
-		/* Calculate the coordinates for the player sprite, so it's spawned in the center of the camera. */
-		final float[] coords = scene.getSpawn("LEVEL"+currentId);
-		final TMXTile spawnTile = controller.getTMXLayer().getTMXTileAt(coords[0], coords[1]);
-		final float spawnX = spawnTile.getTileX() + 4;
-		final float spawnY = spawnTile.getTileY();
-		player.setX(spawnX);
-		player.setY(spawnY);
+		this.runOnUpdateThread(new Runnable() {			
+			@Override
+			public void run() {
+				Log.d("RPG", "NEW LEVEL: "+nextIdString);
+				int nextId = Integer.parseInt(nextIdString.substring(nextIdString.length()-1));
+				OurScene scene = controller.getCurrentScene();
+				int currentId = scene.getID();
+				controller.getCurrentScene().detachChild(player);
+				if(nextId>currentId) controller.nextLevel();
+				else controller.previousLevel();
+				
+				scene = controller.getCurrentScene();
+				controller.getCurrentScene().attachChild(player);
+				
 		
-		this.mEngine.setScene(scene);
+		
+				/* Calculate the coordinates for the player sprite to spawn */
+				final float[] coords = scene.getSpawn("LEVEL"+currentId);
+				TMXLayer layer = controller.getTMXLayer();
+				final TMXTile spawnTile = layer.getTMXTileAt(coords[0], coords[1]);
+				final float spawnX = spawnTile.getTileX() + 4;
+				final float spawnY = spawnTile.getTileY();
+				player.setX(spawnX);
+				player.setY(spawnY);
+				int column = spawnTile.getTileColumn();
+				int row = spawnTile.getTileRow();
+				Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
+				if(column==0) player.setCurrentTileIndex(4);
+				else if(row==0) player.setCurrentTileIndex(0);
+				else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(8);
+				else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(12);
+				
+				LevelActivity.this.mEngine.setScene(scene);
+			}
+		});	
 	}
 
 	/**
@@ -410,20 +454,58 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			if(isInteracting){
 				stopInteraction();
 			}
-			TMXTile startTile = ((TMXLayer) mEngine.getScene().getChildByIndex(0)).getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
-			TMXTile destinationTile = ((TMXLayer) mEngine.getScene().getChildByIndex(0)).getTMXTileAt(sceneX, sceneY);
 			OurScene scene = controller.getCurrentScene();
-			if(controller.doAction(startTile, destinationTile, scene.getMap(), scene)){
-				Path path = controller.getPath(startTile, destinationTile, scene.getMap());
-				if(path!=null) startPath(path);
-				else Log.d("RPG", "path=null");
-			} else{
-				String interActionText = controller.getInteractionText();
-				startInteraction(interActionText);
+			final TMXLayer layer = (TMXLayer) scene.getChildByIndex(0);
+			final TMXTile startTile = layer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
+			final TMXTile destinationTile = layer.getTMXTileAt(sceneX, sceneY);
+			switch(controller.doAction(startTile, destinationTile, scene.getMap(), scene)){
+				case 1:
+					Path path = controller.getPath(startTile, destinationTile, scene.getMap());
+					if(path!=null) startPath(path, destinationTile);
+					else Log.d("RPG", "path=null");
+					break;
+				case 2:
+					String interActionText = controller.getInteractionText();
+					startInteraction(interActionText);
+					break;
+				case 3:
+					Opponent opponent = (Opponent) scene.getChildByMatcher(new IEntityMatcher() {							
+						@Override
+						public boolean matches(IEntity entity) {
+							if(layer.getTMXTileAt(entity.getX(), entity.getY()) == destinationTile)	return true;
+							else return false;
+						}
+					});
+					turnToTile(player, destinationTile, startTile, scene.getMap());
+					turnToTile(opponent, startTile, destinationTile, scene.getMap());
+					switch(controller.fight(player, opponent)){
+						case 1:
+							fightWon(opponent);
+							break;
+						case 2:
+							flee();
+							break;
+					}
+					break;
 			}					
 		} else{
-			stopPath();
+			if(!fleeing) stopPath();
 		}
+	}
+
+	private void flee() {
+		float[] coords = controller.getCurrentScene().getSpawn("SPAWN");
+		TMXLayer layer = controller.getTMXLayer();
+		TMXTile startTile = layer.getTMXTileAt(player.getX(), player.getY());
+		TMXTile spawnTile = layer.getTMXTileAt(coords[0], coords[1]);
+		Path path = controller.getPath(startTile, spawnTile, controller.getCurrentScene().getMap());
+		if(path!=null) startPath(path, spawnTile);
+		else Log.d("RPG", "path=null");
+		fleeing = true;
+	}
+
+	private void fightWon(Opponent opponent) {
+		controller.getCurrentScene().detachChild(opponent);
 	}
 
 }
