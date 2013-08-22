@@ -13,6 +13,10 @@ import org.andengine.extension.tmx.TMXTiledMap;
  *
  */
 public class InteractionDecider {
+	
+	private static final int MOVE = 1;
+	private static final int TALK = 2;
+	private static final int FIGHT = 3;
 
 	/**
 	 * determine if the player should move to or interact
@@ -23,14 +27,14 @@ public class InteractionDecider {
 	 * @param scene - the scene containing the map
 	 * @returns true if the player shall move to the tile, false if he shall interact
 	 */
-	public boolean decide(TMXTile startTile, TMXTile destinationTile, TMXTiledMap tiledMap, Scene scene) {
+	public int decide(TMXTile startTile, TMXTile destinationTile, TMXTiledMap tiledMap, Scene scene) {
 		boolean collide = false;
-
+		IEntity entity = null;
 		// cycle through all childs of the scene 
 		for(int i = 0; i<scene.getChildCount(); i++){
-			IEntity entity = scene.getChildByIndex(i);
+			entity = scene.getChildByIndex(i);
 			// check if they are AnimatedSprites
-			if(entity instanceof AnimatedSprite){
+			if(entity instanceof NPC || entity instanceof Opponent){
 				float entityX = entity.getX();
 				float entityY = entity.getY();
 				TMXTile tile = tiledMap.getTMXLayers().get(0).getTMXTileAt(entityX+12, entityY+16); // TODO: 16 evtl durch PLAYER_WIDTH/HEUGHT ersetzen
@@ -41,14 +45,22 @@ public class InteractionDecider {
 			}
 		}
 		// no collision -> nothing on destination tile -> no interaction, move to tile
-    	if(!collide) return true;
+    	if(!collide) return MOVE;
     	// check if the player is standing in front of the tile
     	int divColumns = Math.abs(startTile.getTileColumn()-destinationTile.getTileColumn());
     	int divRows = Math.abs(startTile.getTileRow()-destinationTile.getTileRow());
-    	if(startTile.getTileRow()==destinationTile.getTileRow() && divColumns==1) return false;
-    	else if(startTile.getTileColumn()==destinationTile.getTileColumn() && divRows==1) return false;
+    	if(startTile.getTileRow()==destinationTile.getTileRow() && divColumns==1){
+    		if(entity instanceof NPC) return TALK;
+    		// only NPC or opponent possible
+    		else return FIGHT;
+    	}
+    	else if(startTile.getTileColumn()==destinationTile.getTileColumn() && divRows==1){
+    		if(entity instanceof NPC) return TALK;
+    		// only NPC or opponent possible
+    		else return FIGHT;
+    	}
     	// tile containing an Animated Sprite but too far away for interaction
-    	else return true;
+    	else return MOVE;
 	}
 	
 	
