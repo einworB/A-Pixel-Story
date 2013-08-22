@@ -2,12 +2,22 @@ package com.example.projectrpg;
 
 import java.util.ArrayList;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ClipData;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.DragShadowBuilder;
 import android.view.View.OnClickListener;
+import android.view.View.OnDragListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 public class InventarActivity extends Activity {
 	
@@ -18,7 +28,7 @@ public class InventarActivity extends Activity {
 	private Slot testSlot3;
 
 	//private TextView statsPlayerlevel;
-	private TextView statsAttack;
+	//private TextView statsAttack;
 	//private TextView statsDefense;
 
 	private ImageButton slot1Background;
@@ -30,7 +40,6 @@ public class InventarActivity extends Activity {
 	private ImageButton slot7Background;
 	private ImageButton slot8Background;
 	private ImageButton slot9Background;
-	private ImageButton slot10Background;
 	
 	private ImageButton slot1ItemImage;
 	private ImageButton slot2ItemImage;
@@ -41,7 +50,6 @@ public class InventarActivity extends Activity {
 	private ImageButton slot7ItemImage;
 	private ImageButton slot8ItemImage;
 	private ImageButton slot9ItemImage;
-	private ImageButton slot10ItemImage;
 
 	private InventarDatabase inventarDatabase;
 	
@@ -61,10 +69,8 @@ public class InventarActivity extends Activity {
 	}
 
 	private void putItemsOnSlots() {
-
-		statsAttack.setText(slotList.get(0).getNumberOfItems());
 		
-		for(int i=0; i<10; i++){
+		for(int i=0; i<9; i++){
 			if (slotList.get(i).getItemName().equalsIgnoreCase("Schwert")){
 			//	if (slotList.get(i).getNumberOfItems() == "1"){
 					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_one));
@@ -78,7 +84,7 @@ public class InventarActivity extends Activity {
 	}
 
 	private void setupAllClickListeners() {
-		for(int i=0; i<10; i++ ){
+		for(int i=0; i<9; i++ ){
 			setupOnClickListener(slotBackgroundList.get(i), slotItemImageList.get(i), slotList.get(i));
 		}
 	}
@@ -120,7 +126,7 @@ public class InventarActivity extends Activity {
 
 	private void setSlotsUnmarked() {
 		
-		for(int i=0; i<10; i++ ){
+		for(int i=0; i<9; i++ ){
 			slotBackgroundList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.slot_unmarked));		
 			slotList.get(i).setUnmarked();
 		}
@@ -143,7 +149,6 @@ public class InventarActivity extends Activity {
 		slot7Background = (ImageButton) findViewById(R.id.inventar_slot7);
 		slot8Background = (ImageButton) findViewById(R.id.inventar_slot8);
 		slot9Background = (ImageButton) findViewById(R.id.inventar_slot9);
-		slot10Background = (ImageButton) findViewById(R.id.inventar_slot10);
 		
 		slot1ItemImage = (ImageButton) findViewById(R.id.inventar_slot1_item_image);
 		slot2ItemImage = (ImageButton) findViewById(R.id.inventar_slot2_item_image);
@@ -154,7 +159,6 @@ public class InventarActivity extends Activity {
 		slot7ItemImage = (ImageButton) findViewById(R.id.inventar_slot7_item_image);
 		slot8ItemImage = (ImageButton) findViewById(R.id.inventar_slot8_item_image);
 		slot9ItemImage = (ImageButton) findViewById(R.id.inventar_slot9_item_image);
-		slot10ItemImage = (ImageButton) findViewById(R.id.inventar_slot10_item_image);
 
 		slotList = new ArrayList<Slot>();
 		
@@ -168,7 +172,6 @@ public class InventarActivity extends Activity {
 		slotBackgroundList.add(slot7Background);
 		slotBackgroundList.add(slot8Background);
 		slotBackgroundList.add(slot9Background);
-		slotBackgroundList.add(slot10Background);
 		
 		slotItemImageList = new ArrayList<ImageButton>();
 		slotItemImageList.add(slot1ItemImage);
@@ -180,7 +183,6 @@ public class InventarActivity extends Activity {
 		slotItemImageList.add(slot7ItemImage);
 		slotItemImageList.add(slot8ItemImage);
 		slotItemImageList.add(slot9ItemImage);
-		slotItemImageList.add(slot10ItemImage);
 		
 		testSlot = new Slot(0, "Schwert", "Waffe", "2");
 		testSlot2 = new Slot(1, "Schild", "Waffe", "1");
@@ -197,8 +199,8 @@ public class InventarActivity extends Activity {
 		inventarDatabase.insertSlotItem(testSlot3);
 		inventarDatabase.insertSlotItem(testSlot);
 		inventarDatabase.insertSlotItem(testSlot2);
-
-		statsAttack = (TextView)findViewById(R.id.text_attack);
 	}
-	
 }
+
+ 
+
