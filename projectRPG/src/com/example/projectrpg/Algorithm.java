@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.PathModifier.Path;
+import org.andengine.entity.scene.Scene;
 import org.andengine.extension.tmx.TMXLayer;
 import org.andengine.extension.tmx.TMXObject;
 import org.andengine.extension.tmx.TMXObjectGroup;
@@ -38,6 +40,7 @@ public class Algorithm {
 	private ArrayList<TMXObjectGroup> tmxGroupObjects;
 	private TMXLayer layer;
 	
+	private Scene scene;
 	
 	// variables to get the path
 	/** the a star path the sprite should go*/
@@ -52,11 +55,12 @@ public class Algorithm {
 	private ICostFunction<TMXLayer> costCallback;
 	
 	
-	public Algorithm(TMXTile startPosition, TMXTile endPosition, TMXTiledMap tmxTiledMap) {
+	public Algorithm(TMXTile startPosition, TMXTile endPosition, TMXTiledMap tmxTiledMap, Scene scene) {
 		this.endPosition = endPosition;
 		this.startPosition = startPosition;
 		this.tiledMap = tmxTiledMap;
 		this.layer = tiledMap.getTMXLayers().get(0);
+		this.scene = scene;
 	}
 	
 	public Algorithm generatePathMap() {
@@ -71,18 +75,33 @@ public class Algorithm {
         	private boolean collide;
         	
         	@Override
-            public boolean isBlocked(final int pX, final int pY, final TMXLayer pTMXLayer) {
+            public boolean isBlocked(final int pX, final int pY, final TMXLayer tmxLayer) {
         		collide = false;
+        		TMXTile endTile = tmxLayer.getTMXTile(pX, pY);
 				//Null check. Used since not all tiles have properties
-            	if(pTMXLayer.getTMXTile(pX, pY).getTMXTileProperties(tiledMap) != null){
+            	if(endTile.getTMXTileProperties(tiledMap) != null){
                     //Get tiles with collision property
-            		if(pTMXLayer.getTMXTile(pX, pY).getTMXTileProperties(tiledMap).containsTMXProperty("COLLISION", "true")) 
-            			collide = true;    					           		
+            		if(endTile.getTMXTileProperties(tiledMap).containsTMXProperty("COLLISION", "true")) 
+            			collide = true;
+            	} else {
+            		for(int i = 0; i < scene.getChildCount(); i++) {
+            			IEntity entity = scene.getChildByIndex(i);
+            			// check if there are AnimatedSprites
+            			if(entity instanceof Opponent || entity instanceof NPC) {
+            				float entityX = entity.getX();
+            				float entityY = entity.getY();
+            				TMXTile tile = tiledMap.getTMXLayers().get(0).getTMXTileAt(entityX+12, entityY+16); // TODO: 16 evtl durch PLAYER_WIDTH/HEUGHT ersetzen
+            				if(endTile.equals(tile)) {
+            					collide = true;
+            					break;
+            				}
+            			}
+            		}
             	}
-            	if(getCollideTiles().contains(pTMXLayer.getTMXTile(pX, pY))) {
+            	if(getCollideTiles().contains(tmxLayer.getTMXTile(pX, pY))) {
             		collide = true;
             	}
-            	
+            	Log.d("projekt", "collide: " + collide);
         		return collide;
         	};
 		};
@@ -108,6 +127,7 @@ public class Algorithm {
 		if(pathFinderMap.isBlocked(endPosition.getTileColumn(), endPosition.getTileRow(), layer)) {
 			//TODO abfangen ob außenrum alle blockiert sind
 			Log.d("projekt", ""+ isReachable(endPosition));
+			Log.d("projekt", "Opponent reachable: " + isReachable(layer.getTMXTile(1, 1)));
 			if(isReachable(endPosition)) {
 				endPosition = getNextTile(startPosition, endPosition);
 			} else {
@@ -188,10 +208,10 @@ public class Algorithm {
 			if(finalPosition.getTileRow() - i >= 0)
 				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn(), finalPosition.getTileRow() - i));
 			//RIGHT
-			if(finalPosition.getTileColumn() + i <= TMXMapLayer.getTileColumns())
-				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn() + i, finalPosition.getTileRow()));
+			if(finalPosition.getTileColumn() + i < TMXMapLayer.getTileColumns())
+				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn() + i, finalPosition.getTileRow())); //TODO 
 			//DOWN
-			if(finalPosition.getTileRow() + i <= TMXMapLayer.getTileRows())
+			if(finalPosition.getTileRow() + i < TMXMapLayer.getTileRows())
 				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn(), finalPosition.getTileRow() + i));
 
 			for (TMXTile tmxTile : playerTiles) {
@@ -225,17 +245,28 @@ public class Algorithm {
 		//The tile that was outside is the tile we move to
 		playerTile = playerTiles.get(tempIndex);
 		
-
 		return playerTile;
 	}
 	
 	
 	private ArrayList<TMXTile> getCollideTiles() {
+		ArrayList<TMXTile> collideTiles;
 		tmxGroupObjects = new ArrayList<TMXObjectGroup>();
 		for (final TMXObjectGroup group : tiledMap.getTMXObjectGroups()) {
 			tmxGroupObjects.add(group); 
 		}
-		return this.getObjectGroupPropertyTiles("COLLISION",  tmxGroupObjects);
+		collideTiles = this.getObjectGroupPropertyTiles("COLLISION",  tmxGroupObjects);
+		for(int i = 0; i < scene.getChildCount(); i++) {
+			IEntity entity = scene.getChildByIndex(i);
+			// check if there are AnimatedSprites
+			if(entity instanceof Opponent || entity instanceof NPC) {
+				float entityX = entity.getX();
+				float entityY = entity.getY();
+				TMXTile tile = tiledMap.getTMXLayers().get(0).getTMXTileAt(entityX+12, entityY+16); // TODO: 16 evtl durch PLAYER_WIDTH/HEUGHT ersetzen
+				collideTiles.add(tile);
+			}
+		}
+		return collideTiles;
 	}
 
 	public ArrayList<TMXTile> getObjectGroupPropertyTiles(String name, ArrayList<TMXObjectGroup> tmxObjectGroups){

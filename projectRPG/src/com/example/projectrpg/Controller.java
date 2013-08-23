@@ -56,7 +56,7 @@ public class Controller {
 	 */
 	public Path getPath(TMXTile startTile, TMXTile destinationTile,
 			TMXTiledMap tmxTiledMap) {
-		Algorithm algo = new Algorithm(startTile, destinationTile, tmxTiledMap);
+		Algorithm algo = new Algorithm(startTile, destinationTile, tmxTiledMap, getCurrentScene());
 		algo.generatePathMap();
 		return algo.updatePath();
 	}
