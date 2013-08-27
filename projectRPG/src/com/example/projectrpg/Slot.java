@@ -67,5 +67,12 @@ public class Slot {
 	public String getNumberOfItems(){
 		return numberOfItems;
 	}
+	
+	public void eraseSlot(){
+		itemName = "leer";
+		itemType = "leer";
+		numberOfItems = "0";
+		marked = false;
+	}
 
 }

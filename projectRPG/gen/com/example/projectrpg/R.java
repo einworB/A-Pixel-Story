@@ -55,6 +55,7 @@ public final class R {
         public static final int action_settings=0x7f090049;
         public static final int clouds1=0x7f090038;
         public static final int clouds2=0x7f090039;
+        public static final int container=0x7f090000;
         public static final int ground1=0x7f09003b;
         public static final int ground2=0x7f09003c;
         public static final int help_imageview=0x7f090047;
@@ -95,7 +96,6 @@ public final class R {
         public static final int inventar_slot9_item_image=0x7f09001c;
         public static final int inventar_slot9_item_image_sell=0x7f090036;
         public static final int inventar_slot9_sell=0x7f090029;
-        public static final int layout=0x7f090000;
         public static final int load_game_imageview=0x7f090042;
         public static final int load_game_textview=0x7f090043;
         public static final int new_game_imageview=0x7f090040;

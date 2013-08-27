@@ -4,7 +4,10 @@ import java.util.ArrayList;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +17,7 @@ import android.view.View;
 import android.view.View.DragShadowBuilder;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
+import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -50,12 +54,35 @@ public class InventarActivity extends Activity {
 	private ImageButton slot7ItemImage;
 	private ImageButton slot8ItemImage;
 	private ImageButton slot9ItemImage;
+	
+	private ImageButton slot1BackgroundSell;
+	private ImageButton slot2BackgroundSell;
+	private ImageButton slot3BackgroundSell;
+	private ImageButton slot4BackgroundSell;
+	private ImageButton slot5BackgroundSell;
+	private ImageButton slot6BackgroundSell;
+	private ImageButton slot7BackgroundSell;
+	private ImageButton slot8BackgroundSell;
+	private ImageButton slot9BackgroundSell;
+	
+	private ImageButton slot1ItemImageSell;
+	private ImageButton slot2ItemImageSell;
+	private ImageButton slot3ItemImageSell;
+	private ImageButton slot4ItemImageSell;
+	private ImageButton slot5ItemImageSell;
+	private ImageButton slot6ItemImageSell;
+	private ImageButton slot7ItemImageSell;
+	private ImageButton slot8ItemImageSell;
+	private ImageButton slot9ItemImageSell;
 
 	private InventarDatabase inventarDatabase;
 	
 	private ArrayList<Slot> slotList = null;
+	private ArrayList<Slot> slotListSell = null;
 	private ArrayList<ImageButton> slotBackgroundList = null;
 	private ArrayList<ImageButton> slotItemImageList = null;
+	private ArrayList<ImageButton> slotBackgroundListSell = null;
+	private ArrayList<ImageButton> slotItemImageListSell = null;
 	
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,19 +91,37 @@ public class InventarActivity extends Activity {
 		setupDatabaseConnection();
 		setupUI();
 		getSavedSlots();
-		putItemsOnSlots();
+		putItemsOnOwnSlots();
+		putItemsOnSellSlots();
 		setupAllClickListeners();
+		
 	}
 
-	private void putItemsOnSlots() {
+	private void putItemsOnSellSlots() {
 		
 		for(int i=0; i<9; i++){
 			if (slotList.get(i).getItemName().equalsIgnoreCase("Schwert")){
-			//	if (slotList.get(i).getNumberOfItems() == "1"){
+				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("1")){
 					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_one));
-			//	}
+				}
 				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("2")){
 					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_two));
+				}
+			}
+		}
+		
+		
+	}
+
+	private void putItemsOnOwnSlots() {
+		
+		for(int i=0; i<9; i++){
+			if (slotListSell.get(i).getItemName().equalsIgnoreCase("Schwert")){
+				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("1")){
+					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_one));
+				}
+				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("2")){
+					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_two));
 				}
 			}
 		}
@@ -87,7 +132,18 @@ public class InventarActivity extends Activity {
 		for(int i=0; i<9; i++ ){
 			setupOnClickListener(slotBackgroundList.get(i), slotItemImageList.get(i), slotList.get(i));
 		}
+		for(int i=0; i<9; i++){
+			setupOnLongClickListener(slotBackgroundList.get(i), slotItemImageList.get(i), slotList.get(i));
+		}
+		
+		
+		for(int i=0; i<9; i++ ){
+			setupOnClickListener(slotBackgroundListSell.get(i), slotItemImageListSell.get(i), slotListSell.get(i));
+		}
+		
 	}
+
+	
 
 	private void setupDatabaseConnection() {
 		inventarDatabase = new InventarDatabase(this);
@@ -102,15 +158,93 @@ public class InventarActivity extends Activity {
 			Thread.sleep(2000);
 		} catch (Exception e) {
 		}
+		
+		//hier kriegt man die Infos, welche Items der Sack/Verkäufer/etc. beinhaltet...
+				//z.b. slotListSell = givenItemList.getAllItems oder so...
+		
+		slotListSell.add(testSlot);
+		slotListSell.add(testSlot2);
+		slotListSell.add(testSlot3);
+		slotListSell.add(testSlot3);
+		slotListSell.add(testSlot3);
+		slotListSell.add(testSlot3);
+		slotListSell.add(testSlot3);
+		slotListSell.add(testSlot3);
+		slotListSell.add(testSlot3);		
 	}
+	private void setupOnLongClickListener(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		slotItem.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				if (slot.getNumberOfItems().equals("0")) {
+				} else {
+					markThisSlot(slotBackground);
+					slot.setMarked();
+					checkLongClickedItem(slotBackground, slotItem, slot);
+				}
+				return false;
+			}
+		});
+		
+		
+	}
+	
 
+
+	private void checkLongClickedItem(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		showSellNotification(slotBackground, slotItem, slot);
+	}
+	
+
+	private void showSellNotification(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Attention");
+		dialogBuilder.setMessage("Do you really want to sell this item?");
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setPositiveButton("Yes", new Dialog.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				//if this button is clicked, the item will be sold
+				
+				sellItem(slotBackground, slotItem, slot);
+				
+			}
+		});
+		dialogBuilder.setNegativeButton("No", new Dialog.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				// if this button is clicked, just close
+				// the dialog box and do nothing
+				dialog.cancel();
+			}
+	});
+		
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();		
+	}
+	
+	private void sellItem(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		if (slot.getNumberOfItems().equals("1")){
+			Slot tempSlot = slot;
+			slot.eraseSlot();
+			setSlotsUnmarked();
+			slotItem.setBackgroundColor(getResources().getColor(R.color.transparent));
+			}
+	}
+	
 	private void setupOnClickListener(final ImageButton slotBackground, final ImageButton slotItem,
 			final Slot slot) {
 		slotItem.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				if (slot.getNumberOfItems() != "0") {
+				if (slot.getNumberOfItems().equals("0")) {
+				} else {
 					markThisSlot(slotBackground);
 					slot.setMarked();
 				}
@@ -128,6 +262,10 @@ public class InventarActivity extends Activity {
 		
 		for(int i=0; i<9; i++ ){
 			slotBackgroundList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.slot_unmarked));		
+			slotList.get(i).setUnmarked();
+		}
+		for(int i=0; i<9; i++ ){
+			slotBackgroundListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.slot_unmarked));		
 			slotList.get(i).setUnmarked();
 		}
 	}
@@ -159,8 +297,30 @@ public class InventarActivity extends Activity {
 		slot7ItemImage = (ImageButton) findViewById(R.id.inventar_slot7_item_image);
 		slot8ItemImage = (ImageButton) findViewById(R.id.inventar_slot8_item_image);
 		slot9ItemImage = (ImageButton) findViewById(R.id.inventar_slot9_item_image);
+		
+		slot1BackgroundSell = (ImageButton) findViewById(R.id.inventar_slot1_sell);
+		slot2BackgroundSell = (ImageButton) findViewById(R.id.inventar_slot2_sell);
+		slot3BackgroundSell = (ImageButton) findViewById(R.id.inventar_slot3_sell);
+		slot4BackgroundSell = (ImageButton) findViewById(R.id.inventar_slot4_sell);
+		slot5BackgroundSell = (ImageButton) findViewById(R.id.inventar_slot5_sell);
+		slot6BackgroundSell = (ImageButton) findViewById(R.id.inventar_slot6_sell);
+		slot7BackgroundSell = (ImageButton) findViewById(R.id.inventar_slot7_sell);
+		slot8BackgroundSell = (ImageButton) findViewById(R.id.inventar_slot8_sell);
+		slot9BackgroundSell = (ImageButton) findViewById(R.id.inventar_slot9_sell);
+		
+		slot1ItemImageSell = (ImageButton) findViewById(R.id.inventar_slot1_item_image_sell);
+		slot2ItemImageSell = (ImageButton) findViewById(R.id.inventar_slot2_item_image_sell);
+		slot3ItemImageSell = (ImageButton) findViewById(R.id.inventar_slot3_item_image_sell);
+		slot4ItemImageSell = (ImageButton) findViewById(R.id.inventar_slot4_item_image_sell);
+		slot5ItemImageSell = (ImageButton) findViewById(R.id.inventar_slot5_item_image_sell);
+		slot6ItemImageSell = (ImageButton) findViewById(R.id.inventar_slot6_item_image_sell);
+		slot7ItemImageSell = (ImageButton) findViewById(R.id.inventar_slot7_item_image_sell);
+		slot8ItemImageSell = (ImageButton) findViewById(R.id.inventar_slot8_item_image_sell);
+		slot9ItemImageSell = (ImageButton) findViewById(R.id.inventar_slot9_item_image_sell);
+		
 
 		slotList = new ArrayList<Slot>();
+		slotListSell = new ArrayList<Slot>();
 		
 		slotBackgroundList = new ArrayList<ImageButton>();
 		slotBackgroundList.add(slot1Background);
@@ -173,6 +333,17 @@ public class InventarActivity extends Activity {
 		slotBackgroundList.add(slot8Background);
 		slotBackgroundList.add(slot9Background);
 		
+		slotBackgroundListSell = new ArrayList<ImageButton>();
+		slotBackgroundListSell.add(slot1BackgroundSell);
+		slotBackgroundListSell.add(slot2BackgroundSell);
+		slotBackgroundListSell.add(slot3BackgroundSell);
+		slotBackgroundListSell.add(slot4BackgroundSell);
+		slotBackgroundListSell.add(slot5BackgroundSell);
+		slotBackgroundListSell.add(slot6BackgroundSell);
+		slotBackgroundListSell.add(slot7BackgroundSell);
+		slotBackgroundListSell.add(slot8BackgroundSell);
+		slotBackgroundListSell.add(slot9BackgroundSell);
+		
 		slotItemImageList = new ArrayList<ImageButton>();
 		slotItemImageList.add(slot1ItemImage);
 		slotItemImageList.add(slot2ItemImage);
@@ -184,9 +355,21 @@ public class InventarActivity extends Activity {
 		slotItemImageList.add(slot8ItemImage);
 		slotItemImageList.add(slot9ItemImage);
 		
+		slotItemImageListSell = new ArrayList<ImageButton>();
+		slotItemImageListSell.add(slot1ItemImageSell);
+		slotItemImageListSell.add(slot2ItemImageSell);
+		slotItemImageListSell.add(slot3ItemImageSell);
+		slotItemImageListSell.add(slot4ItemImageSell);
+		slotItemImageListSell.add(slot5ItemImageSell);
+		slotItemImageListSell.add(slot6ItemImageSell);
+		slotItemImageListSell.add(slot7ItemImageSell);
+		slotItemImageListSell.add(slot8ItemImageSell);
+		slotItemImageListSell.add(slot9ItemImageSell);
+		
+		
 		testSlot = new Slot(0, "Schwert", "Waffe", "2");
-		testSlot2 = new Slot(1, "Schild", "Waffe", "1");
-		testSlot3 = new Slot(0, "Schwert", "Waffe", "1");
+		testSlot2 = new Slot(1, "Schwert", "Waffe", "1");
+		testSlot3 = new Slot(0, "leer", "leer", "0");
 		
 		inventarDatabase.removeAll();
 		inventarDatabase.insertSlotItem(testSlot);
@@ -198,7 +381,6 @@ public class InventarActivity extends Activity {
 		inventarDatabase.insertSlotItem(testSlot);
 		inventarDatabase.insertSlotItem(testSlot3);
 		inventarDatabase.insertSlotItem(testSlot);
-		inventarDatabase.insertSlotItem(testSlot2);
 	}
 }
 
