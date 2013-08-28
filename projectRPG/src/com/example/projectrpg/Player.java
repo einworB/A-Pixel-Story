@@ -13,8 +13,8 @@ public class Player extends FightingSprite {
 	
 	
 	
-	public Player(final float pX, final float pY, final float pWidth, final float pHeight, final ITiledTextureRegion pTiledTextureRegion, final VertexBufferObjectManager pVertexBufferObjectManager){
-		super(pX, pY, pWidth, pHeight, pTiledTextureRegion, pVertexBufferObjectManager);
+	public Player(final float pX, final float pY, final float pWidth, final float pHeight, final ITiledTextureRegion pTiledTextureRegion, final VertexBufferObjectManager pVertexBufferObjectManager, int level){
+		super(pX, pY, pWidth, pHeight, pTiledTextureRegion, pVertexBufferObjectManager, level);
 	}
 
 }

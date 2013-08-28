@@ -14,9 +14,9 @@ public class FightingSprite extends AnimatedSprite {
 	private int luck;
 	private double concentration;
 	
-	public FightingSprite(final float pX, final float pY, final float pWidth, final float pHeight, final ITiledTextureRegion pTiledTextureRegion, final VertexBufferObjectManager pVertexBufferObjectManager){
+	public FightingSprite(final float pX, final float pY, final float pWidth, final float pHeight, final ITiledTextureRegion pTiledTextureRegion, final VertexBufferObjectManager pVertexBufferObjectManager, int level){
 		super(pX, pY, pWidth, pHeight, pTiledTextureRegion, pVertexBufferObjectManager);
-		level = 1;
+		this.level = level;
 		equippedArmor = new Armor[5];
 		health = 100;
 		agility = level;
@@ -66,4 +66,11 @@ public class FightingSprite extends AnimatedSprite {
 	public double getConcentration(){
 		return concentration;
 	}
+	
+	public Weapon getEquippedWeapon(){
+		return equippedWeapon;
+	}
+
+	// TODO: add defense value calculation
+	
 }

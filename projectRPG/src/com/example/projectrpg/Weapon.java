@@ -1,17 +1,18 @@
 package com.example.projectrpg;
 
-public class Weapon {
+public class Weapon extends Item{
 	
 	private String name;
 	private int levelNeeded;
 	private int attackValue;
+	private int type;
 
-	public Weapon(String id){
-		getValuesFromDatabase(id);
-	}
-	
-	private void getValuesFromDatabase(String id) {
-		
+	public Weapon(String name, int levelNeeded, int attackValue, int weaponType){
+		super("weapon");
+		this.name = name;
+		this.levelNeeded = levelNeeded;
+		this.attackValue = attackValue;
+		this.type = weaponType;
 	}
 
 	public String getName(){
@@ -25,6 +26,12 @@ public class Weapon {
 	public int getLevelNeeded(){
 		return levelNeeded;
 	}
+	
+	public int getType() {
+		return type;
+	}
+	
+	
 	
 
 }

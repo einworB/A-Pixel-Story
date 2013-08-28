@@ -34,6 +34,8 @@ public class Controller {
 	private TMXMapLoader mapLoader;
 
 	private SceneManager sceneManager;
+	
+	private OurDatabase db;
 
 	private Context context;
 	
@@ -44,6 +46,14 @@ public class Controller {
 		isMoving = false;
 		level = 1;
 		this.context = context;
+		db = new OurDatabase(context);
+	}
+
+	public void testDatabase() {
+		db.open();
+		Armor weapon = (Armor) db.getItem("Dreckiger Regenmantel");
+		Log.d("DBTEST", weapon.getName());
+		db.close();
 	}
 
 	/**
@@ -188,6 +198,15 @@ public class Controller {
 		return FightHelper.fight(player, opponent);
 	}
 
-	
+	public Object[] getLoot(int[] loot) {
+		db.open();
+		Object[] items = db.getLoot(loot);
+		db.close();
+		return items;
+	}
+
+	public int getLevel(){
+		return level;
+	}
 
 }

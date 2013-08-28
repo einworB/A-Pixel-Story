@@ -18,6 +18,7 @@ import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TickerText;
 import org.andengine.entity.text.TickerText.TickerTextOptions;
@@ -41,6 +42,7 @@ import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
@@ -84,7 +86,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private SmoothCamera camera;
 	
 	/** used for loading bitmaps*/
-	private BitmapTextureAtlas bitmapTextureAtlas;
+	private BitmapTextureAtlas tiledBitmapTextureAtlas;
 	/** used for loading bitmaps*/
 	private TiledTextureRegion playerTextureRegion;
 	/** the players sprite */
@@ -125,6 +127,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private Text playerLife;
 	private Text opponentLife;
 	private Font lifeFont;
+	private TextureRegion beutelTextureRegion;
+	private BitmapTextureAtlas bitmapTextureAtlas;
 	
 
 
@@ -153,8 +157,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	public void onCreateResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
+		this.tiledBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 128, 128);
+		this.playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.tiledBitmapTextureAtlas, this, "player4x4.png", 0, 0, 4, 4);
 		this.bitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 128, 128);
-		this.playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.bitmapTextureAtlas, this, "player4x4.png", 0, 0, 4, 4);
+		this.beutelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "beutel.png", 0, 0);
+		this.tiledBitmapTextureAtlas.load();
 		this.bitmapTextureAtlas.load();
 		
 		this.font = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32);
@@ -211,7 +218,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		final float spawnY = spawnTile.getTileY();
 
 		/* Create the sprite and add it to the scene. */
-		player = new Player(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager());
+		player = new Player(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), 2);
 		playerLife = new Text(player.getX()+20, player.getY(), lifeFont, ""+player.getHealth(), 10, this.getVertexBufferObjectManager());
 		int column = spawnTile.getTileColumn();
 		int row = spawnTile.getTileRow();
@@ -223,7 +230,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		controller.getCurrentScene().attachChild(player);
 		controller.getCurrentScene().attachChild(playerLife);
-		final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager());
+		final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), 1);
 		opponentLife = new Text(opponent.getX()+20, opponent.getY(), lifeFont, ""+opponent.getHealth(), 10, this.getVertexBufferObjectManager());
 		controller.getCurrentScene().attachChild(opponent);
 		controller.getCurrentScene().attachChild(opponentLife);
@@ -260,7 +267,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	public boolean onSceneTouchEvent(Scene scene, final TouchEvent sceneTouchEvent) {
 		pinchZoomDetector.onTouchEvent(sceneTouchEvent);
 		clickDetector.onTouchEvent(sceneTouchEvent);
-		
+//		controller.testDatabase();
 		return true;
 	}
 
@@ -360,7 +367,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				controller.animationFinished();
 //				camera.setChaseEntity(null);
 				
-				TMXTile endTile = controller.getTMXLayer().getTMXTileAt(player.getX(), player.getY());
+				final TMXLayer layer = controller.getTMXLayer();
+				final TMXTile endTile = layer.getTMXTileAt(player.getX(), player.getY());
 				TMXTiledMap map = controller.getCurrentScene().getMap();
 				turnToTile(player, destinationTile, endTile, map);
 				if(endTile.getTMXTileProperties(map)!=null){
@@ -369,6 +377,27 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 						TMXTileProperty property = properties.get(i);
 						if(property.getName().contentEquals("TRANSITION") && !property.getValue().contentEquals("SPAWN")) startNewLevel(property.getValue());
 					}
+				} else{
+					final OurScene scene = controller.getCurrentScene();
+					runOnUpdateThread(new Runnable() {						
+						@Override
+						public void run() {
+							for(int i=0; i<scene.getChildCount(); i++){
+								IEntity child = scene.getChildByIndex(i);
+								if(layer.getTMXTileAt(child.getX(), child.getY())==endTile && child instanceof LootBag){
+									scene.detachChild(child);
+									Object[] loot = controller.getLoot(((LootBag) child).getLoot());
+									for(int j=0; j<3; j++){
+										if(loot[j] instanceof Weapon) player.setWeapon((Weapon) loot[j]);
+										else if(loot[j] instanceof Armor) player.addArmor((Armor) loot[j]);
+									}
+									Log.d("RPG", "Equipped Weapon: "+player.getEquippedWeapon().getName());
+									break;
+								}
+							}
+						}
+					});
+					
 				}
 				if(fleeing) fleeing = false;
 			}
@@ -428,6 +457,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				else if(row==0) player.setCurrentTileIndex(0);
 				else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(8);
 				else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(12);
+				
+				final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, playerTextureRegion, getVertexBufferObjectManager(), 2);
+				opponentLife = new Text(opponent.getX()+20, opponent.getY(), lifeFont, ""+opponent.getHealth(), 10, getVertexBufferObjectManager());
+				controller.getCurrentScene().attachChild(opponent);
+				controller.getCurrentScene().attachChild(opponentLife);
 				
 				LevelActivity.this.mEngine.setScene(scene);
 			}
@@ -505,7 +539,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 					turnToTile(opponent, startTile, destinationTile, scene.getMap());
 					switch(controller.fight(player, opponent)){
 						case 1:
-							fightWon(opponent);
+							fightWon(opponent, destinationTile);
 							break;
 						case 2:
 							flee();
@@ -519,19 +553,22 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	}
 
 	private void flee() {
-		float[] coords = controller.getCurrentScene().getSpawn("SPAWN");
+		float[] coords;
+		if(controller.getLevel()==1) coords = controller.getCurrentScene().getSpawn("SPAWN");
+		else coords = controller.getCurrentScene().getSpawn("LEVEL1");
 		TMXLayer layer = controller.getTMXLayer();
 		TMXTile startTile = layer.getTMXTileAt(player.getX(), player.getY());
-		TMXTile spawnTile = layer.getTMXTileAt(coords[0], coords[1]);
-		Path path = controller.getPath(startTile, spawnTile, controller.getCurrentScene().getMap());
-		if(path!=null) startPath(path, spawnTile);
+		TMXTile endTile = layer.getTMXTileAt(coords[0], coords[1]);
+		Path path = controller.getPath(startTile, endTile, controller.getCurrentScene().getMap());
+		if(path!=null) startPath(path, endTile);
 		else Log.d("RPG", "path=null");
 		fleeing = true;
 	}
 
-	private void fightWon(Opponent opponent) {
+	private void fightWon(Opponent opponent, TMXTile destinationTile) {
 		controller.getCurrentScene().detachChild(opponent);
 		controller.getCurrentScene().detachChild(opponentLife);
+		Sprite beutel = new LootBag(destinationTile.getTileX(), destinationTile.getTileY(), beutelTextureRegion, getVertexBufferObjectManager(), opponent);
+		controller.getCurrentScene().attachChild(beutel);
 	}
-
 }
