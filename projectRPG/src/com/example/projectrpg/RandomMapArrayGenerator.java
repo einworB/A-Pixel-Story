@@ -192,9 +192,12 @@ public class RandomMapArrayGenerator {
 			while(true) {
 				int treeStumpX = (1 + rGen.nextInt(28));
 				int treeStumpY = (1 + rGen.nextInt(28));
-				
 				if(mapArray[treeStumpX][treeStumpY] == -1) {
-					mapArray[treeStumpX][treeStumpY] = 3;
+					if(rGen.getBoolean(0.2)) {
+						mapArray[treeStumpX][treeStumpY] = 26;
+					} else {
+						mapArray[treeStumpX][treeStumpY] = 3;						
+					}
 					break;
 				}
 			}

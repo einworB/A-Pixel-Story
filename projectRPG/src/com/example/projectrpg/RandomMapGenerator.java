@@ -72,6 +72,15 @@ public class RandomMapGenerator {
 	}
 
 	private void setupDoc() throws IllegalArgumentException, IllegalStateException, IOException {
+		OurRandomGenerator rGen = new OurRandomGenerator();
+		boolean desert = rGen.getBoolean(0.5);
+		String tileset = "";
+		if(desert) {
+			tileset = "tilesetDesert";
+		} else {
+			tileset = "tilesetGras";
+		}
+		
 		serializer.startDocument("UTF-8", true);
         
         serializer.startTag("", "map");
@@ -84,12 +93,12 @@ public class RandomMapGenerator {
         
         serializer.startTag("", "tileset");
         serializer.attribute("", "firstgid", "1");
-        serializer.attribute("", "name", "tilesetDesert");
+        serializer.attribute("", "name", tileset);
         serializer.attribute("", "tilewidth", "32");
         serializer.attribute("", "tileheight", "32");
         
         serializer.startTag("", "image");
-        serializer.attribute("", "source", "gfx/tilesetDesert.png");
+        serializer.attribute("", "source", "gfx/" + tileset + ".png");
         serializer.attribute("", "width", "320");
         serializer.attribute("", "height", "320");
         serializer.endTag("", "image");
@@ -149,6 +158,19 @@ public class RandomMapGenerator {
        	serializer.endTag("", "property");
         serializer.endTag("", "properties");
         serializer.endTag("", "tile");
+        
+    	serializer.startTag("", "tile");
+    	serializer.attribute("", "id", "" + 25);
+    	serializer.startTag("", "properties");
+    	serializer.startTag("", "property");
+    	serializer.attribute("", "name", "COLLISION");
+    	
+		serializer.attribute("", "value", "true");
+		
+    	serializer.endTag("", "property");
+    	serializer.endTag("", "properties");
+    	serializer.endTag("", "tile");
+        
 	}
 	
 	private void setTiles() throws IllegalArgumentException, IllegalStateException, IOException {
