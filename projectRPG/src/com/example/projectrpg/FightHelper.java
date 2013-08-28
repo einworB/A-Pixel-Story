@@ -1,10 +1,12 @@
 package com.example.projectrpg;
 
+import org.andengine.entity.sprite.Sprite;
+
 import android.util.Log;
 
 public class FightHelper {
 	
-	public static int fight(Player player, Opponent opponent){
+	public static int fight(Player player, Opponent opponent, Sprite redBar, Sprite redBarEnemy){
 		OurRandomGenerator rand = new OurRandomGenerator();
 		double playerAgility = player.getAgility();
 		double opponentAgility = opponent.getAgility();
@@ -49,6 +51,10 @@ public class FightHelper {
 			if(opponent.getHealth()<=0) return 1;
 		}
 		// noone dies
+		redBar.setWidth((float)(100-player.getHealth())/3);
+		redBar.setX(44-redBar.getWidth());
+		redBarEnemy.setWidth((float)(100-opponent.getHealth())/3);
+		redBarEnemy.setX(710-redBarEnemy.getWidth());
 		return 0;
 	}
 

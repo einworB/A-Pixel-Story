@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.andengine.engine.Engine;
 import org.andengine.entity.modifier.PathModifier.Path;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.extension.tmx.TMXLayer;
 import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTiledMap;
@@ -194,8 +195,8 @@ public class Controller {
 		return sceneManager.getScene(level);
 	}
 
-	public int fight(Player player, Opponent opponent) {
-		return FightHelper.fight(player, opponent);
+	public int fight(Player player, Opponent opponent, Sprite redBar, Sprite redBarEnemy) {
+		return FightHelper.fight(player, opponent, redBar, redBarEnemy);
 	}
 
 	public Object[] getLoot(int[] loot) {
