@@ -18,8 +18,6 @@ import org.andengine.util.algorithm.path.IPathFinderMap;
 import org.andengine.util.algorithm.path.astar.AStarPathFinder;
 import org.andengine.util.algorithm.path.astar.EuclideanHeuristic;
 
-import android.util.Log;
-
 
 /**
  * Get the path the sprite should move.
@@ -101,7 +99,7 @@ public class Algorithm {
             	if(getCollideTiles().contains(tmxLayer.getTMXTile(pX, pY))) {
             		collide = true;
             	}
-            	Log.d("projekt", "collide: " + collide);
+//            	Log.d("projekt", "collide: " + collide);
         		return collide;
         	};
 		};
@@ -126,8 +124,8 @@ public class Algorithm {
 		// Sets the A* path from the player location to the touched location.
 		if(pathFinderMap.isBlocked(endPosition.getTileColumn(), endPosition.getTileRow(), layer)) {
 			//TODO abfangen ob auﬂenrum alle blockiert sind
-			Log.d("projekt", ""+ isReachable(endPosition));
-			Log.d("projekt", "Opponent reachable: " + isReachable(layer.getTMXTile(1, 1)));
+//			Log.d("projekt", ""+ isReachable(endPosition));
+//			Log.d("projekt", "Opponent reachable: " + isReachable(layer.getTMXTile(1, 1)));
 			if(isReachable(endPosition)) {
 				endPosition = getNextTile(startPosition, endPosition);
 			} else {
@@ -209,7 +207,7 @@ public class Algorithm {
 				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn(), finalPosition.getTileRow() - i));
 			//RIGHT
 			if(finalPosition.getTileColumn() + i < TMXMapLayer.getTileColumns())
-				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn() + i, finalPosition.getTileRow())); //TODO 
+				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn() + i, finalPosition.getTileRow()));
 			//DOWN
 			if(finalPosition.getTileRow() + i < TMXMapLayer.getTileRows())
 				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn(), finalPosition.getTileRow() + i));
