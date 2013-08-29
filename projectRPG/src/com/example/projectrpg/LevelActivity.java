@@ -2,15 +2,12 @@ package com.example.projectrpg;
 
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.camera.hud.HUD;
-import org.andengine.engine.handler.timer.ITimerCallback;
-import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.IEntityMatcher;
 import org.andengine.entity.modifier.LoopEntityModifier;
-import org.andengine.entity.modifier.MoveXModifier;
 import org.andengine.entity.modifier.PathModifier;
 import org.andengine.entity.modifier.PathModifier.IPathModifierListener;
 import org.andengine.entity.modifier.PathModifier.Path;
@@ -19,19 +16,14 @@ import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
-import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TickerText;
 import org.andengine.entity.text.TickerText.TickerTextOptions;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.extension.tmx.TMXLayer;
-import org.andengine.extension.tmx.TMXLoader;
-import org.andengine.extension.tmx.TMXLoader.ITMXTilePropertiesListener;
 import org.andengine.extension.tmx.TMXProperties;
-import org.andengine.extension.tmx.TMXProperty;
 import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTileProperty;
 import org.andengine.extension.tmx.TMXTiledMap;
-import org.andengine.extension.tmx.util.exception.TMXLoadException;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.input.touch.detector.ClickDetector;
 import org.andengine.input.touch.detector.ClickDetector.IClickDetectorListener;
@@ -47,15 +39,12 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
-import org.andengine.util.debug.Debug;
 
-import android.graphics.Point;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
-import android.view.Window;
 
 /**
  * This is the Activity the Player spends most of the playtime in 
@@ -140,6 +129,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private TextureRegion portraitEnemyTextureRegion;
 	private Sprite portraitEnemy;
 	private Sprite redBarEnemy;
+	private TextureRegion inventarButtonTextureRegion;
+	private Sprite inventarButton;
 	
 
 
@@ -178,6 +169,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		this.portraitTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portrait.png", 32, 0);
 		this.portraitEnemyTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portraitEnemy.png", 82, 0);
 		this.redBarTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "roterBalken.png", 132, 0);
+		this.inventarButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "inventarButton.png", 182, 0);
 		this.bitmapTextureAtlas.load();
 		
 		
@@ -187,14 +179,27 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		this.lifeFont.load();
 		
 		
-		rect = new Rectangle(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-20, 100, this.getVertexBufferObjectManager());
+		rect = new Rectangle(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-20, 175, this.getVertexBufferObjectManager());
 		rect.setColor(Color.WHITE);
+		
 		portrait = new Sprite(2, 2, portraitTextureRegion, getVertexBufferObjectManager());
+		
 		portraitEnemy = new Sprite(CAMERA_WIDTH-52, 2, portraitEnemyTextureRegion, getVertexBufferObjectManager());
+		
 		redBarPlayer = new Sprite(44, 11, 0, 4, redBarTextureRegion, getVertexBufferObjectManager());
+		
 		redBarEnemy = new Sprite(CAMERA_WIDTH-10, 11, 0, 4, redBarTextureRegion, getVertexBufferObjectManager());
 		redBarEnemy.setZIndex(1);
 		
+		inventarButton = new Sprite(CAMERA_WIDTH-70, CAMERA_HEIGHT-70, 54, 54, inventarButtonTextureRegion, getVertexBufferObjectManager()){
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				Log.d("RPG", "Inventar touched");
+				Intent intent = new Intent(LevelActivity.this, InventarActivity.class);
+				startActivity(intent);
+				return true;
+			}			
+		};
 
 		controller = new Controller(this);
 		
@@ -251,7 +256,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(12);
 		
 		controller.getCurrentScene().attachChild(player);
-		final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, this.opponentTextureRegion, this.getVertexBufferObjectManager(), 1);
+		final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, this.opponentTextureRegion, this.getVertexBufferObjectManager(), 1, false);
 		controller.getCurrentScene().attachChild(opponent);
 		
 		/* let the camera chase the player */
@@ -263,7 +268,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		hud.attachChild(portrait);
 		hud.attachChild(redBarPlayer);
 		hud.attachChild(redBarEnemy);
+		hud.attachChild(inventarButton);
 		
+		hud.registerTouchArea(inventarButton);
+//		hud.setTouchAreaBindingOnActionDownEnabled(true);
 		
 		return controller.getCurrentScene();
 	}
@@ -314,7 +322,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 */
 	private void startPath(final Path path, final TMXTile destinationTile) {
 		Log.d("RPG", "Run to: "+path.getCoordinatesX()[path.getSize()-1]+", "+path.getCoordinatesY()[path.getSize()-1]);
-		pathModifier = new LoopEntityModifier(new OurPathModifier(50, path, null, new IPathModifierListener() {
+		int velocity;
+		if(fleeing) velocity = 100;
+		else velocity = 50;
+		pathModifier = new LoopEntityModifier(new OurPathModifier(velocity, path, null, new IPathModifierListener() {
 
 			@Override
 			/**
@@ -470,7 +481,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(8);
 				else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(12);
 				
-				final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, playerTextureRegion, getVertexBufferObjectManager(), 2);
+				final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, playerTextureRegion, getVertexBufferObjectManager(), 2, false);
 				scene.attachChild(opponent);
 				LevelActivity.this.mEngine.setScene(scene);
 			}

@@ -217,9 +217,9 @@ public class OurDatabase {
 				// Gets the Task in the current row from the Cursor
 				// Note: We get the column index from the Adapter class! Makes
 				// debugging / changes easier...
+				int itemID = itemCursor.getInt(0);
 				String itemType = itemCursor.getString(1);
 				String name = itemCursor.getString(2);
-				int itemID = itemCursor.getInt(0);
 				int levelNeeded = itemCursor.getInt(3);
 				sql = new String("SELECT * FROM "+itemType+" WHERE itemID='"+itemID+"'");
 				Cursor cursor = db.rawQuery(sql, null);
