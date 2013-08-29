@@ -8,6 +8,7 @@ public class FightingSprite extends AnimatedSprite {
 	
 	private int level;
 	private Weapon equippedWeapon;
+	/** Index 0 = Kopf, 1 = Oberkörper, 2 = Hände, 3 = Beine, 4 = Füße */
 	private Armor[] equippedArmor;
 	private double health;
 	private int agility;
@@ -69,6 +70,10 @@ public class FightingSprite extends AnimatedSprite {
 	
 	public Weapon getEquippedWeapon(){
 		return equippedWeapon;
+	}
+	
+	public Armor[] getArmor(){
+		return equippedArmor;
 	}
 
 	// TODO: add defense value calculation

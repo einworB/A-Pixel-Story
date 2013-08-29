@@ -27,6 +27,8 @@ public class OurDatabase {
 	private String dir;
 	
 	private OurDatabaseHelper dbHelper;
+	
+	private OurRandomGenerator rgen = new OurRandomGenerator();
  
 	public OurDatabase(Context context){
         this.context = context;
@@ -209,7 +211,8 @@ public class OurDatabase {
 	public Object[] getLoot(int[] loot) {
 		String sql = new String("SELECT * FROM item WHERE levelNeeded='"+loot[0]+"'");
 		Cursor itemCursor = db.rawQuery(sql, null);
-		Object[] objects = new Object[3];
+		int itemCount = itemCursor.getCount();
+		Object[] objects = new Object[itemCount];
 		int counter = 0;
 		
 		if (itemCursor.moveToFirst()) {
@@ -243,7 +246,13 @@ public class OurDatabase {
 				counter++;
 			}while(itemCursor.moveToNext());
 		} else return null;
-		return objects;
+		
+		int[] randomInts = rgen.getInts(3, itemCount);
+		Object[] result = new Object[3];
+		for(int i=0; i<3; i++){
+			result[i] = objects[randomInts[i]];
+		}
+		return result;
 	}
 		
 		

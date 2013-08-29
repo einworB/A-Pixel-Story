@@ -418,7 +418,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 											else if(loot[j] instanceof Armor) player.addArmor((Armor) loot[j]);
 										}
 									}
-									Log.d("RPG", "Equipped Weapon: "+player.getEquippedWeapon().getName());
+									if(player.getEquippedWeapon()!=null) Log.d("RPG", "Equipped Weapon: "+player.getEquippedWeapon().getName());
+									Armor[] equippedArmor = player.getArmor();
+									for(int j=0; j<equippedArmor.length; j++){
+										if(equippedArmor[j]!=null) Log.d("RPG", "EquippedArmorSlot "+j+": "+equippedArmor[j].getName());
+									}
 									break;
 								}
 							}
