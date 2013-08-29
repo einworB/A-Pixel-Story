@@ -131,6 +131,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private Sprite redBarEnemy;
 	private TextureRegion inventarButtonTextureRegion;
 	private Sprite inventarButton;
+	private boolean inventarStarted = false;
 	
 
 
@@ -194,9 +195,12 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		inventarButton = new Sprite(CAMERA_WIDTH-70, CAMERA_HEIGHT-70, 54, 54, inventarButtonTextureRegion, getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				Log.d("RPG", "Inventar touched");
-				Intent intent = new Intent(LevelActivity.this, InventarActivity.class);
-				startActivity(intent);
+				if(!inventarStarted){
+					Log.d("RPG", "Inventar touched");
+					inventarStarted = true;
+					Intent intent = new Intent(LevelActivity.this, InventarActivity.class);
+					startActivity(intent);
+				}
 				return true;
 			}			
 		};
@@ -598,5 +602,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		Sprite beutel = new LootBag(destinationTile.getTileX(), destinationTile.getTileY(), beutelTextureRegion, getVertexBufferObjectManager(), opponent);
 		scene.attachChild(beutel);
 		scene.sortChildren();
+	}
+
+	@Override
+	protected synchronized void onResume() {
+		super.onResume();
+		inventarStarted = false;
 	}
 }
