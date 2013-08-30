@@ -27,6 +27,7 @@ public class InventarActivity extends Activity {
 	
 	//hat noch bugs
 	
+	
 	private Slot testSlot;
 	private Slot testSlot2;
 	private Slot testSlot3;
@@ -91,56 +92,50 @@ public class InventarActivity extends Activity {
 		setupDatabaseConnection();
 		setupUI();
 		getSavedSlots();
-		putItemsOnOwnSlots();
-		putItemsOnSellSlots();
+		setItemsOnOwnSlots();
+		if(checkNeededInterface()){
+			setItemsOnSellSlots();
+		}
+		else {
+//			putEquipedItemsOnSlots();
+		}
 		setupAllClickListeners();
 		
 	}
 
-	private void putItemsOnSellSlots() {
-		
-		for(int i=0; i<9; i++){
-			if (slotList.get(i).getItemName().equalsIgnoreCase("Schwert")){
-				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("1")){
-					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_one));
-				}
-				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("2")){
-					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_two));
-				}
+	private boolean checkNeededInterface() {
+		boolean isSellInterface = true; 	//irgendwie getNeededInterfaceFromLevelActivity();
+		if(isSellInterface){
+			for(int i=0; i<9; i++){
+				slotBackgroundListSell.get(i).setVisibility(View.VISIBLE);
+				slotItemImageListSell.get(i).setVisibility(View.VISIBLE);				
+			}	
+		} else {
+			for(int i=0; i<9; i++){
+				slotBackgroundListSell.get(i).setVisibility(View.INVISIBLE);
+				slotItemImageListSell.get(i).setVisibility(View.INVISIBLE);
+				slotListSell.clear();
 			}
 		}
 		
-		
+		return isSellInterface;
 	}
 
-	private void putItemsOnOwnSlots() {
-		
-		for(int i=0; i<9; i++){
-			if (slotListSell.get(i).getItemName().equalsIgnoreCase("Schwert")){
-				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("1")){
-					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_one));
-				}
-				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("2")){
-					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_two));
-				}
-			}
-		}
-		
-	}
+	
 
 	private void setupAllClickListeners() {
 		for(int i=0; i<9; i++ ){
 			setupOnClickListener(slotBackgroundList.get(i), slotItemImageList.get(i), slotList.get(i));
 		}
-		for(int i=0; i<9; i++){
-			setupOnLongClickListener(slotBackgroundList.get(i), slotItemImageList.get(i), slotList.get(i));
+		
+		if(checkNeededInterface()){
+			for(int i=0; i<9; i++){
+				setupOnLongClickListener(slotBackgroundList.get(i), slotItemImageList.get(i), slotList.get(i));
+			}
+			for(int i=0; i<9; i++ ){
+				setupOnClickListener(slotBackgroundListSell.get(i), slotItemImageListSell.get(i), slotListSell.get(i));
+			}
 		}
-		
-		
-		for(int i=0; i<9; i++ ){
-			setupOnClickListener(slotBackgroundListSell.get(i), slotItemImageListSell.get(i), slotListSell.get(i));
-		}
-		
 	}
 
 	
@@ -229,12 +224,33 @@ public class InventarActivity extends Activity {
 	
 	private void sellItem(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
-		if (slot.getNumberOfItems().equals("1")){
-			Slot tempSlot = slot;
+		Slot tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
+		boolean putItemInSlot = false;
+		if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 			slot.eraseSlot();
-			setSlotsUnmarked();
-			slotItem.setBackgroundColor(getResources().getColor(R.color.transparent));
+		} else {
+			slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
+		}
+		setSlotsUnmarked();
+		for(int i=0; i<9; i++){
+			if(tempSlot.getItemName().equalsIgnoreCase(slotListSell.get(i).getItemName()) && putItemInSlot == false){
+				if(slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("5")){
+					//do nothing
+				} else{
+					slotListSell.get(i).setNumberOfItems("" + (Integer.parseInt(slotListSell.get(i).getNumberOfItems())+1));
+					putItemInSlot = true;
+				}
 			}
+		}
+		for (int i = 0; i < 9; i++) {
+			if (slotListSell.get(i).getItemName().equalsIgnoreCase("leer") && putItemInSlot == false) {
+				slotListSell.set(i, tempSlot);
+				putItemInSlot = true;
+			}
+		}
+		setItemsOnOwnSlots();
+		setItemsOnSellSlots();
+		setupAllClickListeners();
 	}
 	
 	private void setupOnClickListener(final ImageButton slotBackground, final ImageButton slotItem,
@@ -273,6 +289,62 @@ public class InventarActivity extends Activity {
 	public void onDestroy() {
 		super.onDestroy();
 		inventarDatabase.close();
+	}
+	
+private void setItemsOnOwnSlots() {
+		
+		for(int i=0; i<9; i++){
+			if (slotList.get(i).getItemName().equalsIgnoreCase("leer")){
+				slotItemImageList.get(i).setBackgroundColor(getResources().getColor(R.color.transparent));
+			}		
+			if (slotList.get(i).getItemName().equalsIgnoreCase("Schwert")){
+				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("1")){
+					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_one));
+				}
+				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("2")){
+					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_two));
+				}
+				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("3")){
+					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_three));
+				}
+				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("4")){
+					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_four));
+				}
+				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("5")){
+					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_five));
+				}
+			}
+		}
+		
+		
+	}
+
+	private void setItemsOnSellSlots() {
+		
+		for(int i=0; i<9; i++){
+			if (slotListSell.get(i).getItemName().equalsIgnoreCase("leer")){
+				slotItemImageListSell.get(i).setBackgroundColor(getResources().getColor(R.color.transparent));
+			}
+			
+			if (slotListSell.get(i).getItemName().equalsIgnoreCase("Schwert")){
+				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("1")){
+					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_one));
+				}
+				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("2")){
+					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_two));
+				}
+				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("3")){
+					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_three));
+				}
+				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("4")){
+					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_four));
+				}
+				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("5")){
+					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_five));
+				}
+			}
+		}
+		
 	}
 	
 	private void setupUI() {
@@ -367,8 +439,8 @@ public class InventarActivity extends Activity {
 		slotItemImageListSell.add(slot9ItemImageSell);
 		
 		
-		testSlot = new Slot(0, "Schwert", "Waffe", "2");
-		testSlot2 = new Slot(1, "Schwert", "Waffe", "1");
+		testSlot = new Slot(0, "Schwert", "Waffe", "5");
+		testSlot2 = new Slot(0, "Schwert", "Waffe", "4");
 		testSlot3 = new Slot(0, "leer", "leer", "0");
 		
 		inventarDatabase.removeAll();

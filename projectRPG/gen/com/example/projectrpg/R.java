@@ -44,11 +44,19 @@ public final class R {
         public static final int options_button=0x7f020006;
         public static final int parallax_background_layer_front=0x7f020007;
         public static final int parallax_background_layer_mid=0x7f020008;
-        public static final int schwert_one=0x7f020009;
-        public static final int schwert_two=0x7f02000a;
-        public static final int slot_marked=0x7f02000b;
-        public static final int slot_unmarked=0x7f02000c;
-        public static final int stats_attack=0x7f02000d;
+        public static final int pizza_five=0x7f020009;
+        public static final int pizza_four=0x7f02000a;
+        public static final int pizza_one=0x7f02000b;
+        public static final int pizza_three=0x7f02000c;
+        public static final int pizza_two=0x7f02000d;
+        public static final int schwert_five=0x7f02000e;
+        public static final int schwert_four=0x7f02000f;
+        public static final int schwert_one=0x7f020010;
+        public static final int schwert_three=0x7f020011;
+        public static final int schwert_two=0x7f020012;
+        public static final int slot_marked=0x7f020013;
+        public static final int slot_unmarked=0x7f020014;
+        public static final int stats_attack=0x7f020015;
     }
     public static final class id {
         public static final int Tabelle=0x7f09003e;
