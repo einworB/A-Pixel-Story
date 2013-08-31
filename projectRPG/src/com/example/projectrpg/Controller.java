@@ -39,6 +39,9 @@ public class Controller {
 	private OurDatabase db;
 
 	private Context context;
+
+	private int lastLevel = 4;
+	private int lastTransitionExitSide;
 	
 	/** constructor */
 	public Controller(Context context){
@@ -158,9 +161,13 @@ public class Controller {
 	 * @returns the path to the tmx file according to the current level
 	 */
 	public InputStream getLevelPath(int index) {
-		RandomMapGenerator gen = new RandomMapGenerator(context);
-		if(index < 1 || index > 2) return null;
-		else return gen.createMap(index);
+		RandomMapGenerator gen = new RandomMapGenerator(context, lastLevel);
+		if(index < 1 || index > lastLevel) return null;
+		else  {
+			InputStream input = gen.createMap(index, lastTransitionExitSide);
+			lastTransitionExitSide = gen.getLastSpawnSide();
+			return input;
+		}
 	}
 
 	/** increments the level counter */

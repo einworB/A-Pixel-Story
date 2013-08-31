@@ -1,27 +1,57 @@
 package com.example.projectrpg;
 
 
+/**
+ * make a random array with values of explicit tiles 
+ * so a random tmxMap can build out of it.
+ * 
+ * @author Lena
+ *
+ */
 public class RandomMapArrayGenerator {
-	/** the array with values of the tileset tiles*/
+	/** The array with values of the tileset tiles.*/
 	private int[][] mapArray;
 	/** RandomGenerator*/
 	private OurRandomGenerator rGen = new OurRandomGenerator();
 	
+	/** The index of the last level.*/
+	private int lastLevel;
+	/** The side of the map where the transition tile to exit the level is.*/
+	private int spawnExitSide;
+	/** The side of the map where the transition tile was in the last level.*/
+	private int lastTransitionExitSide;
+	/** The index of the actual level.*/
+	private int level;
+	
+	/** This index describes the top row of tiles in the map.*/
+	private static final int TOP_SIDE = 0;
+	/** This index describes the left row of tiles in the map.*/
+	private static final int LEFT_SIDE = 1;
+	/** This index describes the right row of tiles in the map.*/
+	private static final int RIGHT_SIDE = 2;
+	/** This index describes the bottom row of tiles in the map.*/
+	private static final int BOTTOM_SIDE = 3;
 	/**
 	 * set the array
 	 */
-	public RandomMapArrayGenerator() {
+	public RandomMapArrayGenerator(int lastLevel) {
 		mapArray = new int[30][30];
+		this.lastLevel = lastLevel;
 	}
 	
 	/**
 	 * Set bushes at the sides of the map.
-	 * Set the spawn tiles. A spawn tile cannot be at a edge.
+	 * Set the spawn tiles.
 	 * Set all other objects that should be at the map, like bushes, trees, cactus..
 	 * @param level the actual level
+	 * @param lastTransitionExitSide 
 	 * @return the array with the tile values
 	 */
-	public int[][] generateMapArray(int level) {
+	public int[][] generateMapArray(int level, int lastTransitionExitSide) {
+		
+		this.level = level;
+		this.lastTransitionExitSide = lastTransitionExitSide;
+		
 		for(int y = 0; y < 30; y++) {
 			for(int x = 0; x < 30; x++) {
 				if(x == 0 || y == 0 || x == 29 || y == 29) {
@@ -31,63 +61,8 @@ public class RandomMapArrayGenerator {
 				}
 			}
 		}
-		//set spawn tiles
-		boolean spawnSet = false;
-		int sideSpawn = -1;
-		int spawntile = -1;
-		//only in the first level there is a spawntile
-		if(level == 1 && !spawnSet) {
-			//select on of the four sides to set the spawntile
-			// 0 = top; 1 = left; 2 = right; 3 = bottom;
-			sideSpawn = rGen.nextInt(4);
-			spawntile = (1 + rGen.nextInt(27)); //the edges cannot be set with spawntiles
-			switch(sideSpawn) {
-			case 0:
-				mapArray[0][spawntile] = 23;
-				mapArray[1][spawntile] = 1;
-				break;
-			case 1:
-				mapArray[spawntile][0] = 23;
-				mapArray[spawntile][1] = 1;
-				break;
-			case 2:
-				mapArray[29][spawntile] = 23;
-				mapArray[28][spawntile] = 1;
-				break;
-			case 3:
-				mapArray[spawntile][29] = 23;
-				mapArray[spawntile][28] = 1;
-				break;
-			}
-			spawnSet = true;
-		}
-		//in every level there is a transitiontile, repeat till the transitiontile is not at the same position as the spawntile
-		while(true) {
-			int sideTransition = rGen.nextInt(4);
-			int transitionTile = (1 + rGen.nextInt(27)); //the edges cannot be set with transitiontiles
-			
-			if((sideTransition != sideSpawn) && (transitionTile != spawntile)) {
-				switch(sideTransition) {
-				case 0:
-					mapArray[0][transitionTile] = 13;
-					mapArray[1][transitionTile] = 1;
-					break;
-				case 1:
-					mapArray[transitionTile][0] = 13;
-					mapArray[transitionTile][1] = 1;
-					break;
-				case 2:
-					mapArray[29][transitionTile] = 13;
-					mapArray[28][transitionTile] = 1;
-					break;
-				case 3:
-					mapArray[transitionTile][29] = 13;
-					mapArray[transitionTile][28] = 1;
-					break;
-				}
-				break;
-			}
-		}
+		
+		setSpawnTiles();
 		
 		setHouse();
 		setBigTree();
@@ -98,6 +73,85 @@ public class RandomMapArrayGenerator {
 		checkForUnreachableTiles();
 		
 		return mapArray;
+	}
+
+	/**
+	 * Set the spawn tiles. 
+	 * A spawn tile cannot be at a edge.
+	 */
+	private void setSpawnTiles() {
+
+		//set spawn tiles
+		boolean spawnSet = false;
+		int sideSpawn = -1;
+		int spawntile = -1;
+		//only in the first level there is a spawntile
+		if(level == 1 && !spawnSet) {
+			//select on of the four sides to set the spawntile
+			sideSpawn = rGen.nextInt(4);
+			spawntile = (1 + rGen.nextInt(27)); //the edges cannot be set with spawntiles
+			switch(sideSpawn) {
+			case TOP_SIDE:
+				mapArray[0][spawntile] = 23;
+				mapArray[1][spawntile] = 1;
+				break;
+			case LEFT_SIDE:
+				mapArray[spawntile][0] = 23;
+				mapArray[spawntile][1] = 1;
+				break;
+			case RIGHT_SIDE:
+				mapArray[29][spawntile] = 23;
+				mapArray[28][spawntile] = 1;
+				break;
+			case BOTTOM_SIDE:
+				mapArray[spawntile][29] = 23;
+				mapArray[spawntile][28] = 1;
+				break;
+			}
+			spawnSet = true;
+		}
+		//in every level there is a transitiontile, repeat till the transitiontile is not at the same position as the spawntile
+		while(true) {
+			int sideTransition;
+			
+			if(lastTransitionExitSide == -1) {
+				sideTransition = rGen.nextInt(4);				
+			} else if(lastTransitionExitSide == LEFT_SIDE ) {
+				sideTransition = BOTTOM_SIDE;
+			} else if(lastTransitionExitSide == TOP_SIDE) {
+				sideTransition = RIGHT_SIDE;
+			} else if(lastTransitionExitSide == RIGHT_SIDE ) {
+				sideTransition = TOP_SIDE;
+			} else {
+				sideTransition = LEFT_SIDE;
+			}
+			
+			int transitionTile = (1 + rGen.nextInt(27)); //the edges cannot be set with transitiontiles
+			
+			if((sideTransition != sideSpawn) && (transitionTile != spawntile)) {
+				switch(sideTransition) {
+				case TOP_SIDE:
+					mapArray[0][transitionTile] = 13;
+					mapArray[1][transitionTile] = 1;
+					break;
+				case LEFT_SIDE:
+					mapArray[transitionTile][0] = 13;
+					mapArray[transitionTile][1] = 1;
+					break;
+				case RIGHT_SIDE:
+					mapArray[29][transitionTile] = 13;
+					mapArray[28][transitionTile] = 1;
+					break;
+				case BOTTOM_SIDE:
+					mapArray[transitionTile][29] = 13;
+					mapArray[transitionTile][28] = 1;
+					break;
+				}
+				spawnExitSide = sideTransition;
+				break;
+			}
+		}
+		
 	}
 
 	/**
@@ -137,13 +191,18 @@ public class RandomMapArrayGenerator {
 			while(true) {
 				int house2X = (1 + rGen.nextInt(26)); //numbers from 1-27 because the house has 3 tiles width
 				int house2Y = (1 + rGen.nextInt(25)); //numbers from 1-26 because the house has 3 tiles height and the house should be reachable from bottom
+				//if all tiles where the house should stand are free go ahead
 				if(mapArray[house2X][house2Y] == -1 && mapArray[house2X + 1][house2Y] == -1 
 						&& mapArray[house2X + 2][house2Y] == -1 && mapArray[house2X][house2Y + 1] == -1 
 						&& mapArray[house2X + 1][house2Y + 1] == -1 && mapArray[house2X + 2][house2Y + 1] == -1) {
+					
+					//if the house should stand on one side check if there is a spawn or transition tile
 					if((mapArray[0][houseY] != 13) && (mapArray[0][houseY + 1] != 13) && (mapArray[0][houseY + 2] != 13) 
 							&& (mapArray[0][houseY] != 23) && (mapArray[0][houseY + 1] != 23) && (mapArray[0][houseY + 2] != 23)) {
 						if((mapArray[houseX][0] != 13) && (mapArray[houseX + 1][0] != 13) && (mapArray[houseX][0] != 23) && (mapArray[houseX + 1][0] != 23)) {
 							if((mapArray[houseX][29] != 13) && (mapArray[houseX + 1][29] != 13) && (mapArray[houseX][29] != 23) && (mapArray[houseX + 1][29] != 23)) {
+								
+								//all tiles are clear so set the house tiles
 								mapArray[house2X][house2Y] = 4;
 								mapArray[house2X + 1][house2Y] = 5;
 								mapArray[house2X + 2][house2Y] = 6;
@@ -160,6 +219,7 @@ public class RandomMapArrayGenerator {
 			}
 		}
 	}
+	
 	/**
 	 * Set the big trees at the map. There can be between 10 to 18 trees.
 	 */
@@ -221,7 +281,10 @@ public class RandomMapArrayGenerator {
 			}
 		}
 	}
-
+	
+	/**
+	 * Fill all tiles that are not blocked with gras or sand.
+	 */
 	private void setGras() {
 		for(int y = 0; y < 30; y++) {
 			for(int x = 0; x < 30; x++) {
@@ -238,6 +301,10 @@ public class RandomMapArrayGenerator {
 		}
 	}
 
+	/**
+	 * Check if there are tiles that are not reachable for the sprite and fill it with a bush.
+	 * It only works if the gap is one or two tiles wide.
+	 */
 	private void checkForUnreachableTiles() {
 
 		int countX;
@@ -247,6 +314,7 @@ public class RandomMapArrayGenerator {
 			for(int x = 1; x < 29; x++) {
 				countX = x;
 				countY = y;
+				// if the gap is one tile wide
 				if((mapArray[countY][countX] == 1) || (mapArray[countY][countX] == 24) || (mapArray[countY][countX] == 25)) {
 					
 					if(((mapArray[countY - 1][countX] != 1) && (mapArray[countY - 1][countX] != 24) && (mapArray[countY - 1][countX] != 25)) 
@@ -255,6 +323,7 @@ public class RandomMapArrayGenerator {
 							&& ((mapArray[countY][countX + 1] != 1) && (mapArray[countY][countX + 1] != 24) && (mapArray[countY][countX + 1] != 25))) {
 						
 						mapArray[countY][countX] = 2;
+					//if the gap is two tiles wide the tiles can be beside or above each other.
 					} else {
 						if((mapArray[countY - 1][countX] == 1) || (mapArray[countY - 1][countX] == 24) || (mapArray[countY - 1][countX] == 25)) {
 														
@@ -314,5 +383,9 @@ public class RandomMapArrayGenerator {
 				}
 			}
 		}
+	}
+
+	public int getLastSpawnSide() {
+		return spawnExitSide;
 	}
 }

@@ -15,17 +15,21 @@ import android.util.Xml;
 public class RandomMapGenerator {
 
 	private Context context;
-	private RandomMapArrayGenerator rMapArray = new RandomMapArrayGenerator();
+	private RandomMapArrayGenerator rMapArray;
 	
 	private XmlSerializer serializer;
 	private int level;
-
-	public RandomMapGenerator(Context context){
+	private int lastTransitionExitSide = -1;
+	public RandomMapGenerator(Context context, int lastLevel){
 		this.context = context;
+		rMapArray = new RandomMapArrayGenerator(lastLevel);
 	}
 	
-	public InputStream createMap(int index){
+	public InputStream createMap(int index, int lastTransitionExitSide){
 		this.level = index;
+		if(index != 1) {
+			this.lastTransitionExitSide = lastTransitionExitSide;
+		}
 		String filename = "LEVEL"+index+".tmx";
 		try {
 			FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
@@ -47,6 +51,7 @@ public class RandomMapGenerator {
 		return null;
 		
 	}
+
 	private String writeXml(){
 	    serializer = Xml.newSerializer();
 	    StringWriter writer = new StringWriter();
@@ -174,9 +179,8 @@ public class RandomMapGenerator {
 	}
 	
 	private void setTiles() throws IllegalArgumentException, IllegalStateException, IOException {
-//		Log.d("projekt", "davor" + level);
-		int[][] mapArray = rMapArray.generateMapArray(level);
-//		Log.d("projekt", "danach" + level);
+		int[][] mapArray = rMapArray.generateMapArray(level, lastTransitionExitSide);
+		
 		for(int y = 0; y < mapArray.length; y++) {
 			for(int x = 0; x < mapArray.length; x++) {
 				
@@ -186,5 +190,8 @@ public class RandomMapGenerator {
 			}
 		}
 	}
-
+	
+	public int getLastSpawnSide() {
+		return rMapArray.getLastSpawnSide();
+	}
 }
