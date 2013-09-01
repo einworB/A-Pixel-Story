@@ -20,8 +20,10 @@ public class RandomMapGenerator {
 	private XmlSerializer serializer;
 	private int level;
 	private int lastTransitionExitSide = -1;
+	private int lastLevel;
 	public RandomMapGenerator(Context context, int lastLevel){
 		this.context = context;
+		this.lastLevel = lastLevel;
 		rMapArray = new RandomMapArrayGenerator(lastLevel);
 	}
 	
@@ -141,12 +143,12 @@ public class RandomMapGenerator {
         	serializer.endTag("", "tile");
         }
         
-        serializer.startTag("", "tile");
-       	serializer.attribute("", "id", "12");
-       	serializer.startTag("", "properties");
-       	serializer.startTag("", "property");
-       	serializer.attribute("", "name", "TRANSITION");
        	if(level == 1){
+            serializer.startTag("", "tile");
+           	serializer.attribute("", "id", "12");
+           	serializer.startTag("", "properties");
+           	serializer.startTag("", "property");
+           	serializer.attribute("", "name", "TRANSITION");
        		serializer.attribute("", "value", "LEVEL2");
        		serializer.endTag("", "property");
 	        serializer.endTag("", "properties");
@@ -158,7 +160,31 @@ public class RandomMapGenerator {
 	       	serializer.startTag("", "property");
 	       	serializer.attribute("", "name", "TRANSITION");
 	       	serializer.attribute("", "value", "SPAWN");
-       	} else serializer.attribute("", "value", "LEVEL1");
+       	} else if(level == lastLevel) {
+            serializer.startTag("", "tile");
+           	serializer.attribute("", "id", "32");
+           	serializer.startTag("", "properties");
+           	serializer.startTag("", "property");
+           	serializer.attribute("", "name", "TRANSITION");
+           	serializer.attribute("", "value", "LEVEL" + (level - 1));
+       	} else {
+            serializer.startTag("", "tile");
+           	serializer.attribute("", "id", "32");
+           	serializer.startTag("", "properties");
+           	serializer.startTag("", "property");
+           	serializer.attribute("", "name", "TRANSITION");
+           	serializer.attribute("", "value", "LEVEL" + (level - 1));
+           	serializer.endTag("", "property");
+            serializer.endTag("", "properties");
+            serializer.endTag("", "tile");
+
+           	serializer.startTag("", "tile");
+           	serializer.attribute("", "id", "12");
+           	serializer.startTag("", "properties");
+           	serializer.startTag("", "property");
+           	serializer.attribute("", "name", "TRANSITION");
+           	serializer.attribute("", "value", "LEVEL" + (level + 1));
+       	}
        	
        	serializer.endTag("", "property");
         serializer.endTag("", "properties");

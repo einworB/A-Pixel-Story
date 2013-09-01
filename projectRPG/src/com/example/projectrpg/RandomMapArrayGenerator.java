@@ -110,48 +110,122 @@ public class RandomMapArrayGenerator {
 			}
 			spawnSet = true;
 		}
-		//in every level there is a transitiontile, repeat till the transitiontile is not at the same position as the spawntile
-		while(true) {
-			int sideTransition;
-			
-			if(lastTransitionExitSide == -1) {
-				sideTransition = rGen.nextInt(4);				
-			} else if(lastTransitionExitSide == LEFT_SIDE ) {
-				sideTransition = BOTTOM_SIDE;
-			} else if(lastTransitionExitSide == TOP_SIDE) {
-				sideTransition = RIGHT_SIDE;
-			} else if(lastTransitionExitSide == RIGHT_SIDE ) {
-				sideTransition = TOP_SIDE;
-			} else {
-				sideTransition = LEFT_SIDE;
-			}
-			
-			int transitionTile = (1 + rGen.nextInt(27)); //the edges cannot be set with transitiontiles
-			
-			if((sideTransition != sideSpawn) && (transitionTile != spawntile)) {
-				switch(sideTransition) {
-				case TOP_SIDE:
-					mapArray[0][transitionTile] = 13;
-					mapArray[1][transitionTile] = 1;
-					break;
-				case LEFT_SIDE:
-					mapArray[transitionTile][0] = 13;
-					mapArray[transitionTile][1] = 1;
-					break;
-				case RIGHT_SIDE:
-					mapArray[29][transitionTile] = 13;
-					mapArray[28][transitionTile] = 1;
-					break;
-				case BOTTOM_SIDE:
-					mapArray[transitionTile][29] = 13;
-					mapArray[transitionTile][28] = 1;
+		
+		if(level != lastLevel && level != 1) {
+			while(true) {
+				int sideTransition;
+				
+				if(lastTransitionExitSide == -1) {
+					sideTransition = rGen.nextInt(4);				
+				} else if(lastTransitionExitSide == LEFT_SIDE ) {
+					sideTransition = BOTTOM_SIDE;
+				} else if(lastTransitionExitSide == TOP_SIDE) {
+					sideTransition = RIGHT_SIDE;
+				} else if(lastTransitionExitSide == RIGHT_SIDE ) {
+					sideTransition = TOP_SIDE;
+				} else {
+					sideTransition = LEFT_SIDE;
+				}
+				
+				int transitionTile = (1 + rGen.nextInt(27)); //the edges cannot be set with transitiontiles
+				
+				if((sideTransition != sideSpawn) && (transitionTile != spawntile)) {
+					switch(sideTransition) {
+					case TOP_SIDE:
+						mapArray[0][transitionTile] = 33;
+						mapArray[1][transitionTile] = 1;
+						break;
+					case LEFT_SIDE:
+						mapArray[transitionTile][0] = 33;
+						mapArray[transitionTile][1] = 1;
+						break;
+					case RIGHT_SIDE:
+						mapArray[29][transitionTile] = 33;
+						mapArray[28][transitionTile] = 1;
+						break;
+					case BOTTOM_SIDE:
+						mapArray[transitionTile][29] = 33;
+						mapArray[transitionTile][28] = 1;
+						break;
+					}
+					spawnExitSide = sideTransition;
 					break;
 				}
-				spawnExitSide = sideTransition;
-				break;
 			}
 		}
-		
+		//in every level there is a transitiontile, repeat till the transitiontile is not at the same position as the spawntile
+		if(level == lastLevel) {
+			while(true) {
+				int sideTransition;
+				
+				if(lastTransitionExitSide == -1) {
+					sideTransition = rGen.nextInt(4);				
+				} else if(lastTransitionExitSide == LEFT_SIDE ) {
+					sideTransition = BOTTOM_SIDE;
+				} else if(lastTransitionExitSide == TOP_SIDE) {
+					sideTransition = RIGHT_SIDE;
+				} else if(lastTransitionExitSide == RIGHT_SIDE ) {
+					sideTransition = TOP_SIDE;
+				} else {
+					sideTransition = LEFT_SIDE;
+				}
+				
+				int transitionTile = (1 + rGen.nextInt(27)); //the edges cannot be set with transitiontiles
+				
+				if((sideTransition != sideSpawn) && (transitionTile != spawntile)) {
+					switch(sideTransition) {
+					case TOP_SIDE:
+						mapArray[0][transitionTile] = 33;
+						mapArray[1][transitionTile] = 1;
+						break;
+					case LEFT_SIDE:
+						mapArray[transitionTile][0] = 33;
+						mapArray[transitionTile][1] = 1;
+						break;
+					case RIGHT_SIDE:
+						mapArray[29][transitionTile] = 33;
+						mapArray[28][transitionTile] = 1;
+						break;
+					case BOTTOM_SIDE:
+						mapArray[transitionTile][29] = 33;
+						mapArray[transitionTile][28] = 1;
+						break;
+					}
+					spawnExitSide = sideTransition;
+					break;
+				}
+			}
+		// if the actual level is not the last level there have to be a transition tile 
+		} else if (level != lastLevel) {
+			while(true) {
+				int sideTransition = rGen.nextInt(4);
+				
+				int transitionTile = (1 + rGen.nextInt(27)); //the edges cannot be set with transitiontiles
+				
+				if((sideTransition != sideSpawn) && (transitionTile != spawntile)) {
+					switch(sideTransition) {
+					case TOP_SIDE:
+						mapArray[0][transitionTile] = 13;
+						mapArray[1][transitionTile] = 1;
+						break;
+					case LEFT_SIDE:
+						mapArray[transitionTile][0] = 13;
+						mapArray[transitionTile][1] = 1;
+						break;
+					case RIGHT_SIDE:
+						mapArray[29][transitionTile] = 13;
+						mapArray[28][transitionTile] = 1;
+						break;
+					case BOTTOM_SIDE:
+						mapArray[transitionTile][29] = 13;
+						mapArray[transitionTile][28] = 1;
+						break;
+					}
+					spawnExitSide = sideTransition;
+					break;
+				}
+			}
+		}
 	}
 
 	/**
