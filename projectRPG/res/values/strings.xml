@@ -6,6 +6,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_level">LevelActivity</string>
     <string name="startmenu_title">A PIXEL STORY</string>
+    <string name="title_sell">Händler</string>
+    <string name="title_equip">Rüstung</string>
     <string name="description_start_game">starts the game</string>
     <string name="description_load_game">loads the game</string>
     <string name="description_options">shows optionsmenu</string>

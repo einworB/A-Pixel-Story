@@ -7,6 +7,9 @@ public class Slot {
 	String itemType;
 	boolean marked;
 	String numberOfItems;
+	int defenseValue = 0;
+	int attackValue = 0;
+	int levelNeeded = 0;
 	
 	public Slot(){
 		slotID = 0;
@@ -73,6 +76,31 @@ public class Slot {
 		itemType = "leer";
 		numberOfItems = "0";
 		marked = false;
+		defenseValue = 0;
+	}
+	
+	public void setDefenseValue(int defenseValue){
+		this.defenseValue = defenseValue;
+	}
+	
+	public int getDefenseValue(){
+		return defenseValue;
+	}
+	
+	public void setAttackValue(int attackValue){
+		this.attackValue = attackValue;
+	}
+	
+	public int getAttackValue(){
+		return attackValue;
+	}
+	
+	public void setlevelNeeded(int levelNeeded){
+		this.levelNeeded = levelNeeded;
+	}
+	
+	public int getLevelNeeded(){
+		return levelNeeded;
 	}
 
 }

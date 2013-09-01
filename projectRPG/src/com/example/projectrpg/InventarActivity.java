@@ -1,3 +1,11 @@
+
+
+
+
+
+//hinweis für mich: armor/inventar zurückgeben an controller
+
+
 package com.example.projectrpg;
 
 import java.util.ArrayList;
@@ -12,8 +20,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class InventarActivity extends Activity {
+	
+	private Controller controller;
 	
 	private static final String EQUIP_HEAD = "kopf";
 	private static final String EQUIP_UPPER_BODY = "oberkoerper";
@@ -28,6 +39,7 @@ public class InventarActivity extends Activity {
 	private Slot testSlot2;
 	private Slot testSlot3;
 
+	private TextView titleSellEquip;
 	//private TextView statsPlayerlevel;
 	//private TextView statsAttack;
 	//private TextView statsDefense;
@@ -98,13 +110,16 @@ public class InventarActivity extends Activity {
 	private ArrayList<ImageButton> slotBackgroundListEquip = null;
 	private ArrayList<ImageButton> slotItemImageListEquip = null;
 	
+	private ArrayList<Item> inventoryList = null;
+	private Armor[] equipedArmorList = null;
+	
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setupDatabaseConnection();
 		setupUI();
-		getSavedSlots();
+		getSavedItems();
 		setItemsOnOwnSlots();
 		if(checkNeededInterface()){
 			setItemsOnSellSlots();
@@ -129,6 +144,7 @@ public class InventarActivity extends Activity {
 				playerEquip.setVisibility(View.INVISIBLE);
 				
 				slotListEquip.clear();
+				titleSellEquip.setText(R.string.title_sell);
 			}	
 		} else {
 			for(int i=0; i<9; i++){
@@ -141,6 +157,7 @@ public class InventarActivity extends Activity {
 				playerEquip.setVisibility(View.VISIBLE);
 
 				slotListSell.clear();
+				titleSellEquip.setText(R.string.title_equip);
 			}
 		}
 		
@@ -175,11 +192,123 @@ public class InventarActivity extends Activity {
 
 	
 
-	private void getSavedSlots() {
-		try {
-			slotList = inventarDatabase.getAllSlots();
-			Thread.sleep(2000);
-		} catch (Exception e) {
+	private void getSavedItems() {
+		boolean putItemInSlot = false;
+		Slot tempSlot = new Slot(0, "leer", "leer", "0");
+
+	//	 inventoryList = controller.getInventory();
+//		equipedArmorList = controller.getArmor();
+		
+		equipedArmorList[0] = new Armor("Schwert", 1, 1, 0);
+		equipedArmorList[1] = new Armor("Pizza", 1, 1, 2);
+		equipedArmorList[2] = new Armor("leer", 1, 1, 4);
+		equipedArmorList[3] = new Armor("leer", 1, 1, 1);
+		equipedArmorList[4] = new Armor("leer", 1, 1, 3);
+		
+		 
+		inventoryList.add(new Armor("Schwert", 1, 1, 0));
+		inventoryList.add(new Armor("Schwert", 1, 1, 0));
+		inventoryList.add(new Armor("Schwert", 1, 1, 0));
+		inventoryList.add(new Armor("Schwert", 1, 1, 0));
+		inventoryList.add(new Armor("Schwert", 1, 1, 0));
+		inventoryList.add(new Armor("Schwert", 1, 1, 0));
+		inventoryList.add(new Armor("Schwert", 1, 1, 0));
+
+		
+/*		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
+		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
+		inventoryList.add(new Item("Pizza", 1, EQUIP_HANDS));
+		inventoryList.add(new Item("Pizza", 1, EQUIP_HANDS));
+		inventoryList.add(new Item("Pizza", 1, EQUIP_HANDS));
+		inventoryList.add(new Item("Pizza", 1, EQUIP_HANDS));
+		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
+		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
+		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
+		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
+		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
+		inventoryList.add(new Item("Pizza", 1, EQUIP_HANDS));
+		inventoryList.add(new Item("Pizza", 1, EQUIP_HANDS));
+		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
+**/
+		for (int i = 0; i < inventoryList.size(); i++) {
+			
+			putItemInSlot = false;
+			for (int j = 0; j < 9; j++) {
+				if (inventoryList.get(i).getName().equalsIgnoreCase(slotList.get(j).getItemName())) {
+					if (slotList.get(j).getNumberOfItems()
+							.equalsIgnoreCase("5")) {
+
+					} else {
+						slotList.set(j, new Slot(j, inventoryList.get(i).getName(), inventoryList.get(i).getItemType(), "" + (Integer.parseInt(slotList.get(j).getNumberOfItems())+1)));
+						slotList.get(j).setlevelNeeded(inventoryList.get(i).getLevelNeeded());
+						if(inventoryList.get(i) instanceof Armor){
+							slotList.get(j).setDefenseValue(((Armor)inventoryList.get(i)).getDefenseValue());
+						} 
+						if(inventoryList.get(i) instanceof Weapon){
+							slotList.get(j).setAttackValue(((Weapon)inventoryList.get(i)).getAttackValue());
+						}
+						putItemInSlot = true;
+					}
+				}
+				if (slotList.get(j).getItemName().equalsIgnoreCase("leer")
+						&& putItemInSlot == false) {
+					tempSlot = new Slot(j, inventoryList.get(i).getName(),
+							inventoryList.get(i).getItemType(), "1");
+					slotList.set(j, tempSlot);
+					slotList.get(j).setlevelNeeded(inventoryList.get(i).getLevelNeeded());
+					if(inventoryList.get(i) instanceof Armor){
+						slotList.get(j).setDefenseValue(((Armor)inventoryList.get(i)).getDefenseValue());
+					} 
+					if(inventoryList.get(i) instanceof Weapon){
+						slotList.get(j).setAttackValue(((Weapon)inventoryList.get(i)).getAttackValue());
+					}
+					putItemInSlot = true;
+				}
+			}
+		}
+		
+		for (int i = 0; i < equipedArmorList.length; i++) {
+			slotListEquip.get(equipedArmorList[i].getType()).setItemName(equipedArmorList[i].getName());
+			if (equipedArmorList[i].getType() == 0) {
+				if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
+				}else{
+					slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_HEAD, "1"));
+					slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
+					slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
+				}
+			}
+			if (equipedArmorList[i].getType() == 1) {
+				if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
+				}else{
+					slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_UPPER_BODY, "1"));
+					slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
+					slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
+					}
+			}
+			if (equipedArmorList[i].getType() == 2) {
+				if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
+				}else{
+				slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_HANDS, "1"));
+				slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
+				slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
+				}
+			}
+			if (equipedArmorList[i].getType() == 3) {
+				if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
+				}else{
+					slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_LOWER_BODY, "1"));
+					slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
+					slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
+					}
+			}
+			if (equipedArmorList[i].getType() == 4) {
+				if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
+				}else{
+					slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_FEET, "1"));
+					slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
+					slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
+					}
+			}
 		}
 		
 		//hier kriegt man die Infos, welche Items der Sack/Verkäufer/etc. beinhaltet...
@@ -192,13 +321,7 @@ public class InventarActivity extends Activity {
 		slotListSell.add(testSlot3);
 		slotListSell.add(testSlot3);
 		slotListSell.add(testSlot3);
-		slotListSell.add(testSlot3);	
-		
-		slotListEquip.add(testSlot);
-		slotListEquip.add(testSlot2);
-		slotListEquip.add(testSlot3);
-		slotListEquip.add(testSlot3);
-		slotListEquip.add(testSlot3);
+		slotListSell.add(testSlot3);
 	}
 	private void setupOnLongClickListenerSell(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
@@ -484,6 +607,9 @@ public class InventarActivity extends Activity {
 			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_HEAD)){
 				if(slotListEquip.get(0).getNumberOfItems().equalsIgnoreCase("0")){
 					slotListEquip.set(0, tempSlot);
+					slotListEquip.get(0).setDefenseValue(tempSlot.getDefenseValue());
+					controller.addArmor(new Armor(tempSlot.getItemName(), 1, tempSlot.getDefenseValue(), 0));
+
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
@@ -496,6 +622,8 @@ public class InventarActivity extends Activity {
 			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_UPPER_BODY)){
 				if(slotListEquip.get(1).getNumberOfItems().equalsIgnoreCase("0")){
 					slotListEquip.set(1, tempSlot);
+					slotListEquip.get(1).setDefenseValue(tempSlot.getDefenseValue());
+					controller.addArmor(new Armor(tempSlot.getItemName(), 1, tempSlot.getDefenseValue(), 1));
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
@@ -508,6 +636,9 @@ public class InventarActivity extends Activity {
 			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_HANDS)){
 				if(slotListEquip.get(2).getNumberOfItems().equalsIgnoreCase("0")){
 					slotListEquip.set(2, tempSlot);
+					slotListEquip.get(2).setDefenseValue(tempSlot.getDefenseValue());
+					controller.addArmor(new Armor(tempSlot.getItemName(), 1, tempSlot.getDefenseValue(), 2));
+
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
@@ -520,6 +651,8 @@ public class InventarActivity extends Activity {
 			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_LOWER_BODY)){
 				if(slotListEquip.get(3).getNumberOfItems().equalsIgnoreCase("0")){
 					slotListEquip.set(3, tempSlot);
+					slotListEquip.get(3).setDefenseValue(tempSlot.getDefenseValue());
+					controller.addArmor(new Armor(tempSlot.getItemName(), 1, tempSlot.getDefenseValue(), 3));
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
@@ -532,6 +665,8 @@ public class InventarActivity extends Activity {
 			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_FEET)){
 				if(slotListEquip.get(4).getNumberOfItems().equalsIgnoreCase("0")){
 					slotListEquip.set(4, tempSlot);
+					slotListEquip.get(4).setDefenseValue(tempSlot.getDefenseValue());
+					controller.addArmor(new Armor(tempSlot.getItemName(), 1, tempSlot.getDefenseValue(), 4));
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
@@ -541,6 +676,7 @@ public class InventarActivity extends Activity {
 					showUsedSlotNotification();
 				}
 			}
+			
 			
 			
 		setItemsOnOwnSlots();
@@ -790,6 +926,10 @@ private void setItemsOnEquipSlots() {
 	
 	private void setupUI() {
 		setContentView(R.layout.activity_inventar);
+		
+		controller = new Controller(this);
+		
+		titleSellEquip = (TextView) findViewById(R.id.title_inventar_sell);
 
 		slot1Background = (ImageButton) findViewById(R.id.inventar_slot1);
 		slot2Background = (ImageButton) findViewById(R.id.inventar_slot2);
@@ -846,8 +986,18 @@ private void setItemsOnEquipSlots() {
 		playerEquip = (ImageButton) findViewById(R.id.player_equip);
 
 		slotList = new ArrayList<Slot>();
+		for(int i=0; i<9; i++){
+			slotList.add(new Slot(0,"leer", "leer", "0"));
+		}
+		
 		slotListSell = new ArrayList<Slot>();
 		slotListEquip = new ArrayList<Slot>();
+		for(int i=0; i<5; i++){
+			slotListEquip.add(new Slot(0,"leer", "leer", "0"));
+		}
+		
+		inventoryList = new ArrayList<Item>();
+		equipedArmorList = new Armor[5];
 
 		
 		slotBackgroundList = new ArrayList<ImageButton>();
@@ -910,8 +1060,8 @@ private void setItemsOnEquipSlots() {
 		
 		
 		
-		testSlot = new Slot(0, "Schwert", EQUIP_HANDS, "1");
-		testSlot2 = new Slot(0, "Pizza", "Nahrung", "1");
+		testSlot = new Slot(0, "Schwert", EQUIP_HEAD, "1");
+		testSlot2 = new Slot(0, "Pizza", EQUIP_HANDS, "1");
 		testSlot3 = new Slot(0, "leer", "leer", "0");
 		
 		inventarDatabase.removeAll();

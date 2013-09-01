@@ -158,18 +158,20 @@ public final class R {
     public static final class string {
         public static final int action_settings=0x7f060001;
         public static final int app_name=0x7f060000;
-        public static final int default_description=0x7f06000d;
-        public static final int description_help=0x7f060008;
-        public static final int description_load_game=0x7f060006;
-        public static final int description_options=0x7f060007;
-        public static final int description_start_game=0x7f060005;
+        public static final int default_description=0x7f06000f;
+        public static final int description_help=0x7f06000a;
+        public static final int description_load_game=0x7f060008;
+        public static final int description_options=0x7f060009;
+        public static final int description_start_game=0x7f060007;
         public static final int hello_world=0x7f060002;
-        public static final int help_string=0x7f06000c;
-        public static final int load_game_string=0x7f06000a;
-        public static final int new_game_string=0x7f060009;
-        public static final int options_string=0x7f06000b;
+        public static final int help_string=0x7f06000e;
+        public static final int load_game_string=0x7f06000c;
+        public static final int new_game_string=0x7f06000b;
+        public static final int options_string=0x7f06000d;
         public static final int startmenu_title=0x7f060004;
         public static final int title_activity_level=0x7f060003;
+        public static final int title_equip=0x7f060006;
+        public static final int title_sell=0x7f060005;
     }
     public static final class style {
         /** 
