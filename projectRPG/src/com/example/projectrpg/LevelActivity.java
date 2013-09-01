@@ -557,10 +557,13 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			final TMXTile startTile = layer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
 			final TMXTile destinationTile = layer.getTMXTileAt(sceneX, sceneY);
 			switch(controller.doAction(startTile, destinationTile, scene.getMap(), scene)){
-				case 1:
-					if(portraitEnemy.hasParent()) hud.detachChild(portraitEnemy);
+				case 1:					
 					Path path = controller.getPath(startTile, destinationTile, scene.getMap());
-					if(path!=null) startPath(path, destinationTile);
+					if(path!=null){
+						if(portraitEnemy.hasParent()) hud.detachChild(portraitEnemy);
+						if(redBarEnemy.hasParent()) hud.detachChild(redBarEnemy);
+						startPath(path, destinationTile);
+					}
 					else Log.d("RPG", "path=null");
 					break;
 				case 2:
