@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_width="210dp"
 		android:gravity="center_horizontal"
-		android:textSize="15sp"
-        android:text="own objects:"/>
+		android:textSize="20sp"
+        android:text="Inventar"/>
     
     <TextView 
         android:id="@+id/title_inventar_sell"
@@ -22,8 +22,8 @@
         android:layout_width="210dp"
         android:layout_alignParentRight="true"
 		android:gravity="center_horizontal"
-		android:textSize="15sp"
-        android:text="other objects:"/>
+		android:textSize="20sp"
+        android:text="Händler"/>
     
     <TableLayout
         android:id="@+id/slots_table"
@@ -383,5 +383,114 @@
                 android:gravity="center" />
         </TableRow>
     </TableLayout>
+    
+    <ImageButton
+    	android:id="@+id/player_equip"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+		android:layout_alignParentRight="true"
+		android:background="@drawable/player_equip"
+        android:contentDescription="@string/default_description"
+        android:layout_alignTop="@id/slots_table" />
+    
+    <ImageButton
+        android:id="@+id/player_equip_slot1"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_toLeftOf="@id/player_equip"
+        android:layout_alignTop="@id/player_equip"
+        android:background="@drawable/slot_unmarked"
+        android:contentDescription="@string/default_description"
+        android:gravity="center" />
+
+    <ImageButton
+        android:id="@+id/player_equip_slot2"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_toLeftOf="@id/player_equip"
+        android:layout_below="@id/player_equip_slot1"
+        android:background="@drawable/slot_unmarked"
+        android:contentDescription="@string/default_description"
+        android:gravity="center" />
+
+    <ImageButton
+        android:id="@+id/player_equip_slot3"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_toLeftOf="@id/player_equip"
+        android:layout_below="@id/player_equip_slot2"
+        android:background="@drawable/slot_unmarked"
+        android:contentDescription="@string/default_description"
+        android:gravity="center" />
+    
+    <ImageButton
+        android:id="@+id/player_equip_slot4"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_toRightOf="@id/player_equip_slot3"
+        android:layout_below="@id/player_equip"
+        android:background="@drawable/slot_unmarked"
+        android:contentDescription="@string/default_description"
+        android:gravity="center" />
+    
+    <ImageButton
+        android:id="@+id/player_equip_slot5"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_toRightOf="@id/player_equip_slot4"
+        android:layout_below="@id/player_equip"
+        android:background="@drawable/slot_unmarked"
+        android:contentDescription="@string/default_description"
+        android:gravity="center" />
+    
+    <ImageButton
+        android:id="@+id/player_equip_slot1_item_image"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_toLeftOf="@id/player_equip"
+        android:layout_alignTop="@id/player_equip"
+        android:background="@color/transparent"
+        android:contentDescription="@string/default_description"
+        android:gravity="center" />
+
+    <ImageButton
+        android:id="@+id/player_equip_slot2_item_image"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_toLeftOf="@id/player_equip"
+        android:layout_below="@id/player_equip_slot1"
+        android:background="@color/transparent"
+        android:contentDescription="@string/default_description"
+        android:gravity="center" />
+
+    <ImageButton
+        android:id="@+id/player_equip_slot3_item_image"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_toLeftOf="@id/player_equip"
+        android:layout_below="@id/player_equip_slot2"
+        android:background="@color/transparent"
+        android:contentDescription="@string/default_description"
+        android:gravity="center" />
+    
+    <ImageButton
+        android:id="@+id/player_equip_slot4_item_image"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_toRightOf="@id/player_equip_slot3"
+        android:layout_below="@id/player_equip"
+        android:background="@color/transparent"
+        android:contentDescription="@string/default_description"
+        android:gravity="center" />
+    
+    <ImageButton
+        android:id="@+id/player_equip_slot5_item_image"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_toRightOf="@id/player_equip_slot4"
+        android:layout_below="@id/player_equip"
+        android:background="@color/transparent"
+        android:contentDescription="@string/default_description"
+        android:gravity="center" />
 
 </RelativeLayout>

@@ -2,28 +2,24 @@ package com.example.projectrpg;
 
 import java.util.ArrayList;
 
-import android.annotation.TargetApi;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ClipData;
 import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.DragEvent;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.DragShadowBuilder;
 import android.view.View.OnClickListener;
-import android.view.View.OnDragListener;
 import android.view.View.OnLongClickListener;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 
 public class InventarActivity extends Activity {
+	
+	private static final String EQUIP_HEAD = "kopf";
+	private static final String EQUIP_UPPER_BODY = "oberkoerper";
+	private static final String EQUIP_HANDS = "haende";
+	private static final String EQUIP_LOWER_BODY = "beine";
+	private static final String EQUIP_FEET = "fuesse";
 	
 	//hat noch bugs
 	
@@ -75,15 +71,32 @@ public class InventarActivity extends Activity {
 	private ImageButton slot7ItemImageSell;
 	private ImageButton slot8ItemImageSell;
 	private ImageButton slot9ItemImageSell;
+	
+	private ImageButton slot1BackgroundEquip;
+	private ImageButton slot2BackgroundEquip;
+	private ImageButton slot3BackgroundEquip;
+	private ImageButton slot4BackgroundEquip;
+	private ImageButton slot5BackgroundEquip;
+	
+	private ImageButton slot1ItemImageEquip;
+	private ImageButton slot2ItemImageEquip;
+	private ImageButton slot3ItemImageEquip;
+	private ImageButton slot4ItemImageEquip;
+	private ImageButton slot5ItemImageEquip;
+	
+	private ImageButton playerEquip;
 
 	private InventarDatabase inventarDatabase;
 	
 	private ArrayList<Slot> slotList = null;
 	private ArrayList<Slot> slotListSell = null;
+	private ArrayList<Slot> slotListEquip = null;
 	private ArrayList<ImageButton> slotBackgroundList = null;
 	private ArrayList<ImageButton> slotItemImageList = null;
 	private ArrayList<ImageButton> slotBackgroundListSell = null;
 	private ArrayList<ImageButton> slotItemImageListSell = null;
+	private ArrayList<ImageButton> slotBackgroundListEquip = null;
+	private ArrayList<ImageButton> slotItemImageListEquip = null;
 	
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -97,23 +110,36 @@ public class InventarActivity extends Activity {
 			setItemsOnSellSlots();
 		}
 		else {
-//			putEquipedItemsOnSlots();
+			setItemsOnEquipSlots();
 		}
 		setupAllClickListeners();
 		
 	}
 
 	private boolean checkNeededInterface() {
-		boolean isSellInterface = true; 	//irgendwie getNeededInterfaceFromLevelActivity();
+		boolean isSellInterface = false; 	//irgendwie getNeededInterfaceFromLevelActivity();
 		if(isSellInterface){
 			for(int i=0; i<9; i++){
 				slotBackgroundListSell.get(i).setVisibility(View.VISIBLE);
-				slotItemImageListSell.get(i).setVisibility(View.VISIBLE);				
+				slotItemImageListSell.get(i).setVisibility(View.VISIBLE);
+				if(i<5){
+					slotBackgroundListEquip.get(i).setVisibility(View.INVISIBLE);
+					slotItemImageListEquip.get(i).setVisibility(View.INVISIBLE);
+				}
+				playerEquip.setVisibility(View.INVISIBLE);
+				
+				slotListEquip.clear();
 			}	
 		} else {
 			for(int i=0; i<9; i++){
 				slotBackgroundListSell.get(i).setVisibility(View.INVISIBLE);
 				slotItemImageListSell.get(i).setVisibility(View.INVISIBLE);
+				if(i<5){
+					slotBackgroundListEquip.get(i).setVisibility(View.VISIBLE);
+					slotItemImageListEquip.get(i).setVisibility(View.VISIBLE);
+				}
+				playerEquip.setVisibility(View.VISIBLE);
+
 				slotListSell.clear();
 			}
 		}
@@ -122,22 +148,24 @@ public class InventarActivity extends Activity {
 	}
 
 	
-
 	private void setupAllClickListeners() {
-		for(int i=0; i<9; i++ ){
-			setupOnClickListener(slotBackgroundList.get(i), slotItemImageList.get(i), slotList.get(i));
-		}
-		
-		if(checkNeededInterface()){
-			for(int i=0; i<9; i++){
-				setupOnLongClickListener(slotBackgroundList.get(i), slotItemImageList.get(i), slotList.get(i));
-			}
-			for(int i=0; i<9; i++ ){
-				setupOnClickListener(slotBackgroundListSell.get(i), slotItemImageListSell.get(i), slotListSell.get(i));
+		for (int i = 0; i < 9; i++) {
+			setupOnClickListener(slotBackgroundList.get(i),	slotItemImageList.get(i), slotList.get(i));
+
+			if (checkNeededInterface()) {
+				setupOnLongClickListenerSell(slotBackgroundList.get(i),slotItemImageList.get(i), slotList.get(i));
+				setupOnLongClickListenerBuy(slotBackgroundListSell.get(i),slotItemImageListSell.get(i), slotListSell.get(i));
+				setupOnClickListener(slotBackgroundListSell.get(i),slotItemImageListSell.get(i), slotListSell.get(i));
+			} else {
+				setupOnLongClickListenerAddEquip(slotBackgroundList.get(i),slotItemImageList.get(i), slotList.get(i));
+				
+				if(i<5){
+					setupOnLongClickListenerRemoveEquip(slotBackgroundListEquip.get(i),slotItemImageListEquip.get(i), slotListEquip.get(i));
+					setupOnClickListener(slotBackgroundListEquip.get(i), slotItemImageListEquip.get(i), slotListEquip.get(i));
+				}
 			}
 		}
 	}
-
 	
 
 	private void setupDatabaseConnection() {
@@ -156,7 +184,6 @@ public class InventarActivity extends Activity {
 		
 		//hier kriegt man die Infos, welche Items der Sack/Verkäufer/etc. beinhaltet...
 				//z.b. slotListSell = givenItemList.getAllItems oder so...
-		
 		slotListSell.add(testSlot);
 		slotListSell.add(testSlot2);
 		slotListSell.add(testSlot3);
@@ -165,9 +192,15 @@ public class InventarActivity extends Activity {
 		slotListSell.add(testSlot3);
 		slotListSell.add(testSlot3);
 		slotListSell.add(testSlot3);
-		slotListSell.add(testSlot3);		
+		slotListSell.add(testSlot3);	
+		
+		slotListEquip.add(testSlot);
+		slotListEquip.add(testSlot2);
+		slotListEquip.add(testSlot3);
+		slotListEquip.add(testSlot3);
+		slotListEquip.add(testSlot3);
 	}
-	private void setupOnLongClickListener(final ImageButton slotBackground,
+	private void setupOnLongClickListenerSell(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		slotItem.setOnLongClickListener(new OnLongClickListener() {
 			
@@ -177,7 +210,64 @@ public class InventarActivity extends Activity {
 				} else {
 					markThisSlot(slotBackground);
 					slot.setMarked();
-					checkLongClickedItem(slotBackground, slotItem, slot);
+					checkLongClickedItemSell(slotBackground, slotItem, slot);
+				}
+				return false;
+			}
+		});
+		
+		
+	}
+	
+	private void setupOnLongClickListenerBuy(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		slotItem.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				if (slot.getNumberOfItems().equals("0")) {
+				} else {
+					markThisSlot(slotBackground);
+					slot.setMarked();
+					checkLongClickedItemBuy(slotBackground, slotItem, slot);
+				}
+				return false;
+			}
+		});
+		
+		
+	}
+	
+	private void setupOnLongClickListenerAddEquip(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		slotItem.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				if (slot.getNumberOfItems().equals("0")) {
+				} else {
+					markThisSlot(slotBackground);
+					slot.setMarked();
+					checkLongClickedItemAddEquip(slotBackground, slotItem, slot);
+				}
+				return false;
+			}
+		});
+		
+		
+	}
+	
+	private void setupOnLongClickListenerRemoveEquip(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		slotItem.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				if (slot.getNumberOfItems().equals("0")) {
+				} else {
+					markThisSlot(slotBackground);
+					slot.setMarked();
+					checkLongClickedItemRemoveEquip(slotBackground, slotItem, slot);
 				}
 				return false;
 			}
@@ -188,19 +278,38 @@ public class InventarActivity extends Activity {
 	
 
 
-	private void checkLongClickedItem(final ImageButton slotBackground,
+	private void checkLongClickedItemSell(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		showSellNotification(slotBackground, slotItem, slot);
+	}
+	
+	private void checkLongClickedItemBuy(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		showBuyNotification(slotBackground, slotItem, slot);
+	}
+	
+	private void checkLongClickedItemAddEquip(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		if(slot.getItemType().equals(EQUIP_HEAD) || slot.getItemType().equals(EQUIP_UPPER_BODY) || slot.getItemType().equals(EQUIP_HANDS) || slot.getItemType().equals(EQUIP_LOWER_BODY) || slot.getItemType().equals(EQUIP_FEET)){
+			showAddEquipNotification(slotBackground, slotItem, slot);
+		} else {
+			showNotEquipableNotification();
+		}
+	}
+	
+	private void checkLongClickedItemRemoveEquip(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		showRemoveEquipNotification(slotBackground, slotItem, slot);
 	}
 	
 
 	private void showSellNotification(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
-		dialogBuilder.setTitle("Attention");
-		dialogBuilder.setMessage("Do you really want to sell this item?");
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Willst du dieses Item wirklich verkaufen?");
 		dialogBuilder.setCancelable(false);
-		dialogBuilder.setPositiveButton("Yes", new Dialog.OnClickListener() {
+		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
@@ -210,7 +319,91 @@ public class InventarActivity extends Activity {
 				
 			}
 		});
-		dialogBuilder.setNegativeButton("No", new Dialog.OnClickListener() {
+		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				// if this button is clicked, just close
+				// the dialog box and do nothing
+				dialog.cancel();
+			}
+	});
+		
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();		
+	}
+	
+	private void showAddEquipNotification(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Willst du dieses Item wirklich anlegen?");
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				//if this button is clicked, the item will be sold
+				
+				addEquipItem(slotBackground, slotItem, slot);
+				
+			}
+		});
+		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				// if this button is clicked, just close
+				// the dialog box and do nothing
+				dialog.cancel();
+			}
+	});
+		
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();		
+	}
+	
+	private void showRemoveEquipNotification(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Willst du dieses Item wirklich ablegen?");
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				//if this button is clicked, the item will be sold
+				
+				removeEquipItem(slotBackground, slotItem, slot);
+				
+			}
+		});
+		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				// if this button is clicked, just close
+				// the dialog box and do nothing
+				dialog.cancel();
+			}
+	});
+		
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();		
+	}
+	
+	private void showBuyNotification(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Willst du dieses Item wirklich kaufen?");
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				//if this button is clicked, the item will be sold
+				
+				buyItem(slotBackground, slotItem, slot);
+				
+			}
+		});
+		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog,int id) {
 				// if this button is clicked, just close
 				// the dialog box and do nothing
@@ -253,6 +446,171 @@ public class InventarActivity extends Activity {
 		setupAllClickListeners();
 	}
 	
+	private void buyItem(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		Slot tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
+		boolean putItemInSlot = false;
+		if (slot.getNumberOfItems().equalsIgnoreCase("1")){
+			slot.eraseSlot();
+		} else {
+			slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
+		}
+		setSlotsUnmarked();
+		for(int i=0; i<9; i++){
+			if(tempSlot.getItemName().equalsIgnoreCase(slotList.get(i).getItemName()) && putItemInSlot == false){
+				if(slotList.get(i).getNumberOfItems().equalsIgnoreCase("5")){
+					//do nothing
+				} else{
+					slotList.get(i).setNumberOfItems("" + (Integer.parseInt(slotList.get(i).getNumberOfItems())+1));
+					putItemInSlot = true;
+				}
+			}
+		}
+		for (int i = 0; i < 9; i++) {
+			if (slotList.get(i).getItemName().equalsIgnoreCase("leer") && putItemInSlot == false) {
+				slotList.set(i, tempSlot);
+				putItemInSlot = true;
+			}
+		}
+		setItemsOnOwnSlots();
+		setItemsOnSellSlots();
+		setupAllClickListeners();
+	}
+	
+	private void addEquipItem(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		Slot tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
+		setSlotsUnmarked();
+			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_HEAD)){
+				if(slotListEquip.get(0).getNumberOfItems().equalsIgnoreCase("0")){
+					slotListEquip.set(0, tempSlot);
+					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
+						slot.eraseSlot();
+					} else {
+						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
+					}
+				} else{
+					showUsedSlotNotification();
+				}
+			}
+			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_UPPER_BODY)){
+				if(slotListEquip.get(1).getNumberOfItems().equalsIgnoreCase("0")){
+					slotListEquip.set(1, tempSlot);
+					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
+						slot.eraseSlot();
+					} else {
+						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
+					}
+				} else{
+					showUsedSlotNotification();
+				}
+			}
+			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_HANDS)){
+				if(slotListEquip.get(2).getNumberOfItems().equalsIgnoreCase("0")){
+					slotListEquip.set(2, tempSlot);
+					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
+						slot.eraseSlot();
+					} else {
+						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
+					}
+				} else{
+					showUsedSlotNotification();
+				}
+			}
+			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_LOWER_BODY)){
+				if(slotListEquip.get(3).getNumberOfItems().equalsIgnoreCase("0")){
+					slotListEquip.set(3, tempSlot);
+					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
+						slot.eraseSlot();
+					} else {
+						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
+					}
+				} else{
+					showUsedSlotNotification();
+				}
+			}
+			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_FEET)){
+				if(slotListEquip.get(4).getNumberOfItems().equalsIgnoreCase("0")){
+					slotListEquip.set(4, tempSlot);
+					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
+						slot.eraseSlot();
+					} else {
+						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
+					}
+				} else{
+					showUsedSlotNotification();
+				}
+			}
+			
+			
+		setItemsOnOwnSlots();
+		setItemsOnEquipSlots();
+		setupAllClickListeners();
+	}
+	
+	private void removeEquipItem(final ImageButton slotBackground,
+			final ImageButton slotItem, final Slot slot) {
+		Slot tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
+		boolean putItemInSlot = false;
+		if (slot.getNumberOfItems().equalsIgnoreCase("1")){
+			slot.eraseSlot();
+		} else {
+			slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
+		}
+		setSlotsUnmarked();
+		for(int i=0; i<9; i++){
+			if(tempSlot.getItemName().equalsIgnoreCase(slotList.get(i).getItemName()) && putItemInSlot == false){
+				if(slotList.get(i).getNumberOfItems().equalsIgnoreCase("5")){
+					//do nothing
+				} else{
+					slotList.get(i).setNumberOfItems("" + (Integer.parseInt(slotList.get(i).getNumberOfItems())+1));
+					putItemInSlot = true;
+				}
+			}
+		}
+		for (int i = 0; i < 9; i++) {
+			if (slotList.get(i).getItemName().equalsIgnoreCase("leer") && putItemInSlot == false) {
+				slotList.set(i, tempSlot);
+				putItemInSlot = true;
+			}
+		}
+		setItemsOnOwnSlots();
+		setItemsOnEquipSlots();
+		setupAllClickListeners();
+	}
+	
+	
+	
+	private void showUsedSlotNotification() {
+		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Du bist schon mit einem Item des selben Typs ausgerüstet! Du musst Zuerst dieses Item ablegen!");
+		dialogBuilder.setPositiveButton("OK", new Dialog.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+			}
+		});
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();
+	}
+	
+	private void showNotEquipableNotification() {
+		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Du kannst dieses Item nicht anlegen!");
+		dialogBuilder.setPositiveButton("OK", new Dialog.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+			}
+		});
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();
+	}
+
 	private void setupOnClickListener(final ImageButton slotBackground, final ImageButton slotItem,
 			final Slot slot) {
 		slotItem.setOnClickListener(new OnClickListener() {
@@ -279,10 +637,12 @@ public class InventarActivity extends Activity {
 		for(int i=0; i<9; i++ ){
 			slotBackgroundList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.slot_unmarked));		
 			slotList.get(i).setUnmarked();
-		}
-		for(int i=0; i<9; i++ ){
 			slotBackgroundListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.slot_unmarked));		
 			slotList.get(i).setUnmarked();
+			if(i<5){
+				slotBackgroundListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.slot_unmarked));		
+				slotListEquip.get(i).setUnmarked();
+			}
 		}
 	}
 
@@ -314,6 +674,24 @@ private void setItemsOnOwnSlots() {
 					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_five));
 				}
 			}
+			if (slotList.get(i).getItemName().equalsIgnoreCase("Pizza")){
+				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("1")){
+					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_one));
+				}
+				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("2")){
+					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_two));
+				}
+				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("3")){
+					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_three));
+				}
+				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("4")){
+					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_four));
+				}
+				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("5")){
+					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_five));
+				}
+			}
+			
 		}
 		
 		
@@ -341,6 +719,69 @@ private void setItemsOnOwnSlots() {
 				}
 				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("5")){
 					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_five));
+				}
+			}
+			
+			if (slotListSell.get(i).getItemName().equalsIgnoreCase("Pizza")){
+				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("1")){
+					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_one));
+				}
+				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("2")){
+					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_two));
+				}
+				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("3")){
+					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_three));
+				}
+				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("4")){
+					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_four));
+				}
+				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("5")){
+					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_five));
+				}
+			}
+		}
+		
+	}
+	
+private void setItemsOnEquipSlots() {
+		
+		for(int i=0; i<5; i++){
+			if (slotListEquip.get(i).getItemName().equalsIgnoreCase("leer")){
+				slotItemImageListEquip.get(i).setBackgroundColor(getResources().getColor(R.color.transparent));
+			}
+			
+			if (slotListEquip.get(i).getItemName().equalsIgnoreCase("Schwert")){
+				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("1")){
+					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_one));
+				}
+				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("2")){
+					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_two));
+				}
+				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("3")){
+					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_three));
+				}
+				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("4")){
+					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_four));
+				}
+				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("5")){
+					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_five));
+				}
+			}
+			if (slotListEquip.get(i).getItemName().equalsIgnoreCase("Pizza")){
+				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("1")){
+					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_one));
+				}
+				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("2")){
+					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_two));
+				}
+				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("3")){
+					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_three));
+				}
+				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("4")){
+					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_four));
+				}
+				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("5")){
+					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_five));
 				}
 			}
 		}
@@ -390,9 +831,24 @@ private void setItemsOnOwnSlots() {
 		slot8ItemImageSell = (ImageButton) findViewById(R.id.inventar_slot8_item_image_sell);
 		slot9ItemImageSell = (ImageButton) findViewById(R.id.inventar_slot9_item_image_sell);
 		
+		slot1BackgroundEquip = (ImageButton) findViewById(R.id.player_equip_slot1);
+		slot2BackgroundEquip = (ImageButton) findViewById(R.id.player_equip_slot2);
+		slot3BackgroundEquip = (ImageButton) findViewById(R.id.player_equip_slot3);
+		slot4BackgroundEquip = (ImageButton) findViewById(R.id.player_equip_slot4);
+		slot5BackgroundEquip = (ImageButton) findViewById(R.id.player_equip_slot5);
+		
+		slot1ItemImageEquip = (ImageButton) findViewById(R.id.player_equip_slot1_item_image);
+		slot2ItemImageEquip = (ImageButton) findViewById(R.id.player_equip_slot2_item_image);
+		slot3ItemImageEquip = (ImageButton) findViewById(R.id.player_equip_slot3_item_image);
+		slot4ItemImageEquip = (ImageButton) findViewById(R.id.player_equip_slot4_item_image);
+		slot5ItemImageEquip = (ImageButton) findViewById(R.id.player_equip_slot5_item_image);
+		
+		playerEquip = (ImageButton) findViewById(R.id.player_equip);
 
 		slotList = new ArrayList<Slot>();
 		slotListSell = new ArrayList<Slot>();
+		slotListEquip = new ArrayList<Slot>();
+
 		
 		slotBackgroundList = new ArrayList<ImageButton>();
 		slotBackgroundList.add(slot1Background);
@@ -416,6 +872,13 @@ private void setItemsOnOwnSlots() {
 		slotBackgroundListSell.add(slot8BackgroundSell);
 		slotBackgroundListSell.add(slot9BackgroundSell);
 		
+		slotBackgroundListEquip = new ArrayList<ImageButton>();
+		slotBackgroundListEquip.add(slot1BackgroundEquip);
+		slotBackgroundListEquip.add(slot2BackgroundEquip);
+		slotBackgroundListEquip.add(slot3BackgroundEquip);
+		slotBackgroundListEquip.add(slot4BackgroundEquip);
+		slotBackgroundListEquip.add(slot5BackgroundEquip);
+		
 		slotItemImageList = new ArrayList<ImageButton>();
 		slotItemImageList.add(slot1ItemImage);
 		slotItemImageList.add(slot2ItemImage);
@@ -438,9 +901,17 @@ private void setItemsOnOwnSlots() {
 		slotItemImageListSell.add(slot8ItemImageSell);
 		slotItemImageListSell.add(slot9ItemImageSell);
 		
+		slotItemImageListEquip = new ArrayList<ImageButton>();
+		slotItemImageListEquip.add(slot1ItemImageEquip);
+		slotItemImageListEquip.add(slot2ItemImageEquip);
+		slotItemImageListEquip.add(slot3ItemImageEquip);
+		slotItemImageListEquip.add(slot4ItemImageEquip);
+		slotItemImageListEquip.add(slot5ItemImageEquip);
 		
-		testSlot = new Slot(0, "Schwert", "Waffe", "5");
-		testSlot2 = new Slot(0, "Schwert", "Waffe", "4");
+		
+		
+		testSlot = new Slot(0, "Schwert", EQUIP_HANDS, "1");
+		testSlot2 = new Slot(0, "Pizza", "Nahrung", "1");
 		testSlot3 = new Slot(0, "leer", "leer", "0");
 		
 		inventarDatabase.removeAll();
