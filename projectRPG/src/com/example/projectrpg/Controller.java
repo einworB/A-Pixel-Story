@@ -1,6 +1,7 @@
 package com.example.projectrpg;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.andengine.engine.Engine;
@@ -42,6 +43,8 @@ public class Controller {
 
 	private int lastLevel = 4;
 	private int lastTransitionExitSide;
+
+	private Player player;
 	
 	/** constructor */
 	public Controller(Context context){
@@ -206,15 +209,47 @@ public class Controller {
 		return FightHelper.fight(player, opponent, redBar, redBarEnemy);
 	}
 
-	public Object[] getLoot(int[] loot) {
+	public Item[] getLoot(int[] loot) {
 		db.open();
-		Object[] items = db.getLoot(loot);
+		Item[] items = db.getLoot(loot);
 		db.close();
 		return items;
 	}
 
 	public int getLevel(){
 		return level;
+	}
+
+	public int getLastLevel() {
+		return lastLevel;
+	}
+	
+	public void setPlayer(Player player){
+		this.player = player;
+	}
+	
+	public boolean addArmor(Armor armor){
+		return player.addArmor(armor);
+	}
+	
+	public void setWeapon(Weapon weapon){
+		player.setWeapon(weapon);
+	}
+	
+	public Weapon getEquippedWeapon(){
+		return player.getEquippedWeapon();
+	}
+	
+	public Armor[] getArmor(){
+		return player.getArmor();
+	}
+	
+	public ArrayList<Item> getInventory(){
+		return player.getInventory();
+	}
+	
+	public void addItemToInventory(Item item){
+		player.addItemToInventory(item);
 	}
 
 }

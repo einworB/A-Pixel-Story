@@ -6,10 +6,7 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 public class FightingSprite extends AnimatedSprite {
 	
-	private int level;
-	private Weapon equippedWeapon;
-	/** Index 0 = Kopf, 1 = Oberkörper, 2 = Hände, 3 = Beine, 4 = Füße */
-	private Armor[] equippedArmor;
+	protected int level;
 	private double health;
 	private int agility;
 	private int luck;
@@ -18,7 +15,6 @@ public class FightingSprite extends AnimatedSprite {
 	public FightingSprite(final float pX, final float pY, final float pWidth, final float pHeight, final ITiledTextureRegion pTiledTextureRegion, final VertexBufferObjectManager pVertexBufferObjectManager, int level){
 		super(pX, pY, pWidth, pHeight, pTiledTextureRegion, pVertexBufferObjectManager);
 		this.level = level;
-		equippedArmor = new Armor[5];
 		health = 100;
 		agility = level;
 		luck = level;
@@ -33,13 +29,6 @@ public class FightingSprite extends AnimatedSprite {
 		level++;
 	}
 	
-	public void addArmor(Armor armor){
-		if(armor.getLevelNeeded()<=level) equippedArmor[armor.getType()] = armor;
-	}
-	
-	public void setWeapon(Weapon weapon){
-		equippedWeapon = weapon;
-	}
 	
 	public double getHealth(){
 		return health;
@@ -51,9 +40,7 @@ public class FightingSprite extends AnimatedSprite {
 	
 	public int getAttackValue(){
 		int attackValue = level*2;
-		if(equippedWeapon != null) attackValue += equippedWeapon.getAttackValue();
-		return attackValue;
-		
+		return attackValue;		
 	}
 	
 	public int getAgility(){
@@ -66,14 +53,6 @@ public class FightingSprite extends AnimatedSprite {
 	
 	public double getConcentration(){
 		return concentration;
-	}
-	
-	public Weapon getEquippedWeapon(){
-		return equippedWeapon;
-	}
-	
-	public Armor[] getArmor(){
-		return equippedArmor;
 	}
 
 	// TODO: add defense value calculation

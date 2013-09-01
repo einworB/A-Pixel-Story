@@ -208,11 +208,11 @@ public class OurDatabase {
 				else return null;
 		} else return null;
 	}
-	public Object[] getLoot(int[] loot) {
+	public Item[] getLoot(int[] loot) {
 		String sql = new String("SELECT * FROM item WHERE levelNeeded='"+loot[0]+"'");
 		Cursor itemCursor = db.rawQuery(sql, null);
 		int itemCount = itemCursor.getCount();
-		Object[] objects = new Object[itemCount];
+		Item[] objects = new Item[itemCount];
 		int counter = 0;
 		
 		if (itemCursor.moveToFirst()) {
@@ -248,7 +248,7 @@ public class OurDatabase {
 		} else return null;
 		
 		int[] randomInts = rgen.getInts(3, itemCount);
-		Object[] result = new Object[3];
+		Item[] result = new Item[3];
 		for(int i=0; i<3; i++){
 			result[i] = objects[randomInts[i]];
 		}

@@ -1,5 +1,7 @@
 package com.example.projectrpg;
 
+import java.util.ArrayList;
+
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.options.EngineOptions;
@@ -45,6 +47,7 @@ import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * This is the Activity the Player spends most of the playtime in 
@@ -75,7 +78,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private SmoothCamera camera;
 	
 	/** used for loading bitmaps, can hold more than one*/
-	private BitmapTextureAtlas playerTiledBitmapTextureAtlas;
+	private BitmapTextureAtlas tiledBitmapTextureAtlas;
 	/** used for loading bitmaps*/
 	private TiledTextureRegion playerTextureRegion;
 	/** the players sprite */
@@ -160,10 +163,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	public void onCreateResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
-		this.playerTiledBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 256, 128);
-		this.playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.playerTiledBitmapTextureAtlas, this, "player4x4.png", 0, 0, 4, 4);
-		this.opponentTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.playerTiledBitmapTextureAtlas, this, "enemy.png", 128, 0, 4, 4);
-		this.playerTiledBitmapTextureAtlas.load();
+		this.tiledBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 256, 128);
+		this.playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.tiledBitmapTextureAtlas, this, "player4x4.png", 0, 0, 4, 4);
+		this.opponentTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.tiledBitmapTextureAtlas, this, "enemy.png", 128, 0, 4, 4);
+		this.tiledBitmapTextureAtlas.load();
 		
 		this.bitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 256, 128);		
 		this.beutelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "beutel.png", 0, 0);
@@ -220,10 +223,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 		
-		
-		for(int i=1; i<3; i++){			
+		int lastLevel = controller.getLastLevel();
+		for(int i=1; i<=lastLevel; i++){			
 			TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i);
 			OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
+			scene.generateOpponents(opponentTextureRegion, getVertexBufferObjectManager(), i);
 			controller.addSceneToManager(scene);
 		}
 
@@ -249,19 +253,20 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		final float spawnY = spawnTile.getTileY();
 
 		/* Create the sprite and add it to the scene. */
-		player = new Player(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), 2);
+		player = new Player(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), 10);
 		player.setZIndex(1);
 		int column = spawnTile.getTileColumn();
 		int row = spawnTile.getTileRow();
 		Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
-		if(column==0) player.setCurrentTileIndex(4);
-		else if(row==0) player.setCurrentTileIndex(0);
-		else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(8);
-		else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(12);
+		if(column==0) player.setCurrentTileIndex(5);
+		else if(row==0) player.setCurrentTileIndex(1);
+		else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(9);
+		else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(13);
 		
 		controller.getCurrentScene().attachChild(player);
-		final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, this.opponentTextureRegion, this.getVertexBufferObjectManager(), 1, false);
-		controller.getCurrentScene().attachChild(opponent);
+//		final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, this.opponentTextureRegion, this.getVertexBufferObjectManager(), 1, false);
+//		opponent.setCurrentTileIndex(1);
+//		controller.getCurrentScene().attachChild(opponent);
 		
 		/* let the camera chase the player */
 		camera.setChaseEntity(player);
@@ -411,24 +416,29 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 								IEntity child = scene.getChildByIndex(i);
 								if(layer.getTMXTileAt(child.getX(), child.getY())==endTile && child instanceof LootBag){
 									scene.detachChild(child);
-									Object[] loot = controller.getLoot(((LootBag) child).getLoot());
+									final Item[] loot = controller.getLoot(((LootBag) child).getLoot());
 									if(loot!=null){
 										for(int j=0; j<3; j++){
-											if(loot[j] instanceof Weapon) player.setWeapon((Weapon) loot[j]);
-											else if(loot[j] instanceof Armor) player.addArmor((Armor) loot[j]);
+											player.addItemToInventory(loot[j]);
 										}
 									}
-									if(player.getEquippedWeapon()!=null) Log.d("RPG", "Equipped Weapon: "+player.getEquippedWeapon().getName());
-									Armor[] equippedArmor = player.getArmor();
-									for(int j=0; j<equippedArmor.length; j++){
-										if(equippedArmor[j]!=null) Log.d("RPG", "EquippedArmorSlot "+j+": "+equippedArmor[j].getName());
-									}
+//									if(player.getEquippedWeapon()!=null) Log.d("RPG", "Equipped Weapon: "+player.getEquippedWeapon().getName());
+//									Armor[] equippedArmor = player.getArmor();
+//									for(int j=0; j<equippedArmor.length; j++){
+//										if(equippedArmor[j]!=null) Log.d("RPG", "EquippedArmorSlot "+j+": "+equippedArmor[j].getName());
+//									}
+									Log.d("RPG", player.getInventory().toString());
+									runOnUiThread(new Runnable() {										
+										@Override
+										public void run() {
+											Toast.makeText(getApplicationContext(), "Looted "+loot[0].getName()+", "+loot[1].getName()+" und "+loot[2].getName(), Toast.LENGTH_LONG).show();
+										}
+									});
 									break;
 								}
 							}
 						}
 					});
-					
 				}
 				if(fleeing) fleeing = false;
 			}
@@ -442,11 +452,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			int divColumns = destinationTile.getTileColumn() - playerTile.getTileColumn();
 			int divRows = destinationTile.getTileRow() - playerTile.getTileRow();
 			if(divColumns==0){
-				if(divRows<0) sprite.setCurrentTileIndex(8);
-				else sprite.setCurrentTileIndex(0);
+				if(divRows<0) sprite.setCurrentTileIndex(9);
+				else sprite.setCurrentTileIndex(1);
 			} else{
-				if(divColumns<0) sprite.setCurrentTileIndex(12);
-				else sprite.setCurrentTileIndex(4);
+				if(divColumns<0) sprite.setCurrentTileIndex(13);
+				else sprite.setCurrentTileIndex(5);
 			}
 		}
 	}
@@ -484,13 +494,14 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				int column = spawnTile.getTileColumn();
 				int row = spawnTile.getTileRow();
 				Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
-				if(column==0) player.setCurrentTileIndex(4);
-				else if(row==0) player.setCurrentTileIndex(0);
-				else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(8);
-				else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(12);
+				if(column==0) player.setCurrentTileIndex(5);
+				else if(row==0) player.setCurrentTileIndex(1);
+				else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(9);
+				else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(13);
 				
-				final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, playerTextureRegion, getVertexBufferObjectManager(), 2, false);
-				scene.attachChild(opponent);
+//				final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, opponentTextureRegion, getVertexBufferObjectManager(), controller.getLevel(), false);
+//				opponent.setCurrentTileIndex(1);
+//				scene.attachChild(opponent);
 				LevelActivity.this.mEngine.setScene(scene);
 			}
 		});	
@@ -566,6 +577,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 					});
 					if(!portraitEnemy.hasParent()){
 						hud.attachChild(portraitEnemy);
+						hud.sortChildren();
+					}if(!redBarEnemy.hasParent()){
+						hud.attachChild(redBarEnemy);
 						hud.sortChildren();
 					}
 					turnToTile(player, destinationTile, startTile, scene.getMap());
