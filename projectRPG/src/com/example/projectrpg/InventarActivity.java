@@ -196,50 +196,79 @@ public class InventarActivity extends Activity {
 		boolean putItemInSlot = false;
 		Slot tempSlot = new Slot(0, "leer", "leer", "0");
 
-	//	 inventoryList = controller.getInventory();
-//		equipedArmorList = controller.getArmor();
+		try{
+		 inventoryList = controller.getInventory();
+		}
+		catch(NullPointerException e){
+			//do nothing
+		}
+		try{
+			 equipedArmorList = controller.getArmor();
+			}
+			catch(NullPointerException e){
+				//do nothing
+			}
 		
-		equipedArmorList[0] = new Armor("Schwert", 1, 1, 0);
-		equipedArmorList[1] = new Armor("Pizza", 1, 1, 2);
-		equipedArmorList[2] = new Armor("leer", 1, 1, 4);
-		equipedArmorList[3] = new Armor("leer", 1, 1, 1);
-		equipedArmorList[4] = new Armor("leer", 1, 1, 3);
+	/*	Item tempItem = new Item("Schwert", 1, EQUIP_HEAD);
+		Armor tempArmor = (Armor) tempItem;
+		tempArmor.setDefenseValue(1);
+		tempArmor.setType(0);
+		tempArmor.set
+		
+		Item tempItem2 = new Item("Pizza", 1, EQUIP_HANDS);
+		Armor tempArmor2 = (Armor) tempItem2;
+		tempArmor2.setDefenseValue(1);
+		tempArmor2.setType(2);
+		
+		Item tempItem3 = new Item("leer", 1, "leer");
+		Armor tempArmor3 = (Armor) tempItem3;
+		tempArmor3.setDefenseValue(0);
+		tempArmor3.setType(5);
+		
+	
+		
+		equipedArmorList[0] = tempArmor;
+		equipedArmorList[1] = tempArmor2;
+		equipedArmorList[2] = tempArmor3;
+		equipedArmorList[3] = tempArmor3;
+		equipedArmorList[4] = tempArmor3;
 		
 		 
-		inventoryList.add(new Armor("Schwert", 1, 1, 0));
-		inventoryList.add(new Armor("Schwert", 1, 1, 0));
-		inventoryList.add(new Armor("Schwert", 1, 1, 0));
-		inventoryList.add(new Armor("Schwert", 1, 1, 0));
-		inventoryList.add(new Armor("Schwert", 1, 1, 0));
-		inventoryList.add(new Armor("Schwert", 1, 1, 0));
-		inventoryList.add(new Armor("Schwert", 1, 1, 0));
-
+		inventoryList.add(tempArmor);
+		inventoryList.add(tempArmor);
+		inventoryList.add(tempArmor);
+		inventoryList.add(tempArmor);
+		inventoryList.add(tempArmor2);
+		inventoryList.add(tempArmor);
+		inventoryList.add(tempArmor);
 		
-/*		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
-		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
-		inventoryList.add(new Item("Pizza", 1, EQUIP_HANDS));
-		inventoryList.add(new Item("Pizza", 1, EQUIP_HANDS));
-		inventoryList.add(new Item("Pizza", 1, EQUIP_HANDS));
-		inventoryList.add(new Item("Pizza", 1, EQUIP_HANDS));
-		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
-		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
-		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
-		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
-		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
-		inventoryList.add(new Item("Pizza", 1, EQUIP_HANDS));
-		inventoryList.add(new Item("Pizza", 1, EQUIP_HANDS));
-		inventoryList.add(new Item("Schwert", 1, EQUIP_HEAD));
-**/
-		for (int i = 0; i < inventoryList.size(); i++) {
-			
-			putItemInSlot = false;
-			for (int j = 0; j < 9; j++) {
-				if (inventoryList.get(i).getName().equalsIgnoreCase(slotList.get(j).getItemName())) {
-					if (slotList.get(j).getNumberOfItems()
-							.equalsIgnoreCase("5")) {
-
-					} else {
-						slotList.set(j, new Slot(j, inventoryList.get(i).getName(), inventoryList.get(i).getItemType(), "" + (Integer.parseInt(slotList.get(j).getNumberOfItems())+1)));
+		**/
+		if(inventoryList != null){
+			for (int i = 0; i < inventoryList.size(); i++) {
+				
+				putItemInSlot = false;
+				for (int j = 0; j < 9; j++) {
+					if (inventoryList.get(i).getName().equalsIgnoreCase(slotList.get(j).getItemName())) {
+						if (slotList.get(j).getNumberOfItems()
+								.equalsIgnoreCase("5")) {
+	
+						} else {
+							slotList.set(j, new Slot(j, inventoryList.get(i).getName(), inventoryList.get(i).getItemType(), "" + (Integer.parseInt(slotList.get(j).getNumberOfItems())+1)));
+							slotList.get(j).setlevelNeeded(inventoryList.get(i).getLevelNeeded());
+							if(inventoryList.get(i) instanceof Armor){
+								slotList.get(j).setDefenseValue(((Armor)inventoryList.get(i)).getDefenseValue());
+							} 
+							if(inventoryList.get(i) instanceof Weapon){
+								slotList.get(j).setAttackValue(((Weapon)inventoryList.get(i)).getAttackValue());
+							}
+							putItemInSlot = true;
+						}
+					}
+					if (slotList.get(j).getItemName().equalsIgnoreCase("leer")
+							&& putItemInSlot == false) {
+						tempSlot = new Slot(j, inventoryList.get(i).getName(),
+								inventoryList.get(i).getItemType(), "1");
+						slotList.set(j, tempSlot);
 						slotList.get(j).setlevelNeeded(inventoryList.get(i).getLevelNeeded());
 						if(inventoryList.get(i) instanceof Armor){
 							slotList.get(j).setDefenseValue(((Armor)inventoryList.get(i)).getDefenseValue());
@@ -250,64 +279,52 @@ public class InventarActivity extends Activity {
 						putItemInSlot = true;
 					}
 				}
-				if (slotList.get(j).getItemName().equalsIgnoreCase("leer")
-						&& putItemInSlot == false) {
-					tempSlot = new Slot(j, inventoryList.get(i).getName(),
-							inventoryList.get(i).getItemType(), "1");
-					slotList.set(j, tempSlot);
-					slotList.get(j).setlevelNeeded(inventoryList.get(i).getLevelNeeded());
-					if(inventoryList.get(i) instanceof Armor){
-						slotList.get(j).setDefenseValue(((Armor)inventoryList.get(i)).getDefenseValue());
-					} 
-					if(inventoryList.get(i) instanceof Weapon){
-						slotList.get(j).setAttackValue(((Weapon)inventoryList.get(i)).getAttackValue());
-					}
-					putItemInSlot = true;
-				}
 			}
 		}
 		
 		for (int i = 0; i < equipedArmorList.length; i++) {
-			slotListEquip.get(equipedArmorList[i].getType()).setItemName(equipedArmorList[i].getName());
-			if (equipedArmorList[i].getType() == 0) {
-				if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
-				}else{
-					slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_HEAD, "1"));
-					slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
-					slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
+			if (equipedArmorList[i] != null){
+				slotListEquip.get(equipedArmorList[i].getType()).setItemName(equipedArmorList[i].getName());
+				if (equipedArmorList[i].getType() == 0) {
+					if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
+					}else{
+						slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_HEAD, "1"));
+						slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
+						slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
+					}
 				}
-			}
-			if (equipedArmorList[i].getType() == 1) {
-				if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
-				}else{
-					slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_UPPER_BODY, "1"));
-					slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
-					slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
-					}
-			}
-			if (equipedArmorList[i].getType() == 2) {
-				if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
-				}else{
-				slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_HANDS, "1"));
-				slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
-				slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
+				if (equipedArmorList[i].getType() == 1) {
+					if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
+					}else{
+						slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_UPPER_BODY, "1"));
+						slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
+						slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
+						}
 				}
-			}
-			if (equipedArmorList[i].getType() == 3) {
-				if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
-				}else{
-					slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_LOWER_BODY, "1"));
+				if (equipedArmorList[i].getType() == 2) {
+					if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
+					}else{
+					slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_HANDS, "1"));
 					slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
 					slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
 					}
-			}
-			if (equipedArmorList[i].getType() == 4) {
-				if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
-				}else{
-					slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_FEET, "1"));
-					slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
-					slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
+				}
+				if (equipedArmorList[i].getType() == 3) {
+					if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
+					}else{
+						slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_LOWER_BODY, "1"));
+						slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
+						slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
+						}
+				}
+				if (equipedArmorList[i].getType() == 4) {
+					if(equipedArmorList[i].getName().equalsIgnoreCase("leer")){
+					}else{
+						slotListEquip.set(equipedArmorList[i].getType(), new Slot(i, equipedArmorList[i].getName(),EQUIP_FEET, "1"));
+						slotListEquip.get(equipedArmorList[i].getType()).setDefenseValue(equipedArmorList[i].getDefenseValue());
+						slotListEquip.get(equipedArmorList[i].getType()).setlevelNeeded(equipedArmorList[i].getLevelNeeded());
 					}
+				}
 			}
 		}
 		
@@ -603,82 +620,97 @@ public class InventarActivity extends Activity {
 	private void addEquipItem(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		Slot tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
+		Item tempItem = new Item(tempSlot.getItemName(), tempSlot.getLevelNeeded(), tempSlot.getItemType());
+		Armor tempArmor = (Armor) tempItem;
 		setSlotsUnmarked();
 			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_HEAD)){
 				if(slotListEquip.get(0).getNumberOfItems().equalsIgnoreCase("0")){
-					slotListEquip.set(0, tempSlot);
-					slotListEquip.get(0).setDefenseValue(tempSlot.getDefenseValue());
-					controller.addArmor(new Armor(tempSlot.getItemName(), 1, tempSlot.getDefenseValue(), 0));
-
+				//	slotListEquip.set(0, tempSlot);
+					tempArmor.setDefenseValue(tempSlot.getDefenseValue());
+					tempArmor.setType(0);
+					controller.addArmor(tempArmor);
+					
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
 						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
 					}
+					controller.removeItemFromInventory(tempArmor);
+
 				} else{
 					showUsedSlotNotification();
 				}
 			}
 			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_UPPER_BODY)){
 				if(slotListEquip.get(1).getNumberOfItems().equalsIgnoreCase("0")){
-					slotListEquip.set(1, tempSlot);
-					slotListEquip.get(1).setDefenseValue(tempSlot.getDefenseValue());
-					controller.addArmor(new Armor(tempSlot.getItemName(), 1, tempSlot.getDefenseValue(), 1));
+				//	slotListEquip.set(1, tempSlot);
+					tempArmor.setDefenseValue(tempSlot.getDefenseValue());
+					tempArmor.setType(0);
+					controller.addArmor(tempArmor);
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
 						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
 					}
+					controller.removeItemFromInventory(tempArmor);
+					
 				} else{
 					showUsedSlotNotification();
 				}
 			}
 			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_HANDS)){
 				if(slotListEquip.get(2).getNumberOfItems().equalsIgnoreCase("0")){
-					slotListEquip.set(2, tempSlot);
-					slotListEquip.get(2).setDefenseValue(tempSlot.getDefenseValue());
-					controller.addArmor(new Armor(tempSlot.getItemName(), 1, tempSlot.getDefenseValue(), 2));
-
+				//	slotListEquip.set(2, tempSlot);
+					tempArmor.setDefenseValue(tempSlot.getDefenseValue());
+					tempArmor.setType(0);
+					controller.addArmor(tempArmor);
+					
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
 						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
 					}
+					controller.removeItemFromInventory(tempArmor);
 				} else{
 					showUsedSlotNotification();
 				}
 			}
 			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_LOWER_BODY)){
 				if(slotListEquip.get(3).getNumberOfItems().equalsIgnoreCase("0")){
-					slotListEquip.set(3, tempSlot);
-					slotListEquip.get(3).setDefenseValue(tempSlot.getDefenseValue());
-					controller.addArmor(new Armor(tempSlot.getItemName(), 1, tempSlot.getDefenseValue(), 3));
+				//	slotListEquip.set(3, tempSlot);
+					tempArmor.setDefenseValue(tempSlot.getDefenseValue());
+					tempArmor.setType(0);
+					controller.addArmor(tempArmor);
+					
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
 						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
 					}
+					controller.removeItemFromInventory(tempArmor);
 				} else{
 					showUsedSlotNotification();
 				}
 			}
 			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_FEET)){
 				if(slotListEquip.get(4).getNumberOfItems().equalsIgnoreCase("0")){
-					slotListEquip.set(4, tempSlot);
-					slotListEquip.get(4).setDefenseValue(tempSlot.getDefenseValue());
-					controller.addArmor(new Armor(tempSlot.getItemName(), 1, tempSlot.getDefenseValue(), 4));
+			//		slotListEquip.set(4, tempSlot);
+					tempArmor.setDefenseValue(tempSlot.getDefenseValue());
+					tempArmor.setType(0);
+					controller.addArmor(tempArmor);
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
 						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
 					}
+					controller.removeItemFromInventory(tempArmor);
 				} else{
 					showUsedSlotNotification();
 				}
 			}
 			
 			
-			
+		getSavedItems();	
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
 		setupAllClickListeners();
@@ -687,14 +719,36 @@ public class InventarActivity extends Activity {
 	private void removeEquipItem(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		Slot tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
+		Armor tempArmor = new Armor("", 1, 1, 1);
 		boolean putItemInSlot = false;
-		if (slot.getNumberOfItems().equalsIgnoreCase("1")){
+	/*	if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 			slot.eraseSlot();
 		} else {
 			slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
+		} **/
+		if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_HEAD)){
+			tempArmor = equipedArmorList[0];
+			controller.removeArmor(tempArmor);
 		}
+		if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_UPPER_BODY)){
+			tempArmor = equipedArmorList[1];
+			controller.removeArmor(tempArmor);
+			}
+		if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_HANDS)){
+			tempArmor = equipedArmorList[2];
+			controller.removeArmor(tempArmor);
+			}
+		if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_LOWER_BODY)){
+			tempArmor = equipedArmorList[3];
+			controller.removeArmor(tempArmor);
+			}
+		if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_FEET)){
+			tempArmor = equipedArmorList[4];
+			controller.removeArmor(tempArmor);
+			}
+		
 		setSlotsUnmarked();
-		for(int i=0; i<9; i++){
+	/*	for(int i=0; i<9; i++){
 			if(tempSlot.getItemName().equalsIgnoreCase(slotList.get(i).getItemName()) && putItemInSlot == false){
 				if(slotList.get(i).getNumberOfItems().equalsIgnoreCase("5")){
 					//do nothing
@@ -710,6 +764,11 @@ public class InventarActivity extends Activity {
 				putItemInSlot = true;
 			}
 		}
+	**/	
+		
+		controller.addItemToInventory(tempArmor);
+		
+		getSavedItems();	
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
 		setupAllClickListeners();
