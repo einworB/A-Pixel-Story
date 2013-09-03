@@ -1,4 +1,4 @@
-package de.projectrpg.main;
+package de.projectrpg.game;
 
 import java.util.ArrayList;
 

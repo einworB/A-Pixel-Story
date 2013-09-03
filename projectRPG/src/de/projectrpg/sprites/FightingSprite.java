@@ -7,7 +7,7 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 public class FightingSprite extends AnimatedSprite {
 	
 	protected int level;
-	private double health;
+	protected double health;
 	private int agility;
 	private int luck;
 	private double concentration;

@@ -7,7 +7,7 @@ import com.example.projectrpg.R;
 import com.example.projectrpg.R.id;
 import com.example.projectrpg.R.layout;
 
-import de.projectrpg.main.LevelActivity;
+import de.projectrpg.game.LevelActivity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;

@@ -12,7 +12,7 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 
-import de.projectrpg.main.LevelActivity;
+import de.projectrpg.game.LevelActivity;
 import de.projectrpg.sprites.NPC;
 import de.projectrpg.sprites.Opponent;
 import de.projectrpg.util.OurRandomGenerator;

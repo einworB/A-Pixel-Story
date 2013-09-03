@@ -1,4 +1,4 @@
-package de.projectrpg.main;
+package de.projectrpg.game;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -17,6 +17,7 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import de.projectrpg.algorithm.Algorithm;
 import de.projectrpg.database.Armor;
+import de.projectrpg.database.HealItem;
 import de.projectrpg.database.Item;
 import de.projectrpg.database.OurDatabase;
 import de.projectrpg.database.Weapon;
@@ -295,8 +296,16 @@ public class Controller implements Serializable{
 		player.removeItemFromInventory(item);
 	}
 	
-	public void removeArmor(Armor armor) {
-		player.removeArmor(armor);
+	public void removeEquippedArmor(Armor armor) {
+		player.removeEquippedArmor(armor);
+	}
+	
+	public void removeEquippedWeapon(Weapon weapon){
+		player.removeEquippedWeapon(weapon);
+	}
+	
+	public void heal(HealItem item){
+		player.heal(item.getHeal());
 	}
 
 }

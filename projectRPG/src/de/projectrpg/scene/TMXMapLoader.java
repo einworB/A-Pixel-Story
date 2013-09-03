@@ -16,7 +16,7 @@ import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
-import de.projectrpg.main.Controller;
+import de.projectrpg.game.Controller;
 
 import android.content.res.AssetManager;
 import android.util.Log;

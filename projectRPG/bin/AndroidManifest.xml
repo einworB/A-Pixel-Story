@@ -31,7 +31,7 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name="de.projectrpg.main.LevelActivity"
+            android:name="de.projectrpg.game.LevelActivity"
             android:label="@string/title_activity_level"
             android:configChanges="orientation|screenSize" >
         </activity>
