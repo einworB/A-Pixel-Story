@@ -301,8 +301,12 @@ public class OurDatabase {
 					}
 				}
 				if(questClosed){
-					String str = npcCursor.getString(1);
-					return convertStringToArrayList(str);
+					int textID = npcCursor.getInt(1);
+					sql = new String("SELECT text FROM text WHERE _id='"+textID+"'");
+					Cursor textCursor = db.rawQuery(sql, null);
+					if(textCursor.moveToFirst()) {
+						return convertStringToArrayList(textCursor.getString(0));
+					} else return null;
 				}
 				else{
 					sql = new String("SELECT * FROM quest WHERE npcID='"+npc.getID()+"'");
