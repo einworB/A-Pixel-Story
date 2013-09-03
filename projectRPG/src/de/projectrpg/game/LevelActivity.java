@@ -148,6 +148,12 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private TextureRegion textScrollTextureRegion;
 	private Sprite textScroll;
 	private ArrayList<String> interActionText;
+	private TextureRegion experienceBackgroundTextureRegion;
+	private TextureRegion experienceBarTextureRegion;
+	private Sprite expBar;
+	private Sprite expBackground;
+	private TextureRegion startExperienceBarTextureRegion;
+	private Sprite startExpBar;
 	
 
 
@@ -184,11 +190,14 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		this.bitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 1024, 256);		
 		this.textScrollTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "dialogHintergrund.png", 0, 0);
-		this.beutelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "beutel.png", 0, 175);
+		this.beutelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "lootBag.png", 0, 175);
 		this.portraitTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portrait.png", 32, 175);
 		this.portraitEnemyTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portraitEnemy.png", 82, 175);
 		this.redBarTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "roterBalken.png", 132, 175);
 		this.inventarButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "inventarButton.png", 182, 175);
+		this.experienceBackgroundTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "expBackground.png", 236, 175);
+		this.experienceBarTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "expBar.png", 236, 205);
+		this.startExperienceBarTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "startExpBar.png", 738, 175);
 		this.bitmapTextureAtlas.load();
 		
 		
@@ -222,10 +231,14 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 //					startActivity(intent);
 				}
 				return true;
-			}			
+			}
 		};
-
-		controller = new Controller(this);
+		
+		expBar = new Sprite(91, 13, 0, 30, experienceBarTextureRegion, getVertexBufferObjectManager());
+		expBackground = new Sprite(70, 12, CAMERA_WIDTH - 140, 32, experienceBackgroundTextureRegion, getVertexBufferObjectManager());
+		startExpBar = new Sprite(71, 13, 20, 30, startExperienceBarTextureRegion, getVertexBufferObjectManager());
+		
+		controller = new Controller(this, expBar);
 		
 		
 //		moveXStart = 0;
@@ -296,6 +309,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		hud.attachChild(redBarPlayer);
 		hud.attachChild(redBarEnemy);
 		hud.attachChild(inventarButton);
+		
+		hud.attachChild(expBar);
+		hud.attachChild(expBackground);
+		hud.attachChild(startExpBar);
 		
 		hud.registerTouchArea(inventarButton);
 //		hud.setTouchAreaBindingOnActionDownEnabled(true);
@@ -666,6 +683,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		Sprite beutel = new LootBag(destinationTile.getTileX(), destinationTile.getTileY(), beutelTextureRegion, getVertexBufferObjectManager(), opponent);
 		scene.attachChild(beutel);
 		scene.sortChildren();
+		controller.addExp(100 * opponent.getLevel());
 	}
 
 	@Override
