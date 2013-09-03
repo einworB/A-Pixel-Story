@@ -371,7 +371,14 @@ public class OurDatabase {
 						}
 						questManager.startQuest(quest);
 						return quest.getStartText();
-					} else return null;
+					} else {
+						int textID = npcCursor.getInt(1);
+						sql = new String("SELECT text FROM text WHERE _id='"+textID+"'");
+						Cursor textCursor = db.rawQuery(sql, null);
+						if(textCursor.moveToFirst()) {
+							return convertStringToArrayList(textCursor.getString(0));
+						} else return null;
+					}
 					
 				}
 			}

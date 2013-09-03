@@ -31,6 +31,7 @@ public class QuestManager {
 		closedQuests.add(activeQuests.remove(i));
 	}
 	
+	
 	public ArrayList<Quest> getActiveQuests(){
 		return activeQuests;
 	}
