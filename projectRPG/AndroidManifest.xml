@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.projectrpg.MainActivity"
+            android:name="de.projectrpg.start.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
@@ -31,7 +31,7 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name="com.example.projectrpg.LevelActivity"
+            android:name="de.projectrpg.main.LevelActivity"
             android:label="@string/title_activity_level"
             android:configChanges="orientation|screenSize" >
         </activity>
