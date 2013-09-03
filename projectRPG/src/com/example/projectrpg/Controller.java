@@ -1,6 +1,7 @@
 package com.example.projectrpg;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -28,8 +29,10 @@ import android.util.Log;
  * @author Philip
  *
  */
-public class Controller {
+@SuppressWarnings("serial")
+public class Controller implements Serializable{
 	
+
 	/** boolean if the player is moving */
 	private boolean isMoving;
 	
@@ -271,6 +274,14 @@ public class Controller {
 
 	public void checkQuests(Item item) {
 		questManager.checkQuests(item);
+	}
+
+	public void removeItemFromInventory(Item item) {
+		player.removeItemFromInventory(item);
+	}
+	
+	public void removeArmor(Armor armor) {
+		player.removeArmor(armor);
 	}
 
 }

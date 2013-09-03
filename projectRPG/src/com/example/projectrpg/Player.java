@@ -54,4 +54,12 @@ public class Player extends FightingSprite {
 		inventory.add(item);
 	}
 
+	public void removeItemFromInventory(Item item) {
+		inventory.remove(item);
+	}
+
+	public void removeArmor(Armor armor) {
+		equippedArmor[armor.getType()] = null;
+	}
+
 }

@@ -209,8 +209,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				if(!inventarStarted){
 					Log.d("RPG", "Inventar touched");
 					inventarStarted = true;
-					Intent intent = new Intent(LevelActivity.this, InventarActivity.class);
-					startActivity(intent);
+//					Intent intent = new Intent(LevelActivity.this, InventarActivity.class);
+//					intent.putExtra("controller", controller);
+//					startActivity(intent);
 				}
 				return true;
 			}			
@@ -327,7 +328,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 //			text.setText(interActionText.remove(0));
 			
 			if(text!=null) if(text.hasParent()) hud.detachChild(text);
-			text = new TickerText(textScroll.getX()+40, textScroll.getY()+15, font, interActionText.remove(0), new TickerTextOptions(AutoWrap.LETTERS, textScroll.getWidth()-80, HorizontalAlign.LEFT, 15), this.getVertexBufferObjectManager());
+			text = new TickerText(textScroll.getX()+40, textScroll.getY()+15, font, interActionText.remove(0), new TickerTextOptions(AutoWrap.WORDS, textScroll.getWidth()-80, HorizontalAlign.LEFT, 15), this.getVertexBufferObjectManager());
 			text.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 			
 			hud.attachChild(text);
