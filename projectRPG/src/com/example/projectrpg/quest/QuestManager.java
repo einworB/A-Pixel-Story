@@ -2,6 +2,11 @@ package com.example.projectrpg.quest;
 
 import java.util.ArrayList;
 
+import android.util.Log;
+
+import com.example.projectrpg.Item;
+import com.example.projectrpg.NPC;
+
 
 public class QuestManager {
 	
@@ -24,5 +29,61 @@ public class QuestManager {
 	
 	public ArrayList<Quest> getActiveQuests(){
 		return activeQuests;
+	}
+
+	public ArrayList<Quest> getClosedQuests() {
+		return closedQuests;
+	}
+
+	public void checkQuests(Item item) {
+		Log.d("checkQuests", "checking Getitemquests; Active Quests: "+activeQuests.toString());
+		if(!activeQuests.isEmpty()){
+			for(int i=0; i<activeQuests.size(); i++){
+				Quest quest = activeQuests.get(i);
+				if(quest instanceof GetItemQuest){
+					if(((GetItemQuest) quest).getItemName().contentEquals(item.getName())){
+						if(((GetItemQuest) quest).gotOne()){
+							Log.d("checkQuests", "Quest fulfilled!");
+							quest.setFulfilled();
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void checkQuests(NPC npc) {
+		Log.d("checkQuests", "checking Talktoquests; Active Quests: "+activeQuests.toString());
+		if(!activeQuests.isEmpty()){
+			for(int i=0; i<activeQuests.size(); i++){
+				Quest quest = activeQuests.get(i);
+				if(quest instanceof TalkToQuest){
+					if(((TalkToQuest) quest).getTargetID()==npc.getID()){
+						Log.d("checkQuests", "Quest fulfilled!");
+						quest.setFulfilled();					
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	public void checkQuests(String enemyName) {
+		Log.d("checkQuests", "checking Killquests; Active Quests: "+activeQuests.toString());
+		if(!activeQuests.isEmpty()){
+			for(int i=0; i<activeQuests.size(); i++){
+				Quest quest = activeQuests.get(i);
+				if(quest instanceof KillQuest){
+					if(((KillQuest) quest).getEnemyName().contentEquals(enemyName)){
+						if(((KillQuest) quest).gotOne()){
+							Log.d("checkQuests", "Quest fulfilled!");
+							quest.setFulfilled();
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 }

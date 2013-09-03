@@ -1,23 +1,30 @@
 package com.example.projectrpg.quest;
 
+import java.util.ArrayList;
+
+import com.example.projectrpg.Item;
+
 
 public class GetItemQuest extends Quest{
 	
-	private int itemID;
+	private String itemName;
 	private int count;
+	private int alreadyFound;
 
-
-	/** getItemQuest without specific reward */
-	public GetItemQuest(String name, String[] dialog, int itemID, int count, int level){
-		this(name, dialog, itemID, count, level, null);
-	}
-	
-	
-	/** getItemQuest with specific reward */
-	public GetItemQuest(String name, String[] dialog, int itemID, int count, int level, int[] rewardSeed){
-		super(name, dialog, level, rewardSeed);
-		this.itemID = itemID;
+	public GetItemQuest(String name, int npcID, ArrayList<String> startText, ArrayList<String> duringText, ArrayList<String> endText, String itemName, int count, int level, Item specialReward){
+		super(name, npcID, startText, duringText, endText, level, specialReward);
+		this.itemName = itemName;
 		this.count = count;
+		alreadyFound = 0;
+	}
+	
+	public String getItemName(){
+		return itemName;
 	}
 
+	public boolean gotOne(){
+		alreadyFound++;
+		if(alreadyFound==count) return true;
+		else return false;
+	}
 }
