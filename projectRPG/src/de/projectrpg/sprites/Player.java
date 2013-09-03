@@ -15,7 +15,9 @@ public class Player extends FightingSprite {
 	/** Index 0 = Kopf, 1 = Oberkörper, 2 = Hände, 3 = Beine, 4 = Füße */
 	private Armor[] equippedArmor;
 	private ArrayList<Item> inventory;
-	
+
+	private int EXP = 0;
+	private int maxEXP = 0;
 	
 	
 	public Player(final float pX, final float pY, final float pWidth, final float pHeight, final ITiledTextureRegion pTiledTextureRegion, final VertexBufferObjectManager pVertexBufferObjectManager, int level){
@@ -74,4 +76,22 @@ public class Player extends FightingSprite {
 		equippedWeapon = null;
 	}
 
+	public void addEXP(int points) {
+		EXP += points;
+		maxEXP = level * 500;
+		if(EXP >= maxEXP) {
+			levelUp();
+			EXP = EXP - maxEXP;
+		}
+	}
+	
+	public int getEXPPercentage() {
+		maxEXP = level * 500;
+		int percent = (EXP * 100) / maxEXP;
+		return percent;
+	}
+	
+	public int getEXP() {
+		return EXP;
+	}
 }
