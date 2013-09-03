@@ -6,6 +6,7 @@ import android.util.Log;
 
 
 import de.projectrpg.database.Item;
+import de.projectrpg.game.Controller;
 import de.projectrpg.sprites.NPC;
 
 
@@ -13,10 +14,12 @@ public class QuestManager {
 	
 	private ArrayList<Quest> activeQuests;
 	private ArrayList<Quest> closedQuests;
+	private Controller controller;
 	
-	public QuestManager(){
+	public QuestManager(Controller controller){
 		activeQuests = new ArrayList<Quest>();
 		closedQuests = new ArrayList<Quest>();
+		this.controller = controller;
 	}
 
 	public void startQuest(Quest quest){
@@ -24,6 +27,7 @@ public class QuestManager {
 	}
 	
 	public void endQuest(int i){
+		controller.addExp(activeQuests.get(i).getLevel()*150);
 		closedQuests.add(activeQuests.remove(i));
 	}
 	

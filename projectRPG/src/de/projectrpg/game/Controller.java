@@ -77,7 +77,7 @@ public class Controller implements Serializable{
 		level = 1;
 		this.context = context;
 		db = new OurDatabase(context);
-		questManager = new QuestManager();
+		questManager = new QuestManager(this);
 	}
 
 	public void testDatabase() {
@@ -306,6 +306,10 @@ public class Controller implements Serializable{
 	
 	public void heal(HealItem item){
 		player.heal(item.getHeal());
+	}
+
+	public void addExp(int points) {
+		player.addEXP(points);
 	}
 
 }
