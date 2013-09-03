@@ -68,9 +68,12 @@ public class Controller implements Serializable{
 	private Player player;
 
 	private QuestManager questManager;
+
+	private Sprite expBar;
 	
-	/** constructor */
-	public Controller(Context context){
+	/** constructor 
+	 * @param expBar */
+	public Controller(Context context, Sprite expBar){
 		mapLoader = new TMXMapLoader(this);
 		sceneManager = new SceneManager();
 		isMoving = false;
@@ -78,6 +81,7 @@ public class Controller implements Serializable{
 		this.context = context;
 		db = new OurDatabase(context);
 		questManager = new QuestManager(this);
+		this.expBar = expBar;
 	}
 
 	public void testDatabase() {
@@ -310,6 +314,8 @@ public class Controller implements Serializable{
 
 	public void addExp(int points) {
 		player.addEXP(points);
+		float percentage = player.getEXPPercentage()/100.0f;
+		expBar.setWidth(558*percentage);
 	}
 
 }

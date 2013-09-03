@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
+import android.util.Log;
 import de.projectrpg.database.Armor;
 import de.projectrpg.database.Item;
 import de.projectrpg.database.Weapon;
@@ -83,6 +84,7 @@ public class Player extends FightingSprite {
 			levelUp();
 			EXP = EXP - maxEXP;
 		}
+
 	}
 	
 	public int getEXPPercentage() {
