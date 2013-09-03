@@ -281,6 +281,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(13);
 		
 		controller.getCurrentScene().attachChild(player);
+		controller.setPlayer(player);
 //		final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, this.opponentTextureRegion, this.getVertexBufferObjectManager(), 1, false);
 //		opponent.setCurrentTileIndex(1);
 //		controller.getCurrentScene().attachChild(opponent);
@@ -608,7 +609,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 							}
 						});
 						controller.checkQuests(npc);
-						interActionText = controller.getInteractionText(npc);
+						interActionText = (ArrayList<String>) controller.getInteractionText(npc).clone();
 						turnToTile(npc, startTile, destinationTile, scene.getMap());
 						startInteraction();
 						break;

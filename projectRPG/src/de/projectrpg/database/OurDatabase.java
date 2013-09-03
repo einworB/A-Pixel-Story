@@ -286,6 +286,7 @@ public class OurDatabase {
 					return quest.getEndText();
 				}
 				else{
+					Log.d("RPG", "duringtext!");
 					return quest.getDuringText();
 				}
 			}
@@ -377,9 +378,9 @@ public class OurDatabase {
 	private ArrayList<String> convertStringToArrayList(String str){
 		String[] strArray = str.split(";");
 		ArrayList<String> result = new ArrayList<String>();
-		for(int i=0; i< strArray.length-1; i+=2){
-			result.add(strArray[i]+"\n"+strArray[i+1]+"\n");
-		}if(strArray.length%2!=0) result.add(strArray[strArray.length-1]);
+		for(int i=0; i< strArray.length; i++){
+			result.add(strArray[i]);
+		}
 		return result;
 	}
 		
