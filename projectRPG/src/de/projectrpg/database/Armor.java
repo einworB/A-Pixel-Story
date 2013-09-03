@@ -22,4 +22,16 @@ public class Armor extends Item{
 		return defenseValue;
 	}
 
+
+
+	public void setDefenseValue(int defenseValue) {
+		this.defenseValue = defenseValue;
+	}
+
+
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
 }
