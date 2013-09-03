@@ -13,6 +13,8 @@ import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTiledMap;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
+import com.example.projectrpg.quest.QuestManager;
+
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
@@ -45,6 +47,8 @@ public class Controller {
 	private int lastTransitionExitSide;
 
 	private Player player;
+
+	private QuestManager questManager;
 	
 	/** constructor */
 	public Controller(Context context){
@@ -54,6 +58,7 @@ public class Controller {
 		level = 1;
 		this.context = context;
 		db = new OurDatabase(context);
+		questManager = new QuestManager();
 	}
 
 	public void testDatabase() {
@@ -154,10 +159,14 @@ public class Controller {
 
 	/**
 	 * gets the string to show in the dialog from the database in future versions
+	 * @param npc 
 	 * @returns the String to show in the dialog
 	 */
-	public String getInteractionText() {
-		return "Das ist ein Text";
+	public ArrayList<String> getInteractionText(NPC npc) {
+		db.open();
+		ArrayList<String> text =  db.getText(npc, questManager);
+		db.close();
+		return text;
 	}
 
 	/** 
@@ -250,6 +259,18 @@ public class Controller {
 	
 	public void addItemToInventory(Item item){
 		player.addItemToInventory(item);
+	}
+
+	public void checkQuests(String enemyName) {
+		questManager.checkQuests(enemyName);
+	}
+
+	public void checkQuests(NPC npc) {
+		questManager.checkQuests(npc);
+	}
+
+	public void checkQuests(Item item) {
+		questManager.checkQuests(item);
 	}
 
 }

@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -12,6 +13,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.example.projectrpg.quest.GetItemQuest;
+import com.example.projectrpg.quest.KillQuest;
+import com.example.projectrpg.quest.Quest;
+import com.example.projectrpg.quest.QuestManager;
+import com.example.projectrpg.quest.TalkToQuest;
 
 public class OurDatabase {
 
@@ -218,8 +225,6 @@ public class OurDatabase {
 		if (itemCursor.moveToFirst()) {
 			do{
 				// Gets the Task in the current row from the Cursor
-				// Note: We get the column index from the Adapter class! Makes
-				// debugging / changes easier...
 				int itemID = itemCursor.getInt(0);
 				String itemType = itemCursor.getString(1);
 				String name = itemCursor.getString(2);
@@ -240,7 +245,7 @@ public class OurDatabase {
 						int armorType = cursor.getInt(3);
 						Armor armor = new Armor(name, levelNeeded, defenseValue, armorType);
 						objects[counter] = armor;
-						Log.d("DB", "weapon");
+						Log.d("DB", "armor");
 					}
 				}
 				counter++;
@@ -252,6 +257,126 @@ public class OurDatabase {
 		for(int i=0; i<3; i++){
 			result[i] = objects[randomInts[i]];
 		}
+		return result;
+	}
+	
+	public ArrayList<String> getText(NPC npc, QuestManager questManager){
+		String sql = new String("SELECT * FROM npc WHERE _id='"+npc.getID()+"'");
+		Cursor npcCursor = db.rawQuery(sql, null);
+		if (npcCursor.moveToFirst()) {
+			ArrayList<Quest> openQuests = questManager.getActiveQuests();
+			int npcID = npcCursor.getInt(0);
+			boolean questActive = false;
+			Quest quest = null;
+			for(int i=0; i<openQuests.size(); i++){
+				quest = openQuests.get(i);
+				if(npcID==quest.getNpcID()){
+					questActive = true;
+					break;
+				}
+			}
+			if(questActive){
+				boolean isFulfilled = quest.isFulfilled();
+				
+				if(isFulfilled){
+					questManager.endQuest(openQuests.indexOf(quest));
+					return quest.getEndText();
+				}
+				else{
+					return quest.getDuringText();
+				}
+			}
+			else{
+				ArrayList<Quest> closedQuests = questManager.getClosedQuests();
+				boolean questClosed = false;
+				for(int i=0; i<closedQuests.size(); i++){
+					quest = closedQuests.get(i);
+					if(npcID==quest.getNpcID()){
+						questClosed = true;
+						break;
+					}
+				}
+				if(questClosed){
+					String str = npcCursor.getString(1);
+					return convertStringToArrayList(str);
+				}
+				else{
+					sql = new String("SELECT * FROM quest WHERE npcID='"+npc.getID()+"'");
+					Cursor questCursor = db.rawQuery(sql, null);
+					if(questCursor.moveToFirst()) {
+						int randomPosition = rgen.nextInt(questCursor.getCount());
+						questCursor.moveToPosition(randomPosition);
+						
+						String name = questCursor.getString(7);
+						int startTextID = questCursor.getInt(3);
+						int duringTextID = questCursor.getInt(4);
+						int endTextID = questCursor.getInt(5);
+						ArrayList<String> startText = null;
+						ArrayList<String> duringText = null;
+						ArrayList<String> endText = null;
+						sql = new String("SELECT text FROM text WHERE _id='"+startTextID+"'");
+						Cursor textCursor = db.rawQuery(sql, null);
+						if(textCursor.moveToFirst()) {
+							startText = convertStringToArrayList(textCursor.getString(0));
+						}
+						sql = new String("SELECT text FROM text WHERE _id='"+duringTextID+"'");
+						textCursor = db.rawQuery(sql, null);
+						if(textCursor.moveToFirst()) {
+							duringText = convertStringToArrayList(textCursor.getString(0));
+						}
+						sql = new String("SELECT text FROM text WHERE _id='"+endTextID+"'");
+						textCursor = db.rawQuery(sql, null);
+						if(textCursor.moveToFirst()) {
+							endText = convertStringToArrayList(textCursor.getString(0));
+						}
+						
+						int level = questCursor.getInt(6);
+						int specialItemID = questCursor.getInt(9);
+						Item specialReward = null;
+						if(specialItemID!=0){
+							// TODO: get item from database
+						}
+						String type = questCursor.getString(8);
+						if(type.contentEquals("talkTo")){
+							sql = new String("SELECT npcID FROM talkToQuest, quest WHERE quest._id=talkToQuest.questID");
+							Cursor specificQuestCursor = db.rawQuery(sql, null);
+							if(specificQuestCursor.moveToFirst()){
+								int targetNPC =  specificQuestCursor.getInt(0);
+								quest = new TalkToQuest(name, npcID, startText, duringText, endText, targetNPC, level, specialReward);
+							}						
+						}else if(type.contentEquals("killQuest")){
+							sql = new String("SELECT target, killCount FROM killQuest, quest WHERE quest._id=killQuest.questID");
+							Cursor specificQuestCursor = db.rawQuery(sql, null);
+							if(specificQuestCursor.moveToFirst()){
+								String enemyName = specificQuestCursor.getString(0);
+								int killCount = specificQuestCursor.getInt(1);
+								quest = new KillQuest(name, npcID, startText, duringText, endText, enemyName, killCount, level, specialReward);
+							}
+						}else{
+							sql = new String("SELECT itemName, count FROM getItemQuest, quest WHERE quest._id=getItemQuest.questID");
+							Cursor specificQuestCursor = db.rawQuery(sql, null);
+							if(specificQuestCursor.moveToFirst()){
+								String itemName = specificQuestCursor.getString(0);
+								int count = specificQuestCursor.getInt(1);
+								quest = new GetItemQuest(name, npcID, startText, duringText, endText, itemName, count, level, specialReward);
+							}
+						}
+						questManager.startQuest(quest);
+						return quest.getStartText();
+					} else return null;
+					
+				}
+			}
+		}
+		else return null;
+	}
+	
+	private ArrayList<String> convertStringToArrayList(String str){
+		String[] strArray = str.split(";");
+		ArrayList<String> result = new ArrayList<String>();
+		for(int i=0; i< strArray.length-1; i+=2){
+			result.add(strArray[i]+"\n"+strArray[i+1]+"\n");
+		}if(strArray.length%2!=0) result.add(strArray[strArray.length-1]);
 		return result;
 	}
 		

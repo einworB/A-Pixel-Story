@@ -20,7 +20,6 @@ public class OurScene extends Scene {
 	private TMXTiledMap tmxTiledMap;
 	private int id;
 	private OurRandomGenerator rgen = new OurRandomGenerator();
-	private ArrayList<int[]> opponentPositionList = new ArrayList<int[]>();
 
 	public OurScene(int id, Context context, TMXTiledMap tmxTiledMap, HashMap<String, float[]> spawns){
 		super();
@@ -48,14 +47,13 @@ public class OurScene extends Scene {
 		return id;
 	}
 	
-	public void generateOpponents(TiledTextureRegion opponentTextureRegion, VertexBufferObjectManager vertextBufferObjectManager, int level){
-		int opponentCount = rgen.nextInt(10) + 10;
-		for(int i=0; i<opponentCount; i++){
+	public void generateAnimatedSprites(TiledTextureRegion opponentTextureRegion, TiledTextureRegion npcTextureRegion, VertexBufferObjectManager vertextBufferObjectManager, int level){
+		int spriteCount = rgen.nextInt(10) + 10;
+		for(int i=0; i<=spriteCount; i++){
 			while(true){
 				boolean alreadySet = false;
 				int[] positions = rgen.getInts(2, 29);
 				TMXTile tile = tmxTiledMap.getTMXLayers().get(0).getTMXTile(positions[0]+1, positions[1]+1);
-				int[] position = new int[]{tile.getTileX(), tile.getTileY()};
 				for(int j=0; j<getChildCount(); j++){
 					IEntity entity = getChildByIndex(j);
 					if(entity instanceof Sprite && entity.getX()==tile.getTileX() && entity.getY()==tile.getTileY()){
@@ -64,11 +62,18 @@ public class OurScene extends Scene {
 					}
 				}
 				if(tile.getTMXTileProperties(tmxTiledMap)==null && !alreadySet){
-					Opponent opponent = new Opponent(tile.getTileX()+4, tile.getTileY(), 24, 32, opponentTextureRegion, vertextBufferObjectManager, level, false);
-					attachChild(opponent);
-					opponent.setCurrentTileIndex(1+(rgen.nextInt(4)*4));
-					opponentPositionList.add(position);
-					Log.d("RPG", "Level "+level+": Opponent "+i+" created.");
+					if(i==spriteCount){
+						NPC npc = new NPC(tile.getTileX()+4, tile.getTileY(), 24, 32, npcTextureRegion, vertextBufferObjectManager, id); // TODO: bei mehr(weniger) als einem NPC pro Level id anpassen!!!
+						attachChild(npc);
+						npc.setCurrentTileIndex(1+(rgen.nextInt(4)*4));
+						Log.d("RPG", "Level "+level+": NPC created.");
+					}
+					else{
+						Opponent opponent = new Opponent(tile.getTileX()+4, tile.getTileY(), 24, 32, opponentTextureRegion, vertextBufferObjectManager, level, false);
+						attachChild(opponent);
+						opponent.setCurrentTileIndex(1+(rgen.nextInt(4)*4));
+						Log.d("RPG", "Level "+level+": Opponent "+i+" created.");
+					}					
 					break;
 				}
 			}

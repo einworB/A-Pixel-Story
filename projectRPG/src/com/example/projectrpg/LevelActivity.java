@@ -18,6 +18,7 @@ import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.AutoWrap;
 import org.andengine.entity.text.TickerText;
 import org.andengine.entity.text.TickerText.TickerTextOptions;
 import org.andengine.entity.util.FPSLogger;
@@ -41,6 +42,8 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
+
+import com.example.projectrpg.quest.QuestManager;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -84,8 +87,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/** the players sprite */
 	private Player player;
 	/** used for loading bitmaps*/
-	private BitmapTextureAtlas opponentTiledBitmapTextureAtlas;
-	/** used for loading bitmaps*/
 	private TiledTextureRegion opponentTextureRegion;
 	
 	
@@ -114,7 +115,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private boolean isInteracting;
 	
 	/** rect for the dialog window */
-	private Rectangle rect;
+//	private Rectangle rect;
 	/** tickertext for the dialog window */
 	private TickerText text;
 	/** only needed for the dialog at the moment */
@@ -135,6 +136,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private TextureRegion inventarButtonTextureRegion;
 	private Sprite inventarButton;
 	private boolean inventarStarted = false;
+	private TiledTextureRegion npcTextureRegion;
+	private TextureRegion textScrollTextureRegion;
+	private Sprite textScroll;
+	private ArrayList<String> interActionText;
 	
 
 
@@ -163,17 +168,19 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	public void onCreateResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
-		this.tiledBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 256, 128);
+		this.tiledBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 256, 256);
 		this.playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.tiledBitmapTextureAtlas, this, "player4x4.png", 0, 0, 4, 4);
 		this.opponentTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.tiledBitmapTextureAtlas, this, "enemy.png", 128, 0, 4, 4);
+		this.npcTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.tiledBitmapTextureAtlas, this, "npc.png", 128, 128, 4, 4);
 		this.tiledBitmapTextureAtlas.load();
 		
-		this.bitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 256, 128);		
-		this.beutelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "beutel.png", 0, 0);
-		this.portraitTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portrait.png", 32, 0);
-		this.portraitEnemyTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portraitEnemy.png", 82, 0);
-		this.redBarTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "roterBalken.png", 132, 0);
-		this.inventarButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "inventarButton.png", 182, 0);
+		this.bitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 1024, 256);		
+		this.textScrollTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "dialogHintergrund.png", 0, 0);
+		this.beutelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "beutel.png", 0, 175);
+		this.portraitTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portrait.png", 32, 175);
+		this.portraitEnemyTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portraitEnemy.png", 82, 175);
+		this.redBarTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "roterBalken.png", 132, 175);
+		this.inventarButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "inventarButton.png", 182, 175);
 		this.bitmapTextureAtlas.load();
 		
 		
@@ -183,8 +190,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		this.lifeFont.load();
 		
 		
-		rect = new Rectangle(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-20, 175, this.getVertexBufferObjectManager());
-		rect.setColor(Color.WHITE);
+//		rect = new Rectangle(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-20, 175, this.getVertexBufferObjectManager());
+//		rect.setColor(Color.WHITE);
+		textScroll = new Sprite(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-40, 175, textScrollTextureRegion, this.getVertexBufferObjectManager());
 		
 		portrait = new Sprite(2, 2, portraitTextureRegion, getVertexBufferObjectManager());
 		
@@ -227,7 +235,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		for(int i=1; i<=lastLevel; i++){			
 			TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i);
 			OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
-			scene.generateOpponents(opponentTextureRegion, getVertexBufferObjectManager(), i);
+			scene.generateAnimatedSprites(opponentTextureRegion, npcTextureRegion, getVertexBufferObjectManager(), i);
 			controller.addSceneToManager(scene);
 		}
 
@@ -300,25 +308,40 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 	/**
 	 * adds the dialog window(consisting of a rect and a tickertext) to the hud
-	 * @param interactionText - the string to show in the dialog
+	 * @param interActionText - the string to show in the dialog
 	 */
-	private void startInteraction(String interactionText) {
+	private void startInteraction() {
 		isInteracting = true;
 		
-		hud.attachChild(rect);
+		hud.attachChild(textScroll);
+		hud.detachChild(inventarButton);
 		
-		text = new TickerText(rect.getX()+10, rect.getY()+10, font, interactionText, new TickerTextOptions(HorizontalAlign.CENTER, 10), this.getVertexBufferObjectManager());
-		text.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		nextString();
 		
-		hud.attachChild(text);
+//		hud.attachChild(text);
+		
+	}
+	
+	private void nextString(){
+		if(!interActionText.isEmpty()){
+//			text.setText(interActionText.remove(0));
+			
+			if(text!=null) if(text.hasParent()) hud.detachChild(text);
+			text = new TickerText(textScroll.getX()+40, textScroll.getY()+15, font, interActionText.remove(0), new TickerTextOptions(AutoWrap.LETTERS, textScroll.getWidth()-80, HorizontalAlign.LEFT, 15), this.getVertexBufferObjectManager());
+			text.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+			
+			hud.attachChild(text);
+		}
+		else stopInteraction();
 	}
 	
 	/**
 	 * detaches dialog window(consisting of a rect and a tickertext) fromt he hud
 	 */
 	private void stopInteraction() {
+		hud.attachChild(inventarButton);
+		hud.detachChild(textScroll);
 		hud.detachChild(text);
-		hud.detachChild(rect);
 		isInteracting = false;
 	}
 
@@ -420,6 +443,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 									if(loot!=null){
 										for(int j=0; j<3; j++){
 											player.addItemToInventory(loot[j]);
+											controller.checkQuests(loot[j]);
 										}
 									}
 //									if(player.getEquippedWeapon()!=null) Log.d("RPG", "Equipped Weapon: "+player.getEquippedWeapon().getName());
@@ -550,64 +574,73 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			float sceneX, float sceneY) {
 		if(!controller.isMoving()){
 			if(isInteracting){
-				stopInteraction();
-			}
-			OurScene scene = controller.getCurrentScene();
-			final TMXLayer layer = (TMXLayer) scene.getChildByIndex(0);
-			final TMXTile startTile = layer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
-			final TMXTile destinationTile = layer.getTMXTileAt(sceneX, sceneY);
-			switch(controller.doAction(startTile, destinationTile, scene.getMap(), scene)){
-				case 1:					
-					Path path = controller.getPath(startTile, destinationTile, scene.getMap());
-					if(path!=null){
-						if(portraitEnemy.hasParent()) hud.detachChild(portraitEnemy);
-						if(redBarEnemy.hasParent()) hud.detachChild(redBarEnemy);
-						startPath(path, destinationTile);
-					}
-					else Log.d("RPG", "path=null");
-					break;
-				case 2:
-					String interActionText = controller.getInteractionText();
-					startInteraction(interActionText);
-					break;
-				case 3:
-					Opponent opponent = (Opponent) scene.getChildByMatcher(new IEntityMatcher() {							
-						@Override
-						public boolean matches(IEntity entity) {
-							if(layer.getTMXTileAt(entity.getX(), entity.getY()) == destinationTile)	return true;
-							else return false;
+				nextString();
+			} else{
+				OurScene scene = controller.getCurrentScene();
+				final TMXLayer layer = (TMXLayer) scene.getChildByIndex(0);
+				final TMXTile startTile = layer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
+				final TMXTile destinationTile = layer.getTMXTileAt(sceneX, sceneY);
+				switch(controller.doAction(startTile, destinationTile, scene.getMap(), scene)){
+					case 1:					
+						Path path = controller.getPath(startTile, destinationTile, scene.getMap());
+						if(path!=null){
+							if(portraitEnemy.hasParent()) hud.detachChild(portraitEnemy);
+							if(redBarEnemy.hasParent()) hud.detachChild(redBarEnemy);
+							startPath(path, destinationTile);
 						}
-					});
-					if(!portraitEnemy.hasParent()){
-						hud.attachChild(portraitEnemy);
-						hud.sortChildren();
-					}if(!redBarEnemy.hasParent()){
-						hud.attachChild(redBarEnemy);
-						hud.sortChildren();
-					}
-					turnToTile(player, destinationTile, startTile, scene.getMap());
-					turnToTile(opponent, startTile, destinationTile, scene.getMap());
-					switch(controller.fight(player, opponent, redBarPlayer, redBarEnemy)){
-						case 1:
-							fightWon(opponent, destinationTile);
-							hud.detachChild(portraitEnemy);
-							hud.detachChild(redBarEnemy);
-							break;
-						case 2:
-							flee();
-							break;
-					}
-					break;
-			}					
-		} else{
-			if(!fleeing) stopPath();
-		}
+						else Log.d("RPG", "path=null");
+						break;
+					case 2:
+						NPC npc = (NPC) scene.getChildByMatcher(new IEntityMatcher() {							
+							@Override
+							public boolean matches(IEntity entity) {
+								if(layer.getTMXTileAt(entity.getX(), entity.getY()) == destinationTile)	return true;
+								else return false;
+							}
+						});
+						controller.checkQuests(npc);
+						interActionText = controller.getInteractionText(npc);
+						turnToTile(npc, startTile, destinationTile, scene.getMap());
+						startInteraction();
+						break;
+					case 3:
+						Opponent opponent = (Opponent) scene.getChildByMatcher(new IEntityMatcher() {							
+							@Override
+							public boolean matches(IEntity entity) {
+								if(layer.getTMXTileAt(entity.getX(), entity.getY()) == destinationTile)	return true;
+								else return false;
+							}
+						});
+						if(!portraitEnemy.hasParent()){
+							hud.attachChild(portraitEnemy);
+							hud.sortChildren();
+						}if(!redBarEnemy.hasParent()){
+							hud.attachChild(redBarEnemy);
+							hud.sortChildren();
+						}
+						turnToTile(player, destinationTile, startTile, scene.getMap());
+						turnToTile(opponent, startTile, destinationTile, scene.getMap());
+						switch(controller.fight(player, opponent, redBarPlayer, redBarEnemy)){
+							case 1:
+								fightWon(opponent, destinationTile);
+								controller.checkQuests("enemy");
+								hud.detachChild(portraitEnemy);
+								hud.detachChild(redBarEnemy);
+								break;
+							case 2:
+								flee();
+								break;
+						}
+						break;
+				}	
+			}
+		} else	if(!fleeing) stopPath();
 	}
 
 	private void flee() {
 		float[] coords;
 		if(controller.getLevel()==1) coords = controller.getCurrentScene().getSpawn("SPAWN");
-		else coords = controller.getCurrentScene().getSpawn("LEVEL1");
+		else coords = controller.getCurrentScene().getSpawn("LEVEL"+(controller.getLevel()-1));
 		TMXLayer layer = controller.getTMXLayer();
 		TMXTile startTile = layer.getTMXTileAt(player.getX(), player.getY());
 		TMXTile endTile = layer.getTMXTileAt(coords[0], coords[1]);
