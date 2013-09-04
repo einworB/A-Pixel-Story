@@ -13,7 +13,6 @@ import org.andengine.entity.modifier.LoopEntityModifier;
 import org.andengine.entity.modifier.PathModifier;
 import org.andengine.entity.modifier.PathModifier.IPathModifierListener;
 import org.andengine.entity.modifier.PathModifier.Path;
-import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.AnimatedSprite;
@@ -41,24 +40,24 @@ import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
-import org.andengine.util.color.Color;
 
-
-import de.projectrpg.algorithm.OurPathModifier;
-import de.projectrpg.database.Item;
-import de.projectrpg.quest.QuestManager;
-import de.projectrpg.scene.OurScene;
-import de.projectrpg.sprites.LootBag;
-import de.projectrpg.sprites.NPC;
-import de.projectrpg.sprites.Opponent;
-import de.projectrpg.sprites.Player;
-
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+import de.projectrpg.algorithm.OurPathModifier;
+import de.projectrpg.database.Item;
+import de.projectrpg.inventory.InventarActivity;
+import de.projectrpg.scene.OurScene;
+import de.projectrpg.sprites.LootBag;
+import de.projectrpg.sprites.NPC;
+import de.projectrpg.sprites.Opponent;
+import de.projectrpg.sprites.Player;
 
 /**
  * This is the Activity the Player spends most of the playtime in 
@@ -226,9 +225,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				if(!inventarStarted){
 					Log.d("RPG", "Inventar touched");
 					inventarStarted = true;
-//					Intent intent = new Intent(LevelActivity.this, InventarActivity.class);
-//					intent.putExtra("controller", controller);
-//					startActivity(intent);
+					Intent intent = new Intent(LevelActivity.this, InventarActivity.class);
+					intent.putExtra("controller", controller);
+					startActivity(intent);
 				}
 				return true;
 			}
@@ -690,5 +689,30 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	protected synchronized void onResume() {
 		super.onResume();
 		inventarStarted = false;
+	}
+	
+	@Override
+	public void onBackPressed() {
+		this.showDialog(1);
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(final int id) {
+		switch(id) {
+			case 1:
+				return new AlertDialog.Builder(this).setMessage("Zurück zum Hauptmenü?")
+						.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								finish();
+							}
+						})
+						.setNeutralButton("Ja & Speichern", null)
+						.setNegativeButton("Nein", null)
+						.create();
+			default:
+				return null;
+		}
 	}
 }
