@@ -45,9 +45,9 @@ import de.projectrpg.util.InteractionDecider;
  * @author Philip
  *
  */
-@SuppressWarnings("serial")
-public class Controller implements Serializable{
+public class Controller {
 	
+	private static Controller controller;
 
 	/** boolean if the player is moving */
 	private boolean isMoving;
@@ -73,6 +73,15 @@ public class Controller implements Serializable{
 	
 	/** constructor 
 	 * @param expBar */
+	
+	public static void initInstance(Context context, Sprite expBar){
+		controller = new Controller(context, expBar);
+	}
+	
+	public static Controller getInstance(){
+		return controller;
+	}
+	
 	public Controller(Context context, Sprite expBar){
 		mapLoader = new TMXMapLoader(this);
 		sceneManager = new SceneManager();

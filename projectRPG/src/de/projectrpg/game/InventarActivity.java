@@ -8,25 +8,12 @@
 
 package de.projectrpg.game;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-
-import com.example.projectrpg.R;
-
-import de.projectrpg.database.Armor;
-import de.projectrpg.database.Weapon;
-import de.projectrpg.database.Item;
-import de.projectrpg.inventory.Slot;
-
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
@@ -34,6 +21,13 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.example.projectrpg.R;
+
+import de.projectrpg.database.Armor;
+import de.projectrpg.database.Item;
+import de.projectrpg.database.Weapon;
+import de.projectrpg.inventory.Slot;
 
 public class InventarActivity extends Activity {
 	
@@ -969,7 +963,7 @@ private void setItemsOnEquipSlots() {
 		sortedItemNames.add("Schmiedeeisener Streitkolben");
 		
 		
-		controller = LevelActivity.controller;
+		controller = Controller.getInstance();
 	
 		
 		titleSellEquip = (TextView) findViewById(R.id.title_inventar_sell);
