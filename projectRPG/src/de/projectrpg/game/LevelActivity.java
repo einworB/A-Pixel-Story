@@ -53,7 +53,6 @@ import android.util.Log;
 import android.widget.Toast;
 import de.projectrpg.algorithm.OurPathModifier;
 import de.projectrpg.database.Item;
-import de.projectrpg.inventory.InventarActivity;
 import de.projectrpg.quest.GetItemQuest;
 import de.projectrpg.quest.KillQuest;
 import de.projectrpg.quest.TalkToQuest;
@@ -106,7 +105,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * the controller responsible for communication between the Activity and the Algorithm 
 	 * and for getting and setting of other technical information
 	 */
-	private Controller controller;
+	private static Controller controller;
 	
 	/** a detector for reacting to pinch zooms */
 	private PinchZoomDetector pinchZoomDetector;
@@ -252,7 +251,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 					Log.d("RPG", "Inventar touched");
 					inventarStarted = true;
 					Intent intent = new Intent(LevelActivity.this, InventarActivity.class);
-					intent.putExtra("controller", controller);
 					startActivity(intent);
 				}
 				return true;
@@ -327,7 +325,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		expBackground = new Sprite(70, 12, CAMERA_WIDTH - 140, 32, experienceBackgroundTextureRegion, getVertexBufferObjectManager());
 		startExpBar = new Sprite(71, 13, 20, 30, startExperienceBarTextureRegion, getVertexBufferObjectManager());
 		
-		controller = new Controller(this, expBar);
+		Controller.initInstance(this, expBar);
+		controller = Controller.getInstance();
 		
 		
 //		moveXStart = 0;
@@ -524,7 +523,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * detaches dialog window(consisting of a rect and a tickertext) fromt he hud
 	 */
 	private void stopInteraction() {
-		hud.attachChild(inventarButton);
+		if(!hud.hasParent()) hud.attachChild(inventarButton);
 		hud.detachChild(textScroll);
 		hud.detachChild(text);
 		isInteracting = false;
@@ -624,12 +623,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 								IEntity child = scene.getChildByIndex(i);
 								if(layer.getTMXTileAt(child.getX(), child.getY())==endTile && child instanceof LootBag){
 									scene.detachChild(child);
-									final Item[] loot = controller.getLoot(((LootBag) child).getLoot());
+									final Item loot = controller.getLoot(((LootBag) child).getLoot());
 									if(loot!=null){
-										for(int j=0; j<3; j++){
-											player.addItemToInventory(loot[j]);
-											controller.checkQuests(loot[j]);
-										}
+											player.addItemToInventory(loot);
+											controller.checkQuests(loot);
 									}
 //									if(player.getEquippedWeapon()!=null) Log.d("RPG", "Equipped Weapon: "+player.getEquippedWeapon().getName());
 //									Armor[] equippedArmor = player.getArmor();
@@ -637,13 +634,15 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 //										if(equippedArmor[j]!=null) Log.d("RPG", "EquippedArmorSlot "+j+": "+equippedArmor[j].getName());
 //									}
 									Log.d("RPG", player.getInventory().toString());
-									runOnUiThread(new Runnable() {										
-										@Override
-										public void run() {
-											Toast.makeText(getApplicationContext(), "Looted "+loot[0].getName()+", "+loot[1].getName()+" und "+loot[2].getName(), Toast.LENGTH_LONG).show();
-										}
-									});
-									break;
+									if(loot!=null){
+										runOnUiThread(new Runnable() {	
+											@Override
+											public void run() {
+												Toast.makeText(getApplicationContext(), "Looted "+loot.getName(), Toast.LENGTH_LONG).show();
+											}
+										});
+										break;									
+									}
 								}
 							}
 						}
@@ -754,6 +753,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onClick(ClickDetector clickDetector, int pointerID,
 			float sceneX, float sceneY) {
@@ -873,5 +873,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			default:
 				return null;
 		}
+	}
+
+	public void getController() {
+		// TODO Auto-generated method stub
+		
 	}
 }

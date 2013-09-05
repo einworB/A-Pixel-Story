@@ -14,10 +14,8 @@ public class LootBag extends Sprite {
 		lootRoot = opponent;
 	}
 	
-	public int[] getLoot(){
-		int[] lootSeed = new int[3];
-		lootSeed[0] = lootRoot.getLevel();
-		return lootSeed;
+	public int getLoot(){
+		return lootRoot.getLevel();
 	}
 
 }

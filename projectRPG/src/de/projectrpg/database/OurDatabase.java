@@ -218,8 +218,8 @@ public class OurDatabase {
 				else return null;
 		} else return null;
 	}
-	public Item[] getLoot(int[] loot) {
-		String sql = new String("SELECT * FROM item WHERE levelNeeded='"+loot[0]+"'");
+	public Item getLoot(int loot) {
+		String sql = new String("SELECT * FROM item WHERE levelNeeded='"+loot+"'");
 		Cursor itemCursor = db.rawQuery(sql, null);
 		int itemCount = itemCursor.getCount();
 		Item[] objects = new Item[itemCount];
@@ -254,11 +254,10 @@ public class OurDatabase {
 				counter++;
 			}while(itemCursor.moveToNext());
 		} else return null;
-		
-		int[] randomInts = rgen.getInts(3, itemCount);
-		Item[] result = new Item[3];
-		for(int i=0; i<3; i++){
-			result[i] = objects[randomInts[i]];
+		Item result = null;
+		while(result==null){
+			int randomInt = rgen.nextInt(itemCount);
+			result = objects[randomInt];
 		}
 		return result;
 	}
@@ -393,6 +392,13 @@ public class OurDatabase {
 			result.add(strArray[i]);
 		}
 		return result;
+	}
+	public String getNPCName(int id) {
+		String sql = new String("SELECT name FROM npc WHERE _id='"+id+"'");
+		Cursor cursor = db.rawQuery(sql, null);
+		if(cursor.moveToFirst()){
+			return cursor.getString(0);
+		} else return null;
 	}
 		
 		

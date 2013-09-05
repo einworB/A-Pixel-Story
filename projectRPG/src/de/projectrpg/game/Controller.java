@@ -250,9 +250,9 @@ public class Controller {
 		return FightHelper.fight(player, opponent, redBar, redBarEnemy);
 	}
 
-	public Item[] getLoot(int[] loot) {
+	public Item getLoot(int loot) {
 		db.open();
-		Item[] items = db.getLoot(loot);
+		Item items = db.getLoot(loot);
 		db.close();
 		return items;
 	}
@@ -344,5 +344,12 @@ public class Controller {
 			return npcList.get(index);
 		}
 		return null;
+	}
+
+	public String getNPCName(int id) {
+		db.open();
+		String name = db.getNPCName(id);
+		db.close();
+		return name;
 	}
 }
