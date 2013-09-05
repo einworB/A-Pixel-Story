@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="de.projectrpg.inventory.InventarActivity"
+            android:name="de.projectrpg.game.InventarActivity"
             android:label="@string/title_activity_level"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >

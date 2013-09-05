@@ -19,6 +19,7 @@ import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.AutoWrap;
 import org.andengine.entity.text.Text;
+import org.andengine.entity.text.TextOptions;
 import org.andengine.entity.text.TickerText;
 import org.andengine.entity.text.TickerText.TickerTextOptions;
 import org.andengine.entity.util.FPSLogger;
@@ -267,7 +268,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		questName = new Text(10, 10, font, "", 100, getVertexBufferObjectManager());
 		questTask = new Text(10, 50, font, "", 200, getVertexBufferObjectManager());
-		HowToCloseQuest = new Text(10, 100, font, "Gehe zurück zu der Person die dir den Quest gegeben hat um ihn abzuschließen", getVertexBufferObjectManager());
+		HowToCloseQuest = new Text(10, 100, font, "Gehe zurück zu der Person die dir den Quest gegeben hat um ihn abzuschließen", new TextOptions(AutoWrap.WORDS, CAMERA_WIDTH-20, HorizontalAlign.LEFT, 15), getVertexBufferObjectManager());
 		
 		backToGameButton = new Sprite(200, CAMERA_HEIGHT-150, 300, 100, backToGameButtonTextureRegion, getVertexBufferObjectManager()){
 			@Override
@@ -396,6 +397,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/**
 	 * creates a scene and its children and adds them to the scene
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Scene onCreateScene() {
 		
@@ -474,6 +476,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		hud.registerTouchArea(prevQuestButton);
 //		hud.setTouchAreaBindingOnActionDownEnabled(true);
 		
+		interActionText = (ArrayList<String>) controller.getInteractionText(null).clone();
+		startInteraction();
+		
 		return controller.getCurrentScene();
 	}
 
@@ -486,7 +491,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	public boolean onSceneTouchEvent(Scene scene, final TouchEvent sceneTouchEvent) {
 		pinchZoomDetector.onTouchEvent(sceneTouchEvent);
 		clickDetector.onTouchEvent(sceneTouchEvent);
-//		controller.testDatabase();
 		return true;
 	}
 
@@ -498,7 +502,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		isInteracting = true;
 		
 		hud.attachChild(textScroll);
-		hud.detachChild(inventarButton);
+		if(inventarButton.hasParent()) hud.detachChild(inventarButton);
+		if(questButton.hasParent()) hud.detachChild(questButton);
 		
 		nextString();
 		
@@ -508,7 +513,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	
 	private void nextString(){
 		if(!interActionText.isEmpty()){
-//			text.setText(interActionText.remove(0));
+			if(inventarButton.hasParent()) hud.detachChild(inventarButton);
+			if(questButton.hasParent()) hud.detachChild(questButton);
 			
 			if(text!=null) if(text.hasParent()) hud.detachChild(text);
 			text = new TickerText(textScroll.getX()+40, textScroll.getY()+15, font, interActionText.remove(0), new TickerTextOptions(AutoWrap.WORDS, textScroll.getWidth()-80, HorizontalAlign.LEFT, 15), this.getVertexBufferObjectManager());
@@ -523,7 +529,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * detaches dialog window(consisting of a rect and a tickertext) fromt he hud
 	 */
 	private void stopInteraction() {
-		if(!hud.hasParent()) hud.attachChild(inventarButton);
+		if(!inventarButton.hasParent()) hud.attachChild(inventarButton);
+		if(!questButton.hasParent()) hud.attachChild(questButton);
 		hud.detachChild(textScroll);
 		hud.detachChild(text);
 		isInteracting = false;
@@ -875,8 +882,4 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		}
 	}
 
-	public void getController() {
-		// TODO Auto-generated method stub
-		
-	}
 }
