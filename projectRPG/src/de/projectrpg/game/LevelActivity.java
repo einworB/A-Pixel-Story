@@ -165,7 +165,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private Sprite questButton;
 	private QuestScene questScene;
 	private TextureRegion backToGameButtonTextureRegion;
-	private int lastVisitedScene = 1;
 	private Sprite backToGameButton;
 	private Text questTask;
 	private TextureRegion nextQuestButtonTextureRegion;
@@ -173,8 +172,16 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private Sprite nextQuestButton;
 	private Sprite prevQuestButton;
 	private int questcount = 0;
-	private Text HowToCloseQuest;
-
+	private Text howToCloseQuest;
+	private HUD questHud;
+	private TextureRegion backToGameButtonBackgroudTextureRegion;
+	private Sprite backToGameButtonBackground;
+	private TextureRegion nextQuestGrayButtonTextureRegion;
+	private TextureRegion prevQuestGrayButtonTextureRegion;
+	private Sprite nextQuestGrayButton;
+	private Sprite prevQuestGrayButton;
+	private Font fontQuestTitel;
+	private Font fontQuestHowTo;
 
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
@@ -220,14 +227,25 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		this.questButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "questButton.png", 758, 175);
 		this.backToGameButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "backToGameButton.png", 0, 229);
+		this.backToGameButtonBackgroudTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "backToGameButtonSchatten.png", 408, 229);
 
 		this.nextQuestButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "nextQuest.png", 300, 229);
 		this.prevQuestButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "prevQuest.png", 354, 229);
+		
+		this.nextQuestGrayButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "nextQuestGray.png", 462, 229);
+		this.prevQuestGrayButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "prevQuestGray.png", 516, 229);
+
 		this.bitmapTextureAtlas.load();
 		
 		
 		this.font = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32);
 		this.font.load();
+
+		this.fontQuestTitel = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 50);
+		this.fontQuestTitel.load();
+		this.fontQuestHowTo = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 25);
+		this.fontQuestHowTo.load();
+		
 		this.lifeFont = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 12);
 		this.lifeFont.load();
 		
@@ -260,50 +278,29 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		questButton = new Sprite(CAMERA_WIDTH-140, CAMERA_HEIGHT-70, 54, 54, questButtonTextureRegion, getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				lastVisitedScene = controller.getCurrentScene().getID();
 				startQuestScene();
 				return true;
 			}
 		};
 		
-		questName = new Text(10, 10, font, "", 100, getVertexBufferObjectManager());
-		questTask = new Text(10, 50, font, "", 200, getVertexBufferObjectManager());
-		HowToCloseQuest = new Text(10, 100, font, "Gehe zurück zu der Person die dir den Quest gegeben hat um ihn abzuschließen", new TextOptions(AutoWrap.WORDS, CAMERA_WIDTH-20, HorizontalAlign.LEFT, 15), getVertexBufferObjectManager());
+		questName = new Text(20, 20, fontQuestTitel, "", 100, getVertexBufferObjectManager());
+		questTask = new Text(20, 90, font, "", 200, getVertexBufferObjectManager());
+		howToCloseQuest = new Text(20, CAMERA_HEIGHT - 230, fontQuestHowTo, "Gehe zurück zu der Person die dir den Quest gegeben hat um ihn abzuschließen", new TextOptions(AutoWrap.WORDS, CAMERA_WIDTH-30, HorizontalAlign.LEFT, 5), getVertexBufferObjectManager());
 		
-		backToGameButton = new Sprite(200, CAMERA_HEIGHT-150, 300, 100, backToGameButtonTextureRegion, getVertexBufferObjectManager()){
+		backToGameButton = new Sprite(CAMERA_WIDTH/2 - 150, CAMERA_HEIGHT-150, 300, 100, backToGameButtonTextureRegion, getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				OurScene scene = controller.getCurrentScene();
-				hud.detachChild(portrait);
-				hud.detachChild(redBarPlayer);
-				hud.detachChild(expBar);
-				hud.detachChild(expBackground);
-				hud.detachChild(startExpBar);
-				hud.detachChild(inventarButton);
-				hud.detachChild(questButton);
-				hud.detachChild(backToGameButton);
-				hud.detachChild(questName);
-				hud.detachChild(questTask);
-				hud.detachChild(HowToCloseQuest);
+				camera.setHUD(hud);
 
-				hud.detachChild(nextQuestButton);
-				hud.detachChild(prevQuestButton);
-				hud.unregisterTouchArea(backToGameButton);
-				
-				
-				hud.attachChild(portrait);
-				hud.attachChild(redBarPlayer);
-				hud.attachChild(expBar);
-				hud.attachChild(expBackground);
-				hud.attachChild(startExpBar);
-				hud.attachChild(inventarButton);
-				hud.attachChild(questButton);
 				LevelActivity.this.mEngine.setScene(scene);
 				return true;
 			}
 		};
-
-		nextQuestButton = new Sprite(545, CAMERA_HEIGHT-125, 54, 54, nextQuestButtonTextureRegion, getVertexBufferObjectManager()){
+		
+		backToGameButtonBackground = new Sprite(CAMERA_WIDTH/2 - 152, CAMERA_HEIGHT-152, 302, 102, backToGameButtonBackgroudTextureRegion, getVertexBufferObjectManager());
+		
+		nextQuestButton = new Sprite(CAMERA_WIDTH/2 + 180, CAMERA_HEIGHT-125, 54, 54, nextQuestButtonTextureRegion, getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if(questcount < controller.getActiveQuests().size()) {
@@ -312,7 +309,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				return true;
 			}
 		};
-		prevQuestButton = new Sprite(100, CAMERA_HEIGHT-125, 54, 54, prevQuestButtonTextureRegion, getVertexBufferObjectManager()){
+		
+		prevQuestButton = new Sprite(CAMERA_WIDTH/2 - 234, CAMERA_HEIGHT-125, 54, 54, prevQuestButtonTextureRegion, getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if(questcount > 0) {
@@ -322,56 +320,41 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			}
 		};
 		
+		nextQuestGrayButton = new Sprite(CAMERA_WIDTH/2 + 180, CAMERA_HEIGHT-125, 54, 54, nextQuestGrayButtonTextureRegion, getVertexBufferObjectManager());
+		prevQuestGrayButton = new Sprite(CAMERA_WIDTH/2 - 234, CAMERA_HEIGHT-125, 54, 54, prevQuestGrayButtonTextureRegion, getVertexBufferObjectManager());
+		
 		expBar = new Sprite(91, 13, 0, 30, experienceBarTextureRegion, getVertexBufferObjectManager());
 		expBackground = new Sprite(70, 12, CAMERA_WIDTH - 140, 32, experienceBackgroundTextureRegion, getVertexBufferObjectManager());
 		startExpBar = new Sprite(71, 13, 20, 30, startExperienceBarTextureRegion, getVertexBufferObjectManager());
 		
 		Controller.initInstance(this, expBar);
 		controller = Controller.getInstance();
-		
-		
-//		moveXStart = 0;
-//		moveYStart = 0;
 	}
 
 	private void startQuestScene() {
 		
-		hud.detachChild(portrait);
-		hud.detachChild(redBarPlayer);
-		hud.detachChild(expBar);
-		hud.detachChild(expBackground);
-		hud.detachChild(startExpBar);
-		hud.detachChild(inventarButton);
-		hud.detachChild(questButton);
-		hud.detachChild(backToGameButton);
-		hud.detachChild(HowToCloseQuest);
-
-		hud.detachChild(questName);		
-
-		hud.detachChild(nextQuestButton);
-		hud.detachChild(prevQuestButton);
-		hud.unregisterTouchArea(backToGameButton);
-
-		hud.registerTouchArea(backToGameButton);
-		hud.attachChild(backToGameButton);
+		camera.setHUD(questHud);
+		
+		questHud.detachChild(nextQuestButton);
+		questHud.detachChild(prevQuestButton);
+		questHud.detachChild(howToCloseQuest);
 		
 		LevelActivity.this.mEngine.setScene(questScene);
 		
 		if(controller.getActiveQuests().size() != 0) {
+			if(controller.getActiveQuests().get(questcount).getNpcID() != 0) {
+				questHud.attachChild(howToCloseQuest);
+			}
 
 			if(controller.getActiveQuests().size() < controller.getActiveQuests().size()) {
-				hud.attachChild(nextQuestButton);
+				questHud.attachChild(nextQuestButton);
 			}
 			if(controller.getActiveQuests().size() > 1) {
-				hud.attachChild(prevQuestButton);
-			}
-			if(controller.getActiveQuests().size() != 0) {
-				questName.setText(questScene.getQuestTitel(controller.getActiveQuests(), questcount)); 
+				questHud.attachChild(prevQuestButton);
 			}
 			
-			hud.detachChild(questTask);
 			if(controller.getActiveQuests().size() != 0) {
-				hud.attachChild(HowToCloseQuest);
+				questName.setText(questScene.getQuestTitel(controller.getActiveQuests(), questcount)); 
 
 				if(controller.getActiveQuests().get(questcount) instanceof TalkToQuest) {
 					questTask.setText(questScene.getTalkToTask((controller.getNPCWithID(controller.getCurrentScene(), controller.getActiveQuests().get(questcount).getNpcID()).getName())));
@@ -383,15 +366,12 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 					
 				} else if(controller.getActiveQuests().get(questcount) instanceof KillQuest) {
 					questTask.setText(questScene.getKillTask(controller.getKillCount(questcount))); 
-					
 				}
 			}
-			hud.attachChild(questTask);
 		} else {
-			questName.setText("Keine Aktiven Quests!");
+			questTask.setText("Keine Aktiven Quests!");
+			questName.setText("");
 		}
-		hud.attachChild(questName);
-
 	}
 	
 	/**
@@ -457,6 +437,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		camera.setCenterDirect(spawnX, spawnY);
 		
 		hud = new HUD();
+		questHud = new HUD();
+		
 		camera.setHUD(hud);
 		hud.attachChild(portrait);
 		hud.attachChild(redBarPlayer);
@@ -470,11 +452,20 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		hud.registerTouchArea(inventarButton);
 		hud.registerTouchArea(questButton);
-		hud.registerTouchArea(backToGameButton);
-
-		hud.registerTouchArea(nextQuestButton);
-		hud.registerTouchArea(prevQuestButton);
-//		hud.setTouchAreaBindingOnActionDownEnabled(true);
+		
+		
+		questHud.attachChild(backToGameButtonBackground);
+		questHud.attachChild(backToGameButton);
+		questHud.attachChild(questTask);
+		questHud.attachChild(questName);
+		questHud.attachChild(howToCloseQuest);
+		questHud.attachChild(prevQuestGrayButton);
+		questHud.attachChild(nextQuestGrayButton);
+		
+		
+		questHud.registerTouchArea(backToGameButton);		
+		questHud.registerTouchArea(nextQuestButton);
+		questHud.registerTouchArea(prevQuestButton);
 		
 		interActionText = (ArrayList<String>) controller.getInteractionText(null).clone();
 		startInteraction();
@@ -874,7 +865,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 								finish();
 							}
 						})
-						.setNeutralButton("Ja & Speichern", null)
+						/*.setNeutralButton("Ja & Speichern", null)*/ //TODO solange man nicht speichern kann
 						.setNegativeButton("Nein", null)
 						.create();
 			default:
