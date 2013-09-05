@@ -28,5 +28,9 @@ public class KillQuest extends Quest{
 		if(alreadyKilled==killCount) return true;
 		else return false;
 	}
+	
+	public int getKillCount() {
+		return killCount;
+	}
 
 }

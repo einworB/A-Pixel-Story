@@ -27,4 +27,8 @@ public class GetItemQuest extends Quest{
 		if(alreadyFound==count) return true;
 		else return false;
 	}
+	
+	public int getItemCount(){
+		return count;
+	}
 }

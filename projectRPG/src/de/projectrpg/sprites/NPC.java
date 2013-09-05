@@ -17,4 +17,8 @@ public class NPC extends AnimatedSprite {
 	public int getID() {
 		return ID;
 	}
+	
+	public String getName() {
+		return "Hans"; //TODO richtigen Namen holen!!!
+	}
 }

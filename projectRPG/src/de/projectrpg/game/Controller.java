@@ -14,13 +14,17 @@ import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTiledMap;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.util.Log;
 import de.projectrpg.algorithm.Algorithm;
 import de.projectrpg.database.Armor;
 import de.projectrpg.database.HealItem;
 import de.projectrpg.database.Item;
 import de.projectrpg.database.OurDatabase;
 import de.projectrpg.database.Weapon;
+import de.projectrpg.quest.KillQuest;
+import de.projectrpg.quest.Quest;
 import de.projectrpg.quest.QuestManager;
 import de.projectrpg.scene.OurScene;
 import de.projectrpg.scene.RandomMapGenerator;
@@ -31,10 +35,6 @@ import de.projectrpg.sprites.Opponent;
 import de.projectrpg.sprites.Player;
 import de.projectrpg.util.FightHelper;
 import de.projectrpg.util.InteractionDecider;
-
-import android.content.Context;
-import android.content.res.AssetManager;
-import android.util.Log;
 
 /**
  * Controller class responsible for communication 
@@ -318,4 +318,22 @@ public class Controller implements Serializable{
 		expBar.setWidth(558*percentage);
 	}
 
+	public ArrayList<Quest> getActiveQuests() {
+		return questManager.getActiveQuests();
+	}
+	
+	public int getKillCount(int index) {
+		if(questManager.getActiveQuests().get(index) instanceof KillQuest) {
+		return ((KillQuest) questManager.getActiveQuests().get(index)).getKillCount();
+		}
+		return 0; 
+	}
+	
+	public NPC getNPCWithID(OurScene scene, int index) {
+		ArrayList<NPC> npcList = scene.getNPCsInScene();
+		if(npcList.size() > index) {
+			return npcList.get(index);
+		}
+		return null;
+	}
 }
