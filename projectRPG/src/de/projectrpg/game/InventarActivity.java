@@ -6,8 +6,9 @@
 //hinweis für mich: armor/inventar zurückgeben an controller
 
 
-package de.projectrpg.inventory;
+package de.projectrpg.game;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import com.example.projectrpg.R;
@@ -15,14 +16,18 @@ import com.example.projectrpg.R;
 import de.projectrpg.database.Armor;
 import de.projectrpg.database.Weapon;
 import de.projectrpg.database.Item;
-import de.projectrpg.game.Controller;
+import de.projectrpg.inventory.Slot;
 
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,14 +38,15 @@ import android.widget.TextView;
 public class InventarActivity extends Activity {
 	
 	
-	private Intent intent;
 	private Controller controller;
 	
-	private static final String EQUIP_HEAD = "kopf";
-	private static final String EQUIP_UPPER_BODY = "oberkoerper";
-	private static final String EQUIP_HANDS = "haende";
-	private static final String EQUIP_LOWER_BODY = "beine";
-	private static final String EQUIP_FEET = "fuesse";
+	private Drawable testDrawable;
+	
+	private static final String EQUIP_HEAD = "0";
+	private static final String EQUIP_UPPER_BODY = "1";
+	private static final String EQUIP_HANDS = "2";
+	private static final String EQUIP_LOWER_BODY = "3";
+	private static final String EQUIP_FEET = "4";
 	
 	//hat noch bugs
 	
@@ -108,6 +114,8 @@ public class InventarActivity extends Activity {
 	
 	private ImageButton playerEquip;
 	
+	private ArrayList<String> sortedItemNames = null;
+	private ArrayList<Drawable> sortedItemImages = null;
 	private ArrayList<Slot> slotList = null;
 	private ArrayList<Slot> slotListSell = null;
 	private ArrayList<Slot> slotListEquip = null;
@@ -194,9 +202,10 @@ public class InventarActivity extends Activity {
 	private void getSavedItems() {
 		boolean putItemInSlot = false;
 		Slot tempSlot = new Slot(0, "leer", "leer", "0");
-
+		
 		try{
-		 inventoryList = controller.getInventory();
+			inventoryList.clear();
+			inventoryList = controller.getInventory();
 		}
 		catch(NullPointerException e){
 			//do nothing
@@ -256,6 +265,7 @@ public class InventarActivity extends Activity {
 							slotList.get(j).setlevelNeeded(inventoryList.get(i).getLevelNeeded());
 							if(inventoryList.get(i) instanceof Armor){
 								slotList.get(j).setDefenseValue(((Armor)inventoryList.get(i)).getDefenseValue());
+								slotList.get(j).setItemType("" + ((Armor)inventoryList.get(i)).getType());
 							} 
 							if(inventoryList.get(i) instanceof Weapon){
 								slotList.get(j).setAttackValue(((Weapon)inventoryList.get(i)).getAttackValue());
@@ -271,6 +281,7 @@ public class InventarActivity extends Activity {
 						slotList.get(j).setlevelNeeded(inventoryList.get(i).getLevelNeeded());
 						if(inventoryList.get(i) instanceof Armor){
 							slotList.get(j).setDefenseValue(((Armor)inventoryList.get(i)).getDefenseValue());
+							slotList.get(j).setItemType("" + ((Armor)inventoryList.get(i)).getType());
 						} 
 						if(inventoryList.get(i) instanceof Weapon){
 							slotList.get(j).setAttackValue(((Weapon)inventoryList.get(i)).getAttackValue());
@@ -429,7 +440,7 @@ public class InventarActivity extends Activity {
 	
 	private void checkLongClickedItemAddEquip(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
-		if(slot.getItemType().equals(EQUIP_HEAD) || slot.getItemType().equals(EQUIP_UPPER_BODY) || slot.getItemType().equals(EQUIP_HANDS) || slot.getItemType().equals(EQUIP_LOWER_BODY) || slot.getItemType().equals(EQUIP_FEET)){
+		if(slot.getItemType().equalsIgnoreCase(EQUIP_HEAD) || slot.getItemType().equalsIgnoreCase(EQUIP_UPPER_BODY) || slot.getItemType().equalsIgnoreCase(EQUIP_HANDS) || slot.getItemType().equalsIgnoreCase(EQUIP_LOWER_BODY) || slot.getItemType().equalsIgnoreCase(EQUIP_FEET)){
 			showAddEquipNotification(slotBackground, slotItem, slot);
 		} else {
 			showNotEquipableNotification();
@@ -620,13 +631,13 @@ public class InventarActivity extends Activity {
 			final ImageButton slotItem, final Slot slot) {
 		Slot tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
 		Item tempItem = new Item(tempSlot.getItemName(), tempSlot.getLevelNeeded(), tempSlot.getItemType());
-		Armor tempArmor = (Armor) tempItem;
+		Armor tempArmor = new Armor(tempSlot.getItemName(), tempSlot.getLevelNeeded(), tempSlot.getDefenseValue(), Integer.parseInt(tempSlot.getItemType()));
+		Item tempItem2 = (Item)tempArmor;
+		tempItem2.setItemType("Armor");
+		tempArmor = (Armor) tempItem2;
 		setSlotsUnmarked();
-			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_HEAD)){
+			if(tempArmor.getType() == 0){
 				if(slotListEquip.get(0).getNumberOfItems().equalsIgnoreCase("0")){
-				//	slotListEquip.set(0, tempSlot);
-					tempArmor.setDefenseValue(tempSlot.getDefenseValue());
-					tempArmor.setType(0);
 					controller.addArmor(tempArmor);
 					
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
@@ -634,51 +645,36 @@ public class InventarActivity extends Activity {
 					} else {
 						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
 					}
-					controller.removeItemFromInventory(tempArmor);
-
 				} else{
 					showUsedSlotNotification();
 				}
 			}
-			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_UPPER_BODY)){
+			if(tempArmor.getType() == 1){
 				if(slotListEquip.get(1).getNumberOfItems().equalsIgnoreCase("0")){
-				//	slotListEquip.set(1, tempSlot);
-					tempArmor.setDefenseValue(tempSlot.getDefenseValue());
-					tempArmor.setType(0);
 					controller.addArmor(tempArmor);
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
 						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
-					}
-					controller.removeItemFromInventory(tempArmor);
-					
+					}					
 				} else{
 					showUsedSlotNotification();
 				}
 			}
-			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_HANDS)){
+			if(tempArmor.getType() == 2){
 				if(slotListEquip.get(2).getNumberOfItems().equalsIgnoreCase("0")){
-				//	slotListEquip.set(2, tempSlot);
-					tempArmor.setDefenseValue(tempSlot.getDefenseValue());
-					tempArmor.setType(0);
-					controller.addArmor(tempArmor);
-					
+					controller.addArmor(tempArmor);		
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
 						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
 					}
-					controller.removeItemFromInventory(tempArmor);
 				} else{
 					showUsedSlotNotification();
 				}
 			}
-			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_LOWER_BODY)){
+			if(tempArmor.getType() == 3){
 				if(slotListEquip.get(3).getNumberOfItems().equalsIgnoreCase("0")){
-				//	slotListEquip.set(3, tempSlot);
-					tempArmor.setDefenseValue(tempSlot.getDefenseValue());
-					tempArmor.setType(0);
 					controller.addArmor(tempArmor);
 					
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
@@ -686,29 +682,24 @@ public class InventarActivity extends Activity {
 					} else {
 						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
 					}
-					controller.removeItemFromInventory(tempArmor);
 				} else{
 					showUsedSlotNotification();
 				}
 			}
-			if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_FEET)){
+			if(tempArmor.getType() == 4){
 				if(slotListEquip.get(4).getNumberOfItems().equalsIgnoreCase("0")){
-			//		slotListEquip.set(4, tempSlot);
-					tempArmor.setDefenseValue(tempSlot.getDefenseValue());
-					tempArmor.setType(0);
 					controller.addArmor(tempArmor);
 					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 						slot.eraseSlot();
 					} else {
 						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
 					}
-					controller.removeItemFromInventory(tempArmor);
 				} else{
 					showUsedSlotNotification();
 				}
 			}
 			
-			
+		controller.removeItemFromInventory((Item)tempArmor);	
 		getSavedItems();	
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
@@ -847,47 +838,16 @@ public class InventarActivity extends Activity {
 private void setItemsOnOwnSlots() {
 		
 		for(int i=0; i<9; i++){
-			if (slotList.get(i).getItemName().equalsIgnoreCase("leer")){
-				slotItemImageList.get(i).setBackgroundColor(getResources().getColor(R.color.transparent));
-			}		
-			if (slotList.get(i).getItemName().equalsIgnoreCase("Schwert")){
-				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("1")){
-					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_one));
-				}
-				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("2")){
-					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_two));
-				}
-				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("3")){
-					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_three));
-				}
-				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("4")){
-					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_four));
-				}
-				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("5")){
-					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_five));
+			for(int j=0; j<sortedItemNames.size(); j++){
+				if (slotList.get(i).getItemName().equalsIgnoreCase("leer")){
+					slotItemImageList.get(i).setBackgroundColor(getResources().getColor(R.color.transparent));
+				}		
+				if (slotList.get(i).getItemName().equalsIgnoreCase(sortedItemNames.get(j))){
+						slotItemImageList.get(i).setBackgroundDrawable(sortedItemImages.get(j));
 				}
 			}
-			if (slotList.get(i).getItemName().equalsIgnoreCase("Pizza")){
-				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("1")){
-					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_one));
-				}
-				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("2")){
-					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_two));
-				}
-				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("3")){
-					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_three));
-				}
-				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("4")){
-					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_four));
-				}
-				if (slotList.get(i).getNumberOfItems().equalsIgnoreCase("5")){
-					slotItemImageList.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_five));
-				}
-			}
-			
 		}
-		
-		
+
 	}
 
 	private void setItemsOnSellSlots() {
@@ -984,9 +944,33 @@ private void setItemsOnEquipSlots() {
 	private void setupUI() {
 		setContentView(R.layout.activity_inventar);
 		
-		intent = getIntent();
+		testDrawable = getResources().getDrawable(R.drawable.schwert_five);
 		
-		controller = (Controller)intent.getExtras().getSerializable("controller");
+		sortedItemImages = new ArrayList<Drawable>();
+		
+		sortedItemImages.add(getResources().getDrawable(R.drawable.axtdestodes));
+		sortedItemImages.add(getResources().getDrawable(R.drawable.etwaszuschwerereisenhammer));
+		sortedItemImages.add(getResources().getDrawable(R.drawable.holzknueppel));
+		sortedItemImages.add(getResources().getDrawable(R.drawable.kupferaxt));
+		sortedItemImages.add(getResources().getDrawable(R.drawable.kupferstreitkolben));
+		sortedItemImages.add(getResources().getDrawable(R.drawable.nagelneueseisenschwert));
+		sortedItemImages.add(getResources().getDrawable(R.drawable.rostigeseisenschwert));
+		sortedItemImages.add(getResources().getDrawable(R.drawable.schmiedeeisernerstreitkolben));		
+		
+		sortedItemNames = new ArrayList<String>();
+		
+		sortedItemNames.add("Axt des Todes");
+		sortedItemNames.add("Etwas zu schwerer Eisenhammer");
+		sortedItemNames.add("Holzknüppel");
+		sortedItemNames.add("Kupferaxt");
+		sortedItemNames.add("Kupferstreitkolben");
+		sortedItemNames.add("Nagelneues Eisenschwert");
+		sortedItemNames.add("Rostiges Eisenschwert");
+		sortedItemNames.add("Schmiedeeisener Streitkolben");
+		
+		
+		controller = LevelActivity.controller;
+	
 		
 		titleSellEquip = (TextView) findViewById(R.id.title_inventar_sell);
 

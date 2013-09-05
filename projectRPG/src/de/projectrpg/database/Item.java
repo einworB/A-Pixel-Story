@@ -23,4 +23,8 @@ public class Item {
 	public int getLevelNeeded() {
 		return levelNeeded;
 	}
+
+	public void setItemType(String itemType) {
+		this.itemType = itemType;
+	}
 }
