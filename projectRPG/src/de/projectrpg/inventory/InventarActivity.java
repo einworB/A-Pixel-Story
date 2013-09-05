@@ -6,7 +6,7 @@
 //hinweis für mich: armor/inventar zurückgeben an controller
 
 
-package de.projectrpg.game;
+package de.projectrpg.inventory;
 
 import java.util.ArrayList;
 
@@ -27,7 +27,7 @@ import com.example.projectrpg.R;
 import de.projectrpg.database.Armor;
 import de.projectrpg.database.Item;
 import de.projectrpg.database.Weapon;
-import de.projectrpg.inventory.Slot;
+import de.projectrpg.game.Controller;
 
 public class InventarActivity extends Activity {
 	
@@ -41,6 +41,8 @@ public class InventarActivity extends Activity {
 	private static final String EQUIP_HANDS = "2";
 	private static final String EQUIP_LOWER_BODY = "3";
 	private static final String EQUIP_FEET = "4";
+	
+	private TextView itemName;
 	
 	//hat noch bugs
 	
@@ -205,46 +207,14 @@ public class InventarActivity extends Activity {
 			//do nothing
 		}
 		try{
+		//	for(int i=0; i<5; i++){
+		//	equipedArmorList[i] = null;
+		//	}
 			 equipedArmorList = controller.getArmor();
 			}
 			catch(NullPointerException e){
 				//do nothing
 			}
-		
-	/*	Item tempItem = new Item("Schwert", 1, EQUIP_HEAD);
-		Armor tempArmor = (Armor) tempItem;
-		tempArmor.setDefenseValue(1);
-		tempArmor.setType(0);
-		tempArmor.set
-		
-		Item tempItem2 = new Item("Pizza", 1, EQUIP_HANDS);
-		Armor tempArmor2 = (Armor) tempItem2;
-		tempArmor2.setDefenseValue(1);
-		tempArmor2.setType(2);
-		
-		Item tempItem3 = new Item("leer", 1, "leer");
-		Armor tempArmor3 = (Armor) tempItem3;
-		tempArmor3.setDefenseValue(0);
-		tempArmor3.setType(5);
-		
-	
-		
-		equipedArmorList[0] = tempArmor;
-		equipedArmorList[1] = tempArmor2;
-		equipedArmorList[2] = tempArmor3;
-		equipedArmorList[3] = tempArmor3;
-		equipedArmorList[4] = tempArmor3;
-		
-		 
-		inventoryList.add(tempArmor);
-		inventoryList.add(tempArmor);
-		inventoryList.add(tempArmor);
-		inventoryList.add(tempArmor);
-		inventoryList.add(tempArmor2);
-		inventoryList.add(tempArmor);
-		inventoryList.add(tempArmor);
-		
-		**/
 		if(inventoryList != null){
 			for (int i = 0; i < inventoryList.size(); i++) {
 				
@@ -693,6 +663,7 @@ public class InventarActivity extends Activity {
 				}
 			}
 			
+		resetItemNameTextView();
 		controller.removeItemFromInventory((Item)tempArmor);	
 		getSavedItems();	
 		setItemsOnOwnSlots();
@@ -700,58 +671,20 @@ public class InventarActivity extends Activity {
 		setupAllClickListeners();
 	}
 	
+	private void resetItemNameTextView() {
+		itemName.setText("Item:");		
+	}
+
 	private void removeEquipItem(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
-		Slot tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
-		Armor tempArmor = new Armor("", 1, 1, 1);
-		boolean putItemInSlot = false;
-	/*	if (slot.getNumberOfItems().equalsIgnoreCase("1")){
-			slot.eraseSlot();
-		} else {
-			slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
-		} **/
-		if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_HEAD)){
-			tempArmor = equipedArmorList[0];
-			controller.removeEquippedArmor(tempArmor);
-		}
-		if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_UPPER_BODY)){
-			tempArmor = equipedArmorList[1];
-			controller.removeEquippedArmor(tempArmor);
-			}
-		if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_HANDS)){
-			tempArmor = equipedArmorList[2];
-			controller.removeEquippedArmor(tempArmor);
-			}
-		if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_LOWER_BODY)){
-			tempArmor = equipedArmorList[3];
-			controller.removeEquippedArmor(tempArmor);
-			}
-		if(tempSlot.getItemType().equalsIgnoreCase(EQUIP_FEET)){
-			tempArmor = equipedArmorList[4];
-			controller.removeEquippedArmor(tempArmor);
-			}
-		
-		setSlotsUnmarked();
-	/*	for(int i=0; i<9; i++){
-			if(tempSlot.getItemName().equalsIgnoreCase(slotList.get(i).getItemName()) && putItemInSlot == false){
-				if(slotList.get(i).getNumberOfItems().equalsIgnoreCase("5")){
-					//do nothing
-				} else{
-					slotList.get(i).setNumberOfItems("" + (Integer.parseInt(slotList.get(i).getNumberOfItems())+1));
-					putItemInSlot = true;
-				}
-			}
-		}
-		for (int i = 0; i < 9; i++) {
-			if (slotList.get(i).getItemName().equalsIgnoreCase("leer") && putItemInSlot == false) {
-				slotList.set(i, tempSlot);
-				putItemInSlot = true;
-			}
-		}
-	**/	
-		
+		Armor tempArmor = equipedArmorList[Integer.parseInt(slot.getItemType())];
 		controller.addItemToInventory(tempArmor);
+		setSlotsUnmarked();
 		
+		//equip löschen
+		
+		resetItemNameTextView();
+		controller.removeEquippedArmor(tempArmor);		
 		getSavedItems();	
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
@@ -776,6 +709,7 @@ public class InventarActivity extends Activity {
 	}
 	
 	private void showNotEquipableNotification() {
+		// dgsdfhsd
 		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
 		dialogBuilder.setMessage("Du kannst dieses Item nicht anlegen!");
@@ -800,9 +734,14 @@ public class InventarActivity extends Activity {
 				} else {
 					markThisSlot(slotBackground);
 					slot.setMarked();
+					showItemName(slot);
 				}
 			}
 		});
+	}
+
+	protected void showItemName(Slot slot) {
+		itemName.setText("Item: " + slot.getNumberOfItems() + "x "+ slot.getItemName());
 	}
 
 	private void markThisSlot(ImageButton slotBackground) {
@@ -967,6 +906,7 @@ private void setItemsOnEquipSlots() {
 	
 		
 		titleSellEquip = (TextView) findViewById(R.id.title_inventar_sell);
+		itemName = (TextView) findViewById(R.id.item_name_and_number);
 
 		slot1Background = (ImageButton) findViewById(R.id.inventar_slot1);
 		slot2Background = (ImageButton) findViewById(R.id.inventar_slot2);

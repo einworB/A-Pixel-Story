@@ -54,6 +54,7 @@ import android.util.Log;
 import android.widget.Toast;
 import de.projectrpg.algorithm.OurPathModifier;
 import de.projectrpg.database.Item;
+import de.projectrpg.inventory.InventarActivity;
 import de.projectrpg.quest.GetItemQuest;
 import de.projectrpg.quest.KillQuest;
 import de.projectrpg.quest.TalkToQuest;

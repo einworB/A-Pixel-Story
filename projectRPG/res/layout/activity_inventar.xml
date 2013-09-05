@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_inventar"
-    android:padding="20dp" >
+    android:paddingTop="20dp" 
+    android:paddingLeft="20dp" 
+    android:paddingRight="20dp" >
 
     
     
@@ -385,10 +387,40 @@
     </TableLayout>
     
     <ImageButton
+        android:id="@+id/player_weapon_slot"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/slots_table"
+        android:background="@color/transparent"
+        android:contentDescription="@string/default_description"
+        android:gravity="center" />
+    
+    <ImageButton
+        android:id="@+id/player_weapon_slot_item_image"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/slots_table"
+        android:background="@drawable/slot_unmarked"
+        android:contentDescription="@string/default_description"
+        android:gravity="center" />
+    
+       
+    <TextView 
+        android:id="@+id/slot_type_weapon"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/player_weapon_slot"
+        android:layout_alignParentRight="true"
+        android:gravity="center_horizontal"
+        android:text="Waffe"/>
+    
+    <ImageButton
     	android:id="@+id/player_equip"
-        android:layout_width="140dp"
+        android:layout_width="70dp"
         android:layout_height="140dp"
-		android:layout_alignParentRight="true"
+		android:layout_toLeftOf="@id/player_weapon_slot"
 		android:background="@drawable/player_equip"
         android:contentDescription="@string/default_description"
         android:layout_alignTop="@id/slots_table" />
@@ -452,6 +484,15 @@
         android:background="@color/transparent"
         android:contentDescription="@string/default_description"
         android:gravity="center" />
+    
+    <TextView 
+        android:id="@+id/slot_type_armor1"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/player_equip_slot1"
+        android:layout_toLeftOf="@id/player_equip"
+        android:gravity="center_horizontal"
+        android:text="Kopf"/>
 
     <ImageButton
         android:id="@+id/player_equip_slot2_item_image"
@@ -462,6 +503,15 @@
         android:background="@color/transparent"
         android:contentDescription="@string/default_description"
         android:gravity="center" />
+    
+    <TextView 
+        android:id="@+id/slot_type_armor2"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/player_equip_slot2"
+        android:layout_toLeftOf="@id/player_equip"
+        android:gravity="center_horizontal"
+        android:text="Rumpf"/>
 
     <ImageButton
         android:id="@+id/player_equip_slot3_item_image"
@@ -473,6 +523,15 @@
         android:contentDescription="@string/default_description"
         android:gravity="center" />
     
+    <TextView 
+        android:id="@+id/slot_type_armor3"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/player_equip_slot3"
+        android:layout_toLeftOf="@id/player_equip"
+        android:gravity="center_horizontal"
+        android:text="Hände"/>
+    
     <ImageButton
         android:id="@+id/player_equip_slot4_item_image"
         android:layout_width="70dp"
@@ -483,6 +542,15 @@
         android:contentDescription="@string/default_description"
         android:gravity="center" />
     
+    <TextView 
+        android:id="@+id/slot_type_armor4"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/player_equip_slot4"
+        android:layout_toRightOf="@id/player_equip_slot3"
+        android:gravity="center_horizontal"
+        android:text="Beine"/>
+    
     <ImageButton
         android:id="@+id/player_equip_slot5_item_image"
         android:layout_width="70dp"
@@ -492,5 +560,23 @@
         android:background="@color/transparent"
         android:contentDescription="@string/default_description"
         android:gravity="center" />
+    
+    <TextView 
+        android:id="@+id/slot_type_armor5"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/player_equip_slot5"
+        android:layout_toRightOf="@id/player_equip_slot4"
+        android:gravity="center_horizontal"
+        android:text="Füße"/>
+    
+       
+    <TextView 
+        android:id="@+id/item_name_and_number"
+        android:layout_marginTop="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/slots_table"
+        android:text="Item:"/>
 
 </RelativeLayout>
