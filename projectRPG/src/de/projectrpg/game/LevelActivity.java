@@ -340,6 +340,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		questHud.detachChild(prevQuestButton);
 		questHud.detachChild(howToCloseQuest);
 		
+		questHud.unregisterTouchArea(nextQuestButton);
+		questHud.unregisterTouchArea(prevQuestButton);
+		
+		
 		LevelActivity.this.mEngine.setScene(questScene);
 		
 		if(controller.getActiveQuests().size() != 0) {
@@ -349,9 +353,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 			if(controller.getActiveQuests().size() < controller.getActiveQuests().size()) {
 				questHud.attachChild(nextQuestButton);
+				questHud.unregisterTouchArea(nextQuestButton);
 			}
 			if(controller.getActiveQuests().size() > 1) {
 				questHud.attachChild(prevQuestButton);
+				questHud.unregisterTouchArea(prevQuestButton);
 			}
 			
 			if(controller.getActiveQuests().size() != 0) {
@@ -464,7 +470,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		questHud.attachChild(nextQuestGrayButton);
 		
 		
-		questHud.registerTouchArea(backToGameButton);		
+		questHud.registerTouchArea(backToGameButton);
 		questHud.registerTouchArea(nextQuestButton);
 		questHud.registerTouchArea(prevQuestButton);
 		

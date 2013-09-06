@@ -45,7 +45,8 @@ public class QuestScene extends Scene {
 	}
 	
 	public String getTalkToTask(String npcName) {
-		return "Sprich mit " + npcName + "!";
+		return "Suche jemanden der mit dir spricht!";
+		//.        ..Sprich mit " + npcName + 
 	}
 	
 	public String getKillTask(int count) {
