@@ -200,6 +200,10 @@ public class Controller {
 		db.close();
 		return text;
 	}
+	
+	public boolean startMerchant(){
+		return db.startMerchant();
+	}
 
 	/** 
 	 * @returns the path to the tmx file according to the current level

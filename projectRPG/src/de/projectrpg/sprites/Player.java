@@ -48,7 +48,7 @@ public class Player extends FightingSprite {
 
 	@Override
 	public int getAttackValue() {
-		int attackValue = level*2;
+		int attackValue = level*20;
 		if(equippedWeapon != null) attackValue += equippedWeapon.getAttackValue();
 		return attackValue;
 	}

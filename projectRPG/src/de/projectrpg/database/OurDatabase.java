@@ -39,6 +39,8 @@ public class OurDatabase {
 	private OurDatabaseHelper dbHelper;
 	
 	private OurRandomGenerator rgen = new OurRandomGenerator();
+
+	private boolean startMerchant;
  
 	public OurDatabase(Context context){
         this.context = context;
@@ -310,6 +312,7 @@ public class OurDatabase {
 				sql = new String("SELECT text FROM text WHERE _id='"+textID+"'");
 				Cursor textCursor = db.rawQuery(sql, null);
 				if(textCursor.moveToFirst()) {
+					startMerchant = true;
 					return convertStringToArrayList(textCursor.getString(0));
 				} else return null;
 			}
@@ -330,18 +333,21 @@ public class OurDatabase {
 					sql = new String("SELECT text FROM text WHERE _id='"+startTextID+"'");
 					Cursor textCursor = db.rawQuery(sql, null);
 					if(textCursor.moveToFirst()) {
+						startMerchant = false;
 						String str =textCursor.getString(0);
 						if(str!=null) startText = convertStringToArrayList(str);
 					}
 					sql = new String("SELECT text FROM text WHERE _id='"+duringTextID+"'");
 					textCursor = db.rawQuery(sql, null);
 					if(textCursor.moveToFirst()) {
+						startMerchant = false;
 						String str =textCursor.getString(0);
 						if(str!=null) duringText = convertStringToArrayList(str);
 					}
 					sql = new String("SELECT text FROM text WHERE _id='"+endTextID+"'");
 					textCursor = db.rawQuery(sql, null);
 					if(textCursor.moveToFirst()) {
+						startMerchant = false;
 						String str =textCursor.getString(0);
 						if(str!=null) endText = convertStringToArrayList(str);
 					}
@@ -383,12 +389,17 @@ public class OurDatabase {
 					sql = new String("SELECT text FROM text WHERE _id='"+textID+"'");
 					Cursor textCursor = db.rawQuery(sql, null);
 					if(textCursor.moveToFirst()) {
+						startMerchant = true;
 						return convertStringToArrayList(textCursor.getString(0));
 					} else return null;
 				}
 					
 			}
 		}		
+	}
+	
+	public boolean startMerchant(){
+		return startMerchant;
 	}
 	
 	private ArrayList<String> convertStringToArrayList(String str){

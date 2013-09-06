@@ -271,6 +271,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 					Log.d("RPG", "Inventar touched");
 					inventarStarted = true;
 					Intent intent = new Intent(LevelActivity.this, InventarActivity.class);
+					intent.putExtra("isMerchant", false);
 					startActivity(intent);
 				}
 				return true;
@@ -423,7 +424,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		final float spawnY = spawnTile.getTileY();
 
 		/* Create the sprite and add it to the scene. */
-		player = new Player(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), 10);
+		player = new Player(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), 1);
 		player.setZIndex(1);
 		int column = spawnTile.getTileColumn();
 		int row = spawnTile.getTileRow();
@@ -503,9 +504,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		if(inventarButton.hasParent()) hud.detachChild(inventarButton);
 		if(questButton.hasParent()) hud.detachChild(questButton);
 		
-		nextString();
 		
-//		hud.attachChild(text);
+		nextString();
 		
 	}
 	
@@ -532,6 +532,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		hud.detachChild(textScroll);
 		hud.detachChild(text);
 		isInteracting = false;
+		if(controller.startMerchant()){
+			Intent intent = new Intent(LevelActivity.this, InventarActivity.class);
+			intent.putExtra("isMerchant", true);
+			startActivity(intent);
+		}
 	}
 
 	/**
