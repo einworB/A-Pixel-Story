@@ -93,96 +93,112 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/** the smooth camera allowing smooth camera movements, bounds and zoom */
 	private SmoothCamera camera;
 	
-	/** used for loading bitmaps, can hold more than one*/
+	/** used for loading sprite bitmaps, can hold more than one*/
 	private BitmapTextureAtlas tiledBitmapTextureAtlas;
+	/** used for loading button bitmaps, can hold more than one*/
+	private BitmapTextureAtlas bitmapTextureAtlas;
+	
 	/** used for loading bitmaps*/
 	private TiledTextureRegion playerTextureRegion;
-	/** the players sprite */
-	private Player player;
 	/** used for loading bitmaps*/
 	private TiledTextureRegion opponentTextureRegion;
-	
-	
-	/**
-	 * the controller responsible for communication between the Activity and the Algorithm 
-	 * and for getting and setting of other technical information
-	 */
+	/** used for loading bitmaps*/
+	private TiledTextureRegion npcTextureRegion;
+
+	/** used for loading bitmaps*/
+	private TextureRegion beutelTextureRegion;
+
+	/** the players sprite */
+	private Player player;
+
+	/**the controller responsible for communication between the Activity and the Algorithm 
+	 * and for getting and setting of other technical information */
 	private static Controller controller;
-	
+	private QuestScene questScene;
+
 	/** a detector for reacting to pinch zooms */
 	private PinchZoomDetector pinchZoomDetector;
-	/** var for the zoom factor before the pinch zoom began */
-	private float initialTouchZoomFactor;
 	/** boolean to help the onscenetouch listener to decide if the screen was touched to zoom(and not to move the player) */
 	private ClickDetector clickDetector;
 	
 	/** necessary as var to be able to stop an already started path */
 	private LoopEntityModifier pathModifier;
-	/** necessary as var to be able to stop an already started path */
-	private boolean stop;
 	
 	/** the font for the dialog text */
 	private Font font;
+	/** the font for the quest titel */
+	private Font fontQuestTitel;
+	/** the font for the "how to close quest" text */
+	private Font fontQuestHowTo;
 
-	/** boolean stating if the player is interacting at the moment */
-	private boolean isInteracting;
-	
-	/** rect for the dialog window */
-//	private Rectangle rect;
 	/** tickertext for the dialog window */
 	private TickerText text;
+	/** text for the name of the quest */
 	private Text questName;
-	
-	
-	/** only needed for the dialog at the moment */
-	private HUD hud;
-	private boolean fleeing;
-
-	private Font lifeFont;
-	private TextureRegion beutelTextureRegion;
-	private BitmapTextureAtlas bitmapTextureAtlas;
-
-	private TextureRegion portraitTextureRegion;
-	private Sprite portrait;
-	private TextureRegion redBarTextureRegion;
-	private Sprite redBarPlayer;
-	private TextureRegion portraitEnemyTextureRegion;
-	private Sprite portraitEnemy;
-	private Sprite redBarEnemy;
-	private TextureRegion inventarButtonTextureRegion;
-	private Sprite inventarButton;
-	private boolean inventarStarted = false;
-	private TiledTextureRegion npcTextureRegion;
-	private TextureRegion textScrollTextureRegion;
-	private Sprite textScroll;
-	private ArrayList<String> interActionText;
-	private TextureRegion experienceBackgroundTextureRegion;
-	private TextureRegion experienceBarTextureRegion;
-	private Sprite expBar;
-	private Sprite expBackground;
-	private TextureRegion startExperienceBarTextureRegion;
-	private Sprite startExpBar;
-	private TextureRegion questButtonTextureRegion;
-	private Sprite questButton;
-	private QuestScene questScene;
-	private TextureRegion backToGameButtonTextureRegion;
-	private Sprite backToGameButton;
+	/** text for the task of the quest */
 	private Text questTask;
-	private TextureRegion nextQuestButtonTextureRegion;
-	private TextureRegion prevQuestButtonTextureRegion;
-	private Sprite nextQuestButton;
-	private Sprite prevQuestButton;
-	private int questcount = 0;
+	/** text for the level of the player */
+	private Text levelTextPlayer;
+	/** text for the level of the actual opponent */
+	private Text levelTextOpponent;
+	/** text to inform the user how to close a quest */
 	private Text howToCloseQuest;
+
+	/** the list of Strings */
+	private ArrayList<String> interActionText;
+
+	
+	/** the hud for the normal game scenes */
+	private HUD hud;
+	/** the hud for the questscene */
 	private HUD questHud;
-	private TextureRegion backToGameButtonBackgroudTextureRegion;
+
+	/** the portrait of the player */
+	private Sprite portrait;
+	/** the portrait of the enemy */
+	private Sprite portraitEnemy;
+	/** the red life bar of the player */
+	private Sprite redBarPlayer;
+	/** the red life bar of the enemy */
+	private Sprite redBarEnemy;
+	/** the background of the dialog */
+	private Sprite textScroll;
+	/** the background of the exp bar */
+	private Sprite expBackground;
+	/** the start of the exp bar */
+	private Sprite startExpBar;
+	/** the exp bar */
+	private Sprite expBar;
+	/** the button to start the questscene */
+	private Sprite questButton;
+	/** the button to start the inventory activity */
+	private Sprite inventarButton;
+	/** the button to go back to game from quest scene */
+	private Sprite backToGameButton;
+	/** the background of the button to go back to game from quest scene */
 	private Sprite backToGameButtonBackground;
-	private TextureRegion nextQuestGrayButtonTextureRegion;
-	private TextureRegion prevQuestGrayButtonTextureRegion;
+	/** the button to go to the next quest in quest scene */
+	private Sprite nextQuestButton;
+	/** the button to go to the previous quest in quest scene */
+	private Sprite prevQuestButton;
+	/** show if the button to go to next quest isn't shown */
 	private Sprite nextQuestGrayButton;
+	/** show if the button to go to previous quest isn't shown */
 	private Sprite prevQuestGrayButton;
-	private Font fontQuestTitel;
-	private Font fontQuestHowTo;
+	
+	/** boolean if the inventar was started already. true if it was started, else false. */
+	private boolean inventarStarted = false;
+	/** boolean if the player is fleeing. True if it is fleeing, else false. */
+	private boolean fleeing;
+	/** necessary as var to be able to stop an already started path */
+	private boolean stop;
+	/** boolean stating if the player is interacting at the moment */
+	private boolean isInteracting;
+
+	/** var for the zoom factor before the pinch zoom began */
+	private float initialTouchZoomFactor;
+	/** the number of the actual quest that should be shown */
+	private int questcount = 0;
 
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
@@ -216,25 +232,25 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		this.tiledBitmapTextureAtlas.load();
 		
 		this.bitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 1024, 512);		
-		this.textScrollTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "dialogHintergrund.png", 0, 0);
-		this.beutelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "lootBag.png", 0, 175);
-		this.portraitTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portrait.png", 32, 175);
-		this.portraitEnemyTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portraitEnemy.png", 82, 175);
-		this.redBarTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "roterBalken.png", 132, 175);
-		this.inventarButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "inventarButton.png", 182, 175);
-		this.experienceBackgroundTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "expBackground.png", 236, 175);
-		this.experienceBarTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "expBar.png", 236, 205);
-		this.startExperienceBarTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "startExpBar.png", 738, 175);
+		beutelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "lootBag.png", 0, 175);
+		TextureRegion textScrollTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "dialogHintergrund.png", 0, 0);
+		TextureRegion portraitTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portrait.png", 32, 175);
+		TextureRegion portraitEnemyTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portraitEnemy.png", 82, 175);
+		TextureRegion redBarTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "roterBalken.png", 132, 175);
+		TextureRegion inventarButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "inventarButton.png", 182, 175);
+		TextureRegion experienceBackgroundTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "expBackground.png", 236, 175);
+		TextureRegion experienceBarTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "expBar.png", 236, 205);
+		TextureRegion startExperienceBarTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "startExpBar.png", 738, 175);
 		
-		this.questButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "questButton.png", 758, 175);
-		this.backToGameButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "backToGameButton.png", 0, 229);
-		this.backToGameButtonBackgroudTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "backToGameButtonSchatten.png", 408, 229);
+		TextureRegion questButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "questButton.png", 758, 175);
+		TextureRegion backToGameButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "backToGameButton.png", 0, 229);
+		TextureRegion backToGameButtonBackgroudTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "backToGameButtonSchatten.png", 408, 229);
 
-		this.nextQuestButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "nextQuest.png", 300, 229);
-		this.prevQuestButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "prevQuest.png", 354, 229);
+		TextureRegion nextQuestButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "nextQuest.png", 300, 229);
+		TextureRegion prevQuestButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "prevQuest.png", 354, 229);
 		
-		this.nextQuestGrayButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "nextQuestGray.png", 462, 229);
-		this.prevQuestGrayButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "prevQuestGray.png", 516, 229);
+		TextureRegion nextQuestGrayButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "nextQuestGray.png", 462, 229);
+		TextureRegion prevQuestGrayButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "prevQuestGray.png", 516, 229);
 
 		this.bitmapTextureAtlas.load();
 		
@@ -245,18 +261,12 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		this.fontQuestTitel = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 50);
 		this.fontQuestTitel.load();
 		this.fontQuestHowTo = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 25);
-		this.fontQuestHowTo.load();
-		
-		this.lifeFont = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 12);
-		this.lifeFont.load();
+		this.fontQuestHowTo.load();		
 		
 		
-//		rect = new Rectangle(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-20, 175, this.getVertexBufferObjectManager());
-//		rect.setColor(Color.WHITE);
 		textScroll = new Sprite(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-40, 175, textScrollTextureRegion, this.getVertexBufferObjectManager());
 		
 		portrait = new Sprite(2, 2, portraitTextureRegion, getVertexBufferObjectManager());
-		
 		portraitEnemy = new Sprite(CAMERA_WIDTH-52, 2, portraitEnemyTextureRegion, getVertexBufferObjectManager());
 		
 		redBarPlayer = new Sprite(44, 11, 0, 4, redBarTextureRegion, getVertexBufferObjectManager());
@@ -277,6 +287,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				return true;
 			}
 		};
+		
 		questButton = new Sprite(CAMERA_WIDTH-140, CAMERA_HEIGHT-70, 54, 54, questButtonTextureRegion, getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -284,11 +295,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				return true;
 			}
 		};
-		
-		questName = new Text(20, 20, fontQuestTitel, "", 100, getVertexBufferObjectManager());
-		questTask = new Text(20, 90, font, "", 200, getVertexBufferObjectManager());
-		howToCloseQuest = new Text(20, CAMERA_HEIGHT - 230, fontQuestHowTo, "Gehe zurück zu der Person die dir den Quest gegeben hat um ihn abzuschließen", new TextOptions(AutoWrap.WORDS, CAMERA_WIDTH-30, HorizontalAlign.LEFT, 5), getVertexBufferObjectManager());
-		
+				
 		backToGameButton = new Sprite(CAMERA_WIDTH/2 - 150, CAMERA_HEIGHT-150, 300, 100, backToGameButtonTextureRegion, getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -328,6 +335,13 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		expBar = new Sprite(91, 13, 0, 30, experienceBarTextureRegion, getVertexBufferObjectManager());
 		expBackground = new Sprite(70, 12, CAMERA_WIDTH - 140, 32, experienceBackgroundTextureRegion, getVertexBufferObjectManager());
 		startExpBar = new Sprite(71, 13, 20, 30, startExperienceBarTextureRegion, getVertexBufferObjectManager());
+		
+		questName = new Text(20, 20, fontQuestTitel, "", 100, getVertexBufferObjectManager());
+		questTask = new Text(20, 90, font, "", 200, getVertexBufferObjectManager());
+		howToCloseQuest = new Text(20, CAMERA_HEIGHT - 230, fontQuestHowTo, "Gehe zurück zu der Person die dir den Quest gegeben hat um ihn abzuschließen", new TextOptions(AutoWrap.WORDS, CAMERA_WIDTH-30, HorizontalAlign.LEFT, 5), getVertexBufferObjectManager());
+		levelTextPlayer = new Text(3, 50, fontQuestHowTo, "lvl 1", 5, getVertexBufferObjectManager());
+		levelTextOpponent = new Text(CAMERA_WIDTH - 51, 50, fontQuestHowTo, "lvl 1", 5, getVertexBufferObjectManager()); //TODO gegner maximal level 9 .. sonst verschieben
+
 		
 		Controller.initInstance(this, expBar);
 		controller = Controller.getInstance();
@@ -406,7 +420,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		camera.setBoundsEnabled(true);
 		
 		/* set the scene's on touch listener to the activity itself */
-//		scene.setOnSceneTouchListener(this);
 		pinchZoomDetector = new PinchZoomDetector(this);
 		pinchZoomDetector.setEnabled(true);
 		clickDetector = new ClickDetector(this);
@@ -436,9 +449,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		controller.getCurrentScene().attachChild(player);
 		controller.setPlayer(player);
-//		final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, this.opponentTextureRegion, this.getVertexBufferObjectManager(), 1, false);
-//		opponent.setCurrentTileIndex(1);
-//		controller.getCurrentScene().attachChild(opponent);
 		
 		/* let the camera chase the player */
 		camera.setChaseEntity(player);
@@ -454,6 +464,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		hud.attachChild(inventarButton);
 		hud.attachChild(questButton);
 		
+		hud.attachChild(levelTextPlayer);
+
 		hud.attachChild(expBar);
 		hud.attachChild(expBackground);
 		hud.attachChild(startExpBar);
@@ -501,18 +513,30 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		isInteracting = true;
 		
 		hud.attachChild(textScroll);
-		if(inventarButton.hasParent()) hud.detachChild(inventarButton);
-		if(questButton.hasParent()) hud.detachChild(questButton);
+		if(inventarButton.hasParent()) {
+			hud.detachChild(inventarButton);
+			hud.unregisterTouchArea(inventarButton);
+		}
+		if(questButton.hasParent()) {
+			hud.detachChild(questButton);
+			hud.unregisterTouchArea(questButton);
+		}
 		
+		levelTextPlayer.setText("lvl " + player.getLevel());
 		
 		nextString();
-		
 	}
 	
 	private void nextString(){
 		if(!interActionText.isEmpty()){
-			if(inventarButton.hasParent()) hud.detachChild(inventarButton);
-			if(questButton.hasParent()) hud.detachChild(questButton);
+			if(inventarButton.hasParent()) {
+				hud.detachChild(inventarButton);
+				hud.unregisterTouchArea(inventarButton);
+			}
+			if(questButton.hasParent()) {
+				hud.detachChild(questButton);
+				hud.unregisterTouchArea(questButton);
+			}
 			
 			if(text!=null) if(text.hasParent()) hud.detachChild(text);
 			text = new TickerText(textScroll.getX()+40, textScroll.getY()+15, font, interActionText.remove(0), new TickerTextOptions(AutoWrap.WORDS, textScroll.getWidth()-80, HorizontalAlign.LEFT, 15), this.getVertexBufferObjectManager());
@@ -527,8 +551,14 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * detaches dialog window(consisting of a rect and a tickertext) fromt he hud
 	 */
 	private void stopInteraction() {
-		if(!inventarButton.hasParent()) hud.attachChild(inventarButton);
-		if(!questButton.hasParent()) hud.attachChild(questButton);
+		if(!inventarButton.hasParent()) {
+			hud.attachChild(inventarButton);
+			hud.registerTouchArea(inventarButton);
+		}
+		if(!questButton.hasParent()) {
+			hud.attachChild(questButton);
+			hud.registerTouchArea(questButton);
+		}
 		hud.detachChild(textScroll);
 		hud.detachChild(text);
 		isInteracting = false;
@@ -612,7 +642,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			public void onPathFinished(final PathModifier pathModifier, final IEntity entity) {
 				player.stopAnimation();
 				controller.animationFinished();
-//				camera.setChaseEntity(null);
 				
 				final TMXLayer layer = controller.getTMXLayer();
 				final TMXTile endTile = layer.getTMXTileAt(player.getX(), player.getY());
@@ -717,9 +746,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(9);
 				else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(13);
 				
-//				final Opponent opponent = new Opponent(layer.getTMXTileAt(40, 40).getTileX()+4, layer.getTMXTileAt(40, 40).getTileY(), 24, 32, opponentTextureRegion, getVertexBufferObjectManager(), controller.getLevel(), false);
-//				opponent.setCurrentTileIndex(1);
-//				scene.attachChild(opponent);
 				LevelActivity.this.mEngine.setScene(scene);
 			}
 		});	
@@ -781,6 +807,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 						if(path!=null){
 							if(portraitEnemy.hasParent()) hud.detachChild(portraitEnemy);
 							if(redBarEnemy.hasParent()) hud.detachChild(redBarEnemy);
+							if(levelTextOpponent.hasParent()) hud.detachChild(levelTextOpponent);
 							startPath(path, destinationTile);
 						}
 						else Log.d("RPG", "path=null");
@@ -809,10 +836,17 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 						if(!portraitEnemy.hasParent()){
 							hud.attachChild(portraitEnemy);
 							hud.sortChildren();
-						}if(!redBarEnemy.hasParent()){
+						}
+						if(!redBarEnemy.hasParent()){
 							hud.attachChild(redBarEnemy);
 							hud.sortChildren();
 						}
+						if(!levelTextOpponent.hasParent()){
+							hud.attachChild(levelTextOpponent);
+							hud.sortChildren();
+						}
+						levelTextOpponent.setText("lvl " + opponent.getLevel());
+						
 						turnToTile(player, destinationTile, startTile, scene.getMap());
 						turnToTile(opponent, startTile, destinationTile, scene.getMap());
 						switch(controller.fight(player, opponent, redBarPlayer, redBarEnemy)){
@@ -821,6 +855,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 								controller.checkQuests("enemy");
 								hud.detachChild(portraitEnemy);
 								hud.detachChild(redBarEnemy);
+								hud.detachChild(levelTextOpponent);
 								break;
 							case 2:
 								flee();
@@ -852,6 +887,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		scene.attachChild(beutel);
 		scene.sortChildren();
 		controller.addExp(100 * opponent.getLevel());
+		levelTextPlayer.setText("lvl " + player.getLevel());
 	}
 
 	@Override
