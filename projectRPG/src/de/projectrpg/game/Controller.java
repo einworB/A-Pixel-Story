@@ -356,4 +356,8 @@ public class Controller {
 		db.close();
 		return name;
 	}
+
+	public void setInventory(ArrayList<Item> tempInventoryList) {
+		player.setInventory(tempInventoryList);
+	}
 }

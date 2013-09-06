@@ -1,11 +1,4 @@
 
-
-
-
-
-//hinweis für mich: armor/inventar zurückgeben an controller
-
-
 package de.projectrpg.inventory;
 
 import java.util.ArrayList;
@@ -16,6 +9,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -34,8 +28,6 @@ public class InventarActivity extends Activity {
 	
 	private Controller controller;
 	
-	private Drawable testDrawable;
-	
 	private static final String EQUIP_HEAD = "0";
 	private static final String EQUIP_UPPER_BODY = "1";
 	private static final String EQUIP_HANDS = "2";
@@ -43,18 +35,7 @@ public class InventarActivity extends Activity {
 	private static final String EQUIP_FEET = "4";
 	
 	private TextView itemName;
-	
-	//hat noch bugs
-	
-	
-	private Slot testSlot;
-	private Slot testSlot2;
-	private Slot testSlot3;
-
 	private TextView titleSellEquip;
-	//private TextView statsPlayerlevel;
-	//private TextView statsAttack;
-	//private TextView statsDefense;
 
 	private ImageButton slot1Background;
 	private ImageButton slot2Background;
@@ -108,6 +89,10 @@ public class InventarActivity extends Activity {
 	private ImageButton slot4ItemImageEquip;
 	private ImageButton slot5ItemImageEquip;
 	
+	private ImageButton weaponSlotBackground;
+	
+	private ImageButton weaponSlotItemImage;
+	
 	private ImageButton playerEquip;
 	
 	private ArrayList<String> sortedItemNames = null;
@@ -122,8 +107,23 @@ public class InventarActivity extends Activity {
 	private ArrayList<ImageButton> slotBackgroundListEquip = null;
 	private ArrayList<ImageButton> slotItemImageListEquip = null;
 	
+	private Slot weaponSlot = null;
+	
 	private ArrayList<Item> inventoryList = null;
+	private ArrayList<Item> tempInventoryList = null;
 	private Armor[] equipedArmorList = null;
+	private Weapon equippedWeapon;
+	
+	private boolean removedItem;
+	private boolean putItemInSlot;
+	
+	private Slot tempSlot;
+	private Armor tempArmor;
+	private Item tempItem;
+	private Weapon tempWeapon;
+	
+	private int inventoryUsedSlotCounter = 0;
+	private boolean slotsFull = false;
 	
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +152,8 @@ public class InventarActivity extends Activity {
 					slotBackgroundListEquip.get(i).setVisibility(View.INVISIBLE);
 					slotItemImageListEquip.get(i).setVisibility(View.INVISIBLE);
 				}
+				weaponSlotBackground.setVisibility(View.INVISIBLE);
+				weaponSlotItemImage.setVisibility(View.INVISIBLE);
 				playerEquip.setVisibility(View.INVISIBLE);
 				
 				slotListEquip.clear();
@@ -165,6 +167,8 @@ public class InventarActivity extends Activity {
 					slotBackgroundListEquip.get(i).setVisibility(View.VISIBLE);
 					slotItemImageListEquip.get(i).setVisibility(View.VISIBLE);
 				}
+				weaponSlotBackground.setVisibility(View.VISIBLE);
+				weaponSlotItemImage.setVisibility(View.VISIBLE);
 				playerEquip.setVisibility(View.VISIBLE);
 
 				slotListSell.clear();
@@ -193,29 +197,27 @@ public class InventarActivity extends Activity {
 				}
 			}
 		}
+		setupOnLongClickListenerRemoveWeapon(weaponSlotBackground, weaponSlotItemImage, weaponSlot);
+		setupOnClickListener(weaponSlotBackground,	weaponSlotItemImage, weaponSlot);
 	}
-	
+
 	private void getSavedItems() {
-		boolean putItemInSlot = false;
-		Slot tempSlot = new Slot(0, "leer", "leer", "0");
+
+		putItemInSlot = false;
+		tempSlot = new Slot(0, "leer", "leer", "0");
 		
-		try{
-			inventoryList.clear();
-			inventoryList = controller.getInventory();
-		}
-		catch(NullPointerException e){
-			//do nothing
-		}
-		try{
-		//	for(int i=0; i<5; i++){
-		//	equipedArmorList[i] = null;
-		//	}
-			 equipedArmorList = controller.getArmor();
-			}
-			catch(NullPointerException e){
-				//do nothing
-			}
-		if(inventoryList != null){
+		equipedArmorList = new Armor[5];
+		inventoryList = new ArrayList<Item>();
+		
+		inventoryList = controller.getInventory();
+		Log.d("testArmor", "" + inventoryList.size());
+
+	
+		equipedArmorList = controller.getArmor();
+		
+		equippedWeapon = controller.getEquippedWeapon();
+			 
+	
 			for (int i = 0; i < inventoryList.size(); i++) {
 				
 				putItemInSlot = false;
@@ -233,28 +235,42 @@ public class InventarActivity extends Activity {
 							} 
 							if(inventoryList.get(i) instanceof Weapon){
 								slotList.get(j).setAttackValue(((Weapon)inventoryList.get(i)).getAttackValue());
+								slotList.get(j).setItemType("" + ((Weapon)inventoryList.get(i)).getType());
 							}
 							putItemInSlot = true;
 						}
 					}
 					if (slotList.get(j).getItemName().equalsIgnoreCase("leer")
 							&& putItemInSlot == false) {
-						tempSlot = new Slot(j, inventoryList.get(i).getName(),
-								inventoryList.get(i).getItemType(), "1");
-						slotList.set(j, tempSlot);
-						slotList.get(j).setlevelNeeded(inventoryList.get(i).getLevelNeeded());
-						if(inventoryList.get(i) instanceof Armor){
-							slotList.get(j).setDefenseValue(((Armor)inventoryList.get(i)).getDefenseValue());
-							slotList.get(j).setItemType("" + ((Armor)inventoryList.get(i)).getType());
-						} 
-						if(inventoryList.get(i) instanceof Weapon){
-							slotList.get(j).setAttackValue(((Weapon)inventoryList.get(i)).getAttackValue());
+						if(inventoryUsedSlotCounter == 9){
+							slotsFull = true;
+						} else {
+						
+							if(inventoryList.get(i) instanceof Armor){
+								tempSlot = new Slot(j, inventoryList.get(i).getName(),
+										"" + ((Armor)inventoryList.get(i)).getType(), "1");
+							}	
+							if(inventoryList.get(i) instanceof Weapon){
+								tempSlot = new Slot(j, inventoryList.get(i).getName(),
+										"" + ((Weapon)inventoryList.get(i)).getType(), "1");
+							}
+							slotList.set(j, tempSlot);
+							slotList.get(j).setlevelNeeded(inventoryList.get(i).getLevelNeeded());
+							if(inventoryList.get(i) instanceof Armor){
+								slotList.get(j).setDefenseValue(((Armor)inventoryList.get(i)).getDefenseValue());
+								slotList.get(j).setItemType("" + ((Armor)inventoryList.get(i)).getType());
+							} 
+							if(inventoryList.get(i) instanceof Weapon){
+								slotList.get(j).setAttackValue(((Weapon)inventoryList.get(i)).getAttackValue());
+								slotList.get(j).setItemType("" + ((Weapon)inventoryList.get(i)).getType());
+							}
+							putItemInSlot = true;
+							inventoryUsedSlotCounter++;
 						}
-						putItemInSlot = true;
 					}
 				}
 			}
-		}
+	//	}
 		
 		for (int i = 0; i < equipedArmorList.length; i++) {
 			if (equipedArmorList[i] != null){
@@ -301,18 +317,11 @@ public class InventarActivity extends Activity {
 				}
 			}
 		}
-		
-		//hier kriegt man die Infos, welche Items der Sack/Verkäufer/etc. beinhaltet...
-				//z.b. slotListSell = givenItemList.getAllItems oder so...
-		slotListSell.add(testSlot);
-		slotListSell.add(testSlot2);
-		slotListSell.add(testSlot3);
-		slotListSell.add(testSlot3);
-		slotListSell.add(testSlot3);
-		slotListSell.add(testSlot3);
-		slotListSell.add(testSlot3);
-		slotListSell.add(testSlot3);
-		slotListSell.add(testSlot3);
+		if(equippedWeapon != null){
+			weaponSlot = new Slot(0, equippedWeapon.getName(), "0", "1");
+			weaponSlot.setAttackValue(equippedWeapon.getAttackValue());
+			weaponSlot.setlevelNeeded(equippedWeapon.getLevelNeeded());
+		}
 	}
 	private void setupOnLongClickListenerSell(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
@@ -391,6 +400,23 @@ public class InventarActivity extends Activity {
 	}
 	
 
+	private void setupOnLongClickListenerRemoveWeapon(
+			final ImageButton weaponSlotBackground,
+			final ImageButton weaponSlotItem, final Slot slot) {
+		weaponSlotItem.setOnLongClickListener(new OnLongClickListener() {
+					
+					@Override
+					public boolean onLongClick(View v) {
+						if (slot.getNumberOfItems().equals("0")) {
+						} else {
+							markThisSlot(weaponSlotBackground);
+							slot.setMarked();
+							checkLongClickedItemRemoveWeapon(weaponSlotBackground, weaponSlotItem, slot);
+						}
+						return false;
+					}
+				});		
+	}
 
 	private void checkLongClickedItemSell(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
@@ -416,6 +442,11 @@ public class InventarActivity extends Activity {
 		showRemoveEquipNotification(slotBackground, slotItem, slot);
 	}
 	
+	private void checkLongClickedItemRemoveWeapon(
+			ImageButton weaponSlotBackground, ImageButton weaponSlotItem,
+			Slot slot) {
+		showRemoveWeaponNotification(weaponSlotBackground, weaponSlotItem, slot);
+	}
 
 	private void showSellNotification(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
@@ -456,8 +487,12 @@ public class InventarActivity extends Activity {
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				//if this button is clicked, the item will be sold
-				
-				addEquipItem(slotBackground, slotItem, slot);
+				if(slot.getDefenseValue() != 0){
+					addEquipItem(slotBackground, slotItem, slot);
+				}
+				if(slot.getAttackValue() != 0){
+					addWeaponItem(slotBackground,slotItem, slot);
+				}
 				
 			}
 		});
@@ -473,6 +508,8 @@ public class InventarActivity extends Activity {
 		dialog.show();		
 	}
 	
+	
+
 	private void showRemoveEquipNotification(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
@@ -529,9 +566,41 @@ public class InventarActivity extends Activity {
 		dialog.show();		
 	}
 	
+
+
+	private void showRemoveWeaponNotification(
+			final ImageButton weaponSlotBackground, final ImageButton weaponSlotItem,
+			final Slot slot) {
+
+		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Willst du dieses Item wirklich ablegen?");
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				//if this button is clicked, the item will be sold
+				
+				removeWeaponItem(weaponSlotBackground, weaponSlotItem, slot);
+				
+			}
+		});
+		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				// if this button is clicked, just close
+				// the dialog box and do nothing
+				dialog.cancel();
+			}
+	});
+		
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();
+	}
+
 	private void sellItem(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
-		Slot tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
+		tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
 		boolean putItemInSlot = false;
 		if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 			slot.eraseSlot();
@@ -562,7 +631,7 @@ public class InventarActivity extends Activity {
 	
 	private void buyItem(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
-		Slot tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
+		tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
 		boolean putItemInSlot = false;
 		if (slot.getNumberOfItems().equalsIgnoreCase("1")){
 			slot.eraseSlot();
@@ -593,83 +662,97 @@ public class InventarActivity extends Activity {
 	
 	private void addEquipItem(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
-		Slot tempSlot = new Slot(0, slot.getItemName(), slot.getItemType(), "1");
-		Item tempItem = new Item(tempSlot.getItemName(), tempSlot.getLevelNeeded(), tempSlot.getItemType());
-		Armor tempArmor = new Armor(tempSlot.getItemName(), tempSlot.getLevelNeeded(), tempSlot.getDefenseValue(), Integer.parseInt(tempSlot.getItemType()));
-		Item tempItem2 = (Item)tempArmor;
-		tempItem2.setItemType("Armor");
-		tempArmor = (Armor) tempItem2;
-		setSlotsUnmarked();
-			if(tempArmor.getType() == 0){
-				if(slotListEquip.get(0).getNumberOfItems().equalsIgnoreCase("0")){
+		Log.d("testArmor", "" + inventoryList.size());
+
+		removedItem = false;
+		tempArmor = new Armor(slot.getItemName(), slot.getLevelNeeded(), slot.getDefenseValue(), Integer.parseInt(slot.getItemType()));
+		Log.d("testArmor", "" + tempArmor.getName() + tempArmor.getLevelNeeded() + tempArmor.getDefenseValue() + tempArmor.getType());
+		tempItem = (Item)tempArmor;
+		Log.d("testArmor", "" + tempItem.getName() + tempItem.getLevelNeeded() + ((Armor) tempItem).getDefenseValue() + ((Armor)tempItem).getType());
+
+		tempItem.setItemType("armor");
+		tempArmor = (Armor) tempItem;
+		Log.d("testArmor", "" + tempArmor.getName() + tempArmor.getLevelNeeded() + tempArmor.getDefenseValue() + tempArmor.getType() + tempArmor.getItemType());
+
+		setSlotsUnmarked();	
+		
+				if(slotListEquip.get(tempArmor.getType()).getNumberOfItems().equalsIgnoreCase("0")){
 					controller.addArmor(tempArmor);
+					tempInventoryList = new ArrayList<Item>();
+					for(int i=0; i<inventoryList.size(); i++){
+						if(inventoryList.get(i).getName().equalsIgnoreCase(tempArmor.getName()) && removedItem == false){
+							removedItem = true;
+						}
+						else{
+							tempInventoryList.add(inventoryList.get(i));
+						}
+					}
 					
-					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
-						slot.eraseSlot();
-					} else {
-						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
-					}
-				} else{
-					showUsedSlotNotification();
-				}
-			}
-			if(tempArmor.getType() == 1){
-				if(slotListEquip.get(1).getNumberOfItems().equalsIgnoreCase("0")){
-					controller.addArmor(tempArmor);
-					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
-						slot.eraseSlot();
-					} else {
-						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
-					}					
-				} else{
-					showUsedSlotNotification();
-				}
-			}
-			if(tempArmor.getType() == 2){
-				if(slotListEquip.get(2).getNumberOfItems().equalsIgnoreCase("0")){
-					controller.addArmor(tempArmor);		
-					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
-						slot.eraseSlot();
-					} else {
-						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
-					}
-				} else{
-					showUsedSlotNotification();
-				}
-			}
-			if(tempArmor.getType() == 3){
-				if(slotListEquip.get(3).getNumberOfItems().equalsIgnoreCase("0")){
-					controller.addArmor(tempArmor);
 					
-					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
-						slot.eraseSlot();
-					} else {
-						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
-					}
+					controller.setInventory(tempInventoryList);
 				} else{
+					
 					showUsedSlotNotification();
 				}
-			}
-			if(tempArmor.getType() == 4){
-				if(slotListEquip.get(4).getNumberOfItems().equalsIgnoreCase("0")){
-					controller.addArmor(tempArmor);
-					if (slot.getNumberOfItems().equalsIgnoreCase("1")){
-						slot.eraseSlot();
-					} else {
-						slot.setNumberOfItems(String.valueOf(Integer.parseInt(slot.getNumberOfItems())-1));
-					}
-				} else{
-					showUsedSlotNotification();
-				}
-			}
+				
+
+		slotList.clear();
+		for(int i=0; i<9; i++){
+			slotList.add(new Slot(0,"leer", "leer", "0"));
+		}
 			
 		resetItemNameTextView();
-		controller.removeItemFromInventory((Item)tempArmor);	
+	
 		getSavedItems();	
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
 		setupAllClickListeners();
+		Log.d("testArmor", "" + inventoryList.size());
 	}
+	
+	private void addWeaponItem(ImageButton slotBackground,
+		ImageButton slotItem, Slot slot) {
+		removedItem = false;
+		
+		tempWeapon = new Weapon(slot.getItemName(), slot.getLevelNeeded(), slot.getAttackValue(), 0);
+		tempItem = (Item)tempWeapon;
+		tempItem.setItemType("weapon");
+		tempWeapon = (Weapon) tempItem;
+		setSlotsUnmarked();
+		
+		
+		if(weaponSlot.getNumberOfItems().equalsIgnoreCase("0")){
+			
+			controller.setWeapon(tempWeapon);
+			tempInventoryList = new ArrayList<Item>();
+				for(int i=0; i<inventoryList.size(); i++){
+					if(inventoryList.get(i).getName().equalsIgnoreCase(tempWeapon.getName()) && removedItem == false){
+						removedItem = true;
+					}
+					else{
+						tempInventoryList.add(inventoryList.get(i));
+					}
+				}			
+				controller.setInventory(tempInventoryList);
+			} else{
+			showUsedSlotNotification();
+		}
+
+		slotList.clear();
+		for(int i=0; i<9; i++){
+			slotList.add(new Slot(0,"leer", "leer", "0"));
+		}
+		
+		resetItemNameTextView();
+		
+		getSavedItems();	
+		setItemsOnOwnSlots();
+		setItemsOnEquipSlots();
+		setupAllClickListeners();
+		
+		
+	}
+	
 	
 	private void resetItemNameTextView() {
 		itemName.setText("Item:");		
@@ -677,14 +760,51 @@ public class InventarActivity extends Activity {
 
 	private void removeEquipItem(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
-		Armor tempArmor = equipedArmorList[Integer.parseInt(slot.getItemType())];
-		controller.addItemToInventory(tempArmor);
-		setSlotsUnmarked();
+		inventoryList.add((Item)equipedArmorList[(Integer.parseInt(slot.getItemType()))]);
 		
-		//equip löschen
+		controller.setInventory(inventoryList);
+		setSlotsUnmarked();
+				
+		controller.removeEquippedArmor(equipedArmorList[(Integer.parseInt(slot.getItemType()))]);
+		
+		slotList.clear();
+		for(int i=0; i<9; i++){
+			slotList.add(new Slot(0,"leer", "leer", "0"));
+		}
+		
+		slotListEquip.clear();
+		for(int i=0; i<5; i++){
+			slotListEquip.add(new Slot(0,"leer", "leer", "0"));
+		}
 		
 		resetItemNameTextView();
-		controller.removeEquippedArmor(tempArmor);		
+		
+		getSavedItems();	
+		setItemsOnOwnSlots();
+		setItemsOnEquipSlots();
+		setupAllClickListeners();
+		Log.d("testArmor", "" + inventoryList.size());
+	}
+	
+	private void removeWeaponItem(final ImageButton weaponSlotBackground,
+			final ImageButton weaponSlotItem, final Slot slot) {
+
+		inventoryList.add((Item)equippedWeapon);
+		
+		controller.setInventory(inventoryList);
+		setSlotsUnmarked();
+				
+		controller.removeEquippedWeapon(equippedWeapon);
+		
+		slotList.clear();
+		for(int i=0; i<9; i++){
+			slotList.add(new Slot(0,"leer", "leer", "0"));
+		}
+		
+		weaponSlot = new Slot(0, "leer", "leer", "0");
+		
+		resetItemNameTextView();
+		
 		getSavedItems();	
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
@@ -709,7 +829,6 @@ public class InventarActivity extends Activity {
 	}
 	
 	private void showNotEquipableNotification() {
-		// dgsdfhsd
 		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
 		dialogBuilder.setMessage("Du kannst dieses Item nicht anlegen!");
@@ -762,19 +881,21 @@ public class InventarActivity extends Activity {
 				slotListEquip.get(i).setUnmarked();
 			}
 		}
+		weaponSlotBackground.setBackgroundDrawable(getResources().getDrawable(R.drawable.slot_unmarked));
+		weaponSlot.setUnmarked();
 	}
 
 	public void onDestroy() {
 		super.onDestroy();
 	}
 	
-private void setItemsOnOwnSlots() {
+	private void setItemsOnOwnSlots() {
 		
 		for(int i=0; i<9; i++){
 			for(int j=0; j<sortedItemNames.size(); j++){
 				if (slotList.get(i).getItemName().equalsIgnoreCase("leer")){
 					slotItemImageList.get(i).setBackgroundColor(getResources().getColor(R.color.transparent));
-				}		
+				}	
 				if (slotList.get(i).getItemName().equalsIgnoreCase(sortedItemNames.get(j))){
 						slotItemImageList.get(i).setBackgroundDrawable(sortedItemImages.get(j));
 				}
@@ -786,99 +907,41 @@ private void setItemsOnOwnSlots() {
 	private void setItemsOnSellSlots() {
 		
 		for(int i=0; i<9; i++){
-			if (slotListSell.get(i).getItemName().equalsIgnoreCase("leer")){
-				slotItemImageListSell.get(i).setBackgroundColor(getResources().getColor(R.color.transparent));
-			}
-			
-			if (slotListSell.get(i).getItemName().equalsIgnoreCase("Schwert")){
-				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("1")){
-					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_one));
+			for(int j=0; j<sortedItemNames.size(); j++){
+				if (slotListSell.get(i).getItemName().equalsIgnoreCase("leer")){
+					slotItemImageListSell.get(i).setBackgroundColor(getResources().getColor(R.color.transparent));
 				}
-				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("2")){
-					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_two));
-				}
-				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("3")){
-					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_three));
-				}
-				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("4")){
-					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_four));
-				}
-				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("5")){
-					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_five));
-				}
-			}
-			
-			if (slotListSell.get(i).getItemName().equalsIgnoreCase("Pizza")){
-				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("1")){
-					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_one));
-				}
-				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("2")){
-					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_two));
-				}
-				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("3")){
-					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_three));
-				}
-				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("4")){
-					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_four));
-				}
-				if (slotListSell.get(i).getNumberOfItems().equalsIgnoreCase("5")){
-					slotItemImageListSell.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_five));
+				
+				if (slotListSell.get(i).getItemName().equalsIgnoreCase(sortedItemNames.get(j))){
+					slotItemImageListSell.get(i).setBackgroundDrawable(sortedItemImages.get(j));
 				}
 			}
 		}
-		
 	}
 	
-private void setItemsOnEquipSlots() {
-		
+	private void setItemsOnEquipSlots() {
+
 		for(int i=0; i<5; i++){
-			if (slotListEquip.get(i).getItemName().equalsIgnoreCase("leer")){
-				slotItemImageListEquip.get(i).setBackgroundColor(getResources().getColor(R.color.transparent));
-			}
-			
-			if (slotListEquip.get(i).getItemName().equalsIgnoreCase("Schwert")){
-				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("1")){
-					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_one));
+			for(int j=0; j<sortedItemNames.size(); j++){
+				if(slotListEquip.get(i).getItemName().equalsIgnoreCase("leer")){
+					slotItemImageListEquip.get(i).setBackgroundColor(getResources().getColor(R.color.transparent));
 				}
-				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("2")){
-					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_two));
+				if (slotListEquip.get(i).getItemName().equalsIgnoreCase(sortedItemNames.get(j))){
+					slotItemImageListEquip.get(i).setBackgroundDrawable(sortedItemImages.get(j));
 				}
-				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("3")){
-					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_three));
+				if(weaponSlot.getItemName().equalsIgnoreCase("leer")){
+					weaponSlotItemImage.setBackgroundColor(getResources().getColor(R.color.transparent));
 				}
-				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("4")){
-					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_four));
-				}
-				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("5")){
-					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.schwert_five));
+				if(weaponSlot.getItemName().equalsIgnoreCase(sortedItemNames.get(j))){
+					weaponSlotItemImage.setBackgroundDrawable(sortedItemImages.get(j));
 				}
 			}
-			if (slotListEquip.get(i).getItemName().equalsIgnoreCase("Pizza")){
-				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("1")){
-					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_one));
-				}
-				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("2")){
-					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_two));
-				}
-				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("3")){
-					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_three));
-				}
-				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("4")){
-					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_four));
-				}
-				if (slotListEquip.get(i).getNumberOfItems().equalsIgnoreCase("5")){
-					slotItemImageListEquip.get(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.pizza_five));
-				}
-			}
-		}
-		
+		}	
 	}
 	
 	private void setupUI() {
 		setContentView(R.layout.activity_inventar);
-		
-		testDrawable = getResources().getDrawable(R.drawable.schwert_five);
-		
+				
 		sortedItemImages = new ArrayList<Drawable>();
 		
 		sortedItemImages.add(getResources().getDrawable(R.drawable.axtdestodes));
@@ -960,6 +1023,9 @@ private void setItemsOnEquipSlots() {
 		slot4ItemImageEquip = (ImageButton) findViewById(R.id.player_equip_slot4_item_image);
 		slot5ItemImageEquip = (ImageButton) findViewById(R.id.player_equip_slot5_item_image);
 		
+		weaponSlotBackground = (ImageButton) findViewById(R.id.player_weapon_slot);
+		weaponSlotItemImage = (ImageButton) findViewById(R.id.player_weapon_slot_item_image);
+		
 		playerEquip = (ImageButton) findViewById(R.id.player_equip);
 
 		slotList = new ArrayList<Slot>();
@@ -972,8 +1038,10 @@ private void setItemsOnEquipSlots() {
 		for(int i=0; i<5; i++){
 			slotListEquip.add(new Slot(0,"leer", "leer", "0"));
 		}
+		weaponSlot = (new Slot(0,"leer", "leer", "0"));
 		
 		inventoryList = new ArrayList<Item>();
+		tempInventoryList = new ArrayList<Item>();
 		equipedArmorList = new Armor[5];
 
 		
@@ -1034,12 +1102,10 @@ private void setItemsOnEquipSlots() {
 		slotItemImageListEquip.add(slot3ItemImageEquip);
 		slotItemImageListEquip.add(slot4ItemImageEquip);
 		slotItemImageListEquip.add(slot5ItemImageEquip);
-		
-		
-		
-		testSlot = new Slot(0, "Schwert", EQUIP_HEAD, "1");
-		testSlot2 = new Slot(0, "Pizza", EQUIP_HANDS, "1");
-		testSlot3 = new Slot(0, "leer", "leer", "0");
+	}
+	
+	public boolean inventoryIsFull(){
+		return slotsFull;
 	}
 }
 

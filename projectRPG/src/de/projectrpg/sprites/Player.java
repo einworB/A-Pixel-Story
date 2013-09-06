@@ -96,4 +96,8 @@ public class Player extends FightingSprite {
 	public int getEXP() {
 		return EXP;
 	}
+
+	public void setInventory(ArrayList<Item> tempInventoryList) {
+		inventory = tempInventoryList;
+	}
 }

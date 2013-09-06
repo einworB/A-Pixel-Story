@@ -392,7 +392,7 @@
         android:layout_height="70dp"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@id/slots_table"
-        android:background="@color/transparent"
+        android:background="@drawable/slot_unmarked"
         android:contentDescription="@string/default_description"
         android:gravity="center" />
     
@@ -402,7 +402,7 @@
         android:layout_height="70dp"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@id/slots_table"
-        android:background="@drawable/slot_unmarked"
+        android:background="@color/transparent"
         android:contentDescription="@string/default_description"
         android:gravity="center" />
     
