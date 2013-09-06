@@ -202,6 +202,7 @@ public class InventarActivity extends Activity {
 	}
 
 	private void getSavedItems() {
+		inventoryUsedSlotCounter = 0;
 
 		putItemInSlot = false;
 		tempSlot = new Slot(0, "leer", "leer", "0");
@@ -270,7 +271,6 @@ public class InventarActivity extends Activity {
 					}
 				}
 			}
-	//	}
 		
 		for (int i = 0; i < equipedArmorList.length; i++) {
 			if (equipedArmorList[i] != null){
