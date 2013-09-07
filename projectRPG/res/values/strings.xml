@@ -17,5 +17,14 @@
     <string name="options_string">OPTIONS</string>
     <string name="help_string">HELP</string>
     <string name="default_description"></string>
+    <string name="title_activity_help">HelpActivity</string>
+
+    <string name="help_player_text">Das bist du!</string>
+    <string name="help_merchant_text">So sehen alle aus mit denen du reden kannst. Von ihnen kannst du Quests bekommen oder auch Dinge kaufen.</string>
+    <string name="help_opponent_text">So sehen deine Gegner aus</string>
+    <string name="help_tipToWalk_text">In dem du irgendwo auf die Karte klickst kannst du an diese Stelle gehn.</string>
+    <string name="help_quests_text">Hier findest du eine Übersicht über alle aktiven Quests.</string>
+    <string name="help_inventory_text">Hier findest du dein Inventar. Du kannst hier deine gesammelten und angelegten Gegenstände verwalten.</string>
+    <string name="help_longclick_text">Mit einem langen Klick auf einen Gegenstand in deinem Inventar kannst du es an- oder ablegen.</string>
     
 </resources>

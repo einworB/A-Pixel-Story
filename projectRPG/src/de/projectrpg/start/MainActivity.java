@@ -3,17 +3,11 @@ package de.projectrpg.start;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.example.projectrpg.R;
-import com.example.projectrpg.R.id;
-import com.example.projectrpg.R.layout;
-
-import de.projectrpg.game.LevelActivity;
-
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,6 +15,10 @@ import android.view.View.OnTouchListener;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.projectrpg.R;
+
+import de.projectrpg.game.LevelActivity;
 
 public class MainActivity extends Activity {
 	
@@ -87,8 +85,8 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-
+				Intent intent = new Intent(MainActivity.this, HelpActivity.class);
+				startActivity(intent);
 			}
 		});
 

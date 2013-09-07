@@ -32,8 +32,14 @@
         </activity>
         <activity
             android:name="de.projectrpg.game.LevelActivity"
-            android:label="@string/title_activity_level"
-            android:configChanges="orientation|screenSize" >
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_level" >
+        </activity>
+        <activity
+            android:name="de.projectrpg.start.HelpActivity"
+            android:label="@string/title_activity_help"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
     </application>
 
