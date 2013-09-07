@@ -13,12 +13,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.projectrpg.R;
 
 import de.projectrpg.database.Armor;
+import de.projectrpg.database.HealItem;
 import de.projectrpg.database.Item;
 import de.projectrpg.database.Weapon;
 import de.projectrpg.game.Controller;
@@ -36,7 +38,10 @@ public class InventarActivity extends Activity {
 	
 	private TextView itemName;
 	private TextView titleSellEquip;
-
+	
+	private Button removeItemButton;
+	private Button useItemButton;
+	
 	private ImageButton slot1Background;
 	private ImageButton slot2Background;
 	private ImageButton slot3Background;
@@ -108,6 +113,8 @@ public class InventarActivity extends Activity {
 	private ArrayList<ImageButton> slotItemImageListEquip = null;
 	
 	private Slot weaponSlot = null;
+	private String clickedItem = "leer";
+	private int healValue = 0;
 	
 	private ArrayList<Item> inventoryList = null;
 	private ArrayList<Item> tempInventoryList = null;
@@ -121,6 +128,7 @@ public class InventarActivity extends Activity {
 	private Armor tempArmor;
 	private Item tempItem;
 	private Weapon tempWeapon;
+	private HealItem tempHealItem;
 	
 	private int inventoryUsedSlotCounter = 0;
 	private boolean slotsFull = false;
@@ -199,6 +207,140 @@ public class InventarActivity extends Activity {
 		}
 		setupOnLongClickListenerRemoveWeapon(weaponSlotBackground, weaponSlotItemImage, weaponSlot);
 		setupOnClickListener(weaponSlotBackground,	weaponSlotItemImage, weaponSlot);
+		Log.d("remove", "clickListener ausgelöst");
+		removeItemButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(clickedItem.equalsIgnoreCase("leer")){
+					
+				} else {
+					showRemoveItemNotification();	
+				}
+			}
+		});
+		useItemButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(healValue != 0){
+					showUseItemNotification();
+				}
+			}
+		});
+	}
+
+	private void showUseItemNotification() {
+		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Willst du dich mit 1x " + clickedItem + " heilen?");
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				//if this button is clicked, the item will be sold
+				
+				useItem();
+				
+			}
+		});
+		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				// if this button is clicked, just close
+				// the dialog box and do nothing
+				dialog.cancel();
+			}
+	});
+		
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();
+	}
+	private void showRemoveItemNotification() {
+		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Willst du 1x " + clickedItem + " wirklich entfernen?");
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				//if this button is clicked, the item will be sold
+				
+				removeItem();
+				
+			}
+		});
+		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				// if this button is clicked, just close
+				// the dialog box and do nothing
+				dialog.cancel();
+			}
+	});
+		
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();
+	}
+
+	private void useItem() {
+		removedItem = false;	
+		tempInventoryList = new ArrayList<Item>();
+		for(int i=0; i<inventoryList.size(); i++){
+			if(inventoryList.get(i).getName().equalsIgnoreCase(clickedItem) && removedItem == false){
+				removedItem = true;
+				
+				tempHealItem = new HealItem(inventoryList.get(i).getName(), inventoryList.get(i).getLevelNeeded(), "healItem");
+				tempHealItem.setHeal(healValue);
+				controller.heal(tempHealItem);
+			}
+			else{
+				tempInventoryList.add(inventoryList.get(i));
+			}
+		}	
+		setSlotsUnmarked();
+		controller.setInventory(tempInventoryList);
+
+		slotList.clear();
+		for(int i=0; i<9; i++){
+			slotList.add(new Slot(0,"leer", "leer", "0"));
+		}
+		
+		resetItemNameTextView();
+		
+		getSavedItems();	
+		setItemsOnOwnSlots();
+		setItemsOnEquipSlots();
+		setupAllClickListeners();		
+	}
+
+
+	private void removeItem() {
+		removedItem = false;
+					
+		tempInventoryList = new ArrayList<Item>();
+		for(int i=0; i<inventoryList.size(); i++){
+			if(inventoryList.get(i).getName().equalsIgnoreCase(clickedItem) && removedItem == false){
+				removedItem = true;
+			}
+			else{
+				tempInventoryList.add(inventoryList.get(i));
+			}
+		}	
+		setSlotsUnmarked();
+		controller.setInventory(tempInventoryList);
+
+		slotList.clear();
+		for(int i=0; i<9; i++){
+			slotList.add(new Slot(0,"leer", "leer", "0"));
+		}
+		
+		resetItemNameTextView();
+		
+		getSavedItems();	
+		setItemsOnOwnSlots();
+		setItemsOnEquipSlots();
+		setupAllClickListeners();
 	}
 
 	private void getSavedItems() {
@@ -255,6 +397,10 @@ public class InventarActivity extends Activity {
 								tempSlot = new Slot(j, inventoryList.get(i).getName(),
 										"" + ((Weapon)inventoryList.get(i)).getType(), "1");
 							}
+							if(inventoryList.get(i) instanceof HealItem){
+								tempSlot = new Slot(j, inventoryList.get(i).getName(),
+										"5", "1");
+							}
 							slotList.set(j, tempSlot);
 							slotList.get(j).setlevelNeeded(inventoryList.get(i).getLevelNeeded());
 							if(inventoryList.get(i) instanceof Armor){
@@ -264,6 +410,10 @@ public class InventarActivity extends Activity {
 							if(inventoryList.get(i) instanceof Weapon){
 								slotList.get(j).setAttackValue(((Weapon)inventoryList.get(i)).getAttackValue());
 								slotList.get(j).setItemType("" + ((Weapon)inventoryList.get(i)).getType());
+							}
+							if(inventoryList.get(i) instanceof HealItem){
+								slotList.get(j).setHealValue(((HealItem)inventoryList.get(i)).getHeal());
+								slotList.get(j).setItemType("6");
 							}
 							putItemInSlot = true;
 							inventoryUsedSlotCounter++;
@@ -331,7 +481,7 @@ public class InventarActivity extends Activity {
 			public boolean onLongClick(View v) {
 				if (slot.getNumberOfItems().equals("0")) {
 				} else {
-					markThisSlot(slotBackground);
+					markThisSlot(slotBackground, slot);
 					slot.setMarked();
 					checkLongClickedItemSell(slotBackground, slotItem, slot);
 				}
@@ -350,7 +500,7 @@ public class InventarActivity extends Activity {
 			public boolean onLongClick(View v) {
 				if (slot.getNumberOfItems().equals("0")) {
 				} else {
-					markThisSlot(slotBackground);
+					markThisSlot(slotBackground, slot);
 					slot.setMarked();
 					checkLongClickedItemBuy(slotBackground, slotItem, slot);
 				}
@@ -369,7 +519,7 @@ public class InventarActivity extends Activity {
 			public boolean onLongClick(View v) {
 				if (slot.getNumberOfItems().equals("0")) {
 				} else {
-					markThisSlot(slotBackground);
+					markThisSlot(slotBackground, slot);
 					slot.setMarked();
 					checkLongClickedItemAddEquip(slotBackground, slotItem, slot);
 				}
@@ -388,7 +538,7 @@ public class InventarActivity extends Activity {
 			public boolean onLongClick(View v) {
 				if (slot.getNumberOfItems().equals("0")) {
 				} else {
-					markThisSlot(slotBackground);
+					markThisSlot(slotBackground, slot);
 					slot.setMarked();
 					checkLongClickedItemRemoveEquip(slotBackground, slotItem, slot);
 				}
@@ -409,7 +559,7 @@ public class InventarActivity extends Activity {
 					public boolean onLongClick(View v) {
 						if (slot.getNumberOfItems().equals("0")) {
 						} else {
-							markThisSlot(weaponSlotBackground);
+							markThisSlot(weaponSlotBackground, slot);
 							slot.setMarked();
 							checkLongClickedItemRemoveWeapon(weaponSlotBackground, weaponSlotItem, slot);
 						}
@@ -851,22 +1001,24 @@ public class InventarActivity extends Activity {
 			public void onClick(View v) {
 				if (slot.getNumberOfItems().equals("0")) {
 				} else {
-					markThisSlot(slotBackground);
+					markThisSlot(slotBackground, slot);
 					slot.setMarked();
 					showItemName(slot);
+					clickedItem = slot.getItemName();
+					healValue = slot.getHealValue();
 				}
 			}
+			
 		});
 	}
 
-	protected void showItemName(Slot slot) {
+	private void showItemName(Slot slot) {
 		itemName.setText("Item: " + slot.getNumberOfItems() + "x "+ slot.getItemName());
 	}
 
-	private void markThisSlot(ImageButton slotBackground) {
+	private void markThisSlot(ImageButton slotBackground, Slot slot) {
 		setSlotsUnmarked();
 		slotBackground.setBackgroundDrawable(getResources().getDrawable(R.drawable.slot_marked));
-
 	}
 
 	private void setSlotsUnmarked() {
@@ -883,6 +1035,8 @@ public class InventarActivity extends Activity {
 		}
 		weaponSlotBackground.setBackgroundDrawable(getResources().getDrawable(R.drawable.slot_unmarked));
 		weaponSlot.setUnmarked();
+		clickedItem = "leer";
+		healValue = 0;
 	}
 
 	public void onDestroy() {
@@ -970,6 +1124,9 @@ public class InventarActivity extends Activity {
 		
 		titleSellEquip = (TextView) findViewById(R.id.title_inventar_sell);
 		itemName = (TextView) findViewById(R.id.item_name_and_number);
+		
+		removeItemButton = (Button) findViewById(R.id.remove_item_button);
+		useItemButton = (Button) findViewById(R.id.use_item_button);
 
 		slot1Background = (ImageButton) findViewById(R.id.inventar_slot1);
 		slot2Background = (ImageButton) findViewById(R.id.inventar_slot2);

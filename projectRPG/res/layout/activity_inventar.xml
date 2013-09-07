@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_inventar"
-    android:paddingTop="20dp" 
-    android:paddingLeft="20dp" 
-    android:paddingRight="20dp" >
+    android:paddingTop="5dp" 
+    android:paddingLeft="10dp" 
+    android:paddingRight="10dp" >
 
     
     
@@ -575,8 +575,40 @@
         android:id="@+id/item_name_and_number"
         android:layout_marginTop="15dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
         android:layout_below="@id/slots_table"
         android:text="Item:"/>
+    
+    <ImageView 
+        android:id="@+id/remove_item_background"
+        android:layout_width="70dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="15dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/slots_table"
+        android:background="@drawable/slot_unmarked"
+        android:clickable="false"/>
+    
+    <Button 
+        android:id="@+id/remove_item_button"
+        android:layout_width="70dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="15dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/slots_table"
+        android:background="@drawable/remove_button"/>
+    
+    <Button 
+        android:id="@+id/use_item_button"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_toLeftOf="@id/remove_item_button"
+        android:layout_alignTop="@id/remove_item_button"
+        android:layout_alignLeft="@id/slots_table_sell"
+        android:text="@string/use_item_string"
+        android:textColor="@color/gray"
+        android:background="@drawable/slot_unmarked"/>
+    
 
 </RelativeLayout>

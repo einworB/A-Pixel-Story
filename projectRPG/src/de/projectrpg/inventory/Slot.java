@@ -5,11 +5,12 @@ public class Slot {
 	int slotID;
 	String itemName;
 	String itemType;
-	boolean marked;
+	boolean marked = false;
 	String numberOfItems;
 	int defenseValue = 0;
 	int attackValue = 0;
 	int levelNeeded = 0;
+	int healValue = 0;
 	
 	public Slot(){
 		slotID = 0;
@@ -101,6 +102,14 @@ public class Slot {
 	
 	public int getLevelNeeded(){
 		return levelNeeded;
+	}
+
+	public int getHealValue() {
+		return healValue;
+	}
+	
+	public void setHealValue(int healValue){
+		this.healValue = healValue;
 	}
 
 }
