@@ -17,5 +17,9 @@ public class LootBag extends Sprite {
 	public int getLoot(){
 		return lootRoot.getLevel();
 	}
+	
+	public Opponent getLootRoot() {
+		return lootRoot;
+	}
 
 }

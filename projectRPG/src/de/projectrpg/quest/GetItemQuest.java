@@ -28,7 +28,15 @@ public class GetItemQuest extends Quest{
 		else return false;
 	}
 	
+	public int getAlreadyFound() {
+		return alreadyFound;
+	}
+	
 	public int getItemCount(){
 		return count;
+	}
+	
+	public String getType() {
+		return "GetItemQuest";
 	}
 }

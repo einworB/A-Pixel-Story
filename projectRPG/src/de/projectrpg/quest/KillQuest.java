@@ -33,4 +33,11 @@ public class KillQuest extends Quest{
 		return killCount;
 	}
 
+	public int getAlreadyKilled() {
+		return alreadyKilled;
+	}
+	
+	public String getType() {
+		return "KillQuest";
+	}
 }

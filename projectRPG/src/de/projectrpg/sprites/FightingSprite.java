@@ -26,6 +26,9 @@ public class FightingSprite extends AnimatedSprite {
 	}
 	
 	public void levelUp(){
+		concentration += 0.1;
+		agility++;
+		luck++;
 		level++;
 	}
 	

@@ -18,4 +18,8 @@ public class TalkToQuest extends Quest{
 	public int getTargetID(){
 		return targetNpcID;
 	}
+	
+	public String getType() {
+		return "TalkToQuest";
+	}
 }
