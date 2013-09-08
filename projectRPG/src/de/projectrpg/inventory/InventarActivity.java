@@ -334,8 +334,7 @@ public class InventarActivity extends Activity {
 			if(inventoryList.get(i).getName().equalsIgnoreCase(clickedItem) && removedItem == false){
 				removedItem = true;
 				
-				tempHealItem = new HealItem(inventoryList.get(i).getName(), inventoryList.get(i).getLevelNeeded(), "healItem");
-				tempHealItem.setHeal(healValue);
+				tempHealItem = new HealItem(inventoryList.get(i).getName(), inventoryList.get(i).getLevelNeeded(), "healItem", healValue);
 				controller.heal(tempHealItem);
 			}
 			else{
