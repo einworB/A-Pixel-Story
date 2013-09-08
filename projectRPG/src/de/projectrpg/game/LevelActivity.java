@@ -911,6 +911,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		hud.detachChild(redBarEnemy);
 		fleeing = true;
 	}
+	
 
 	private void fightWon(Opponent opponent, TMXTile destinationTile) {
 		OurScene scene = controller.getCurrentScene();
