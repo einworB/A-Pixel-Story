@@ -1408,7 +1408,6 @@ public class InventarActivity extends Activity {
 		sortedItemImages.add(getResources().getDrawable(R.drawable.axtdestodes));
 		sortedItemImages.add(getResources().getDrawable(R.drawable.etwaszuschwerereisenhammer));
 		sortedItemImages.add(getResources().getDrawable(R.drawable.holzknueppel));
-		sortedItemImages.add(getResources().getDrawable(R.drawable.kupferaxt));
 		sortedItemImages.add(getResources().getDrawable(R.drawable.kupferstreitkolben));
 		sortedItemImages.add(getResources().getDrawable(R.drawable.leinenhemd));
 		sortedItemImages.add(getResources().getDrawable(R.drawable.loechrigeledersandalen));
@@ -1418,7 +1417,8 @@ public class InventarActivity extends Activity {
 		sortedItemImages.add(getResources().getDrawable(R.drawable.stoffhandschuhe));		
 		sortedItemImages.add(getResources().getDrawable(R.drawable.stoffhose));		
 		sortedItemImages.add(getResources().getDrawable(R.drawable.stoffschuhe));		
-		sortedItemImages.add(getResources().getDrawable(R.drawable.stoffstirnband));		
+		sortedItemImages.add(getResources().getDrawable(R.drawable.stoffstirnband));
+		sortedItemImages.add(getResources().getDrawable(R.drawable.stumpfekupferaxt));
 		sortedItemImages.add(getResources().getDrawable(R.drawable.viermalgeflicktelederhose));		
 		
 		sortedItemNames = new ArrayList<String>();
@@ -1427,7 +1427,6 @@ public class InventarActivity extends Activity {
 		sortedItemNames.add("Axt des Todes");
 		sortedItemNames.add("Etwas zu schwerer Eisenhammer");
 		sortedItemNames.add("Holzknüppel");
-		sortedItemNames.add("Kupferaxt");
 		sortedItemNames.add("Kupferstreitkolben");
 		sortedItemNames.add("Leinenhemd");
 		sortedItemNames.add("löchrige Ledersandalen");
@@ -1438,6 +1437,7 @@ public class InventarActivity extends Activity {
 		sortedItemNames.add("Stoffhose");
 		sortedItemNames.add("Stoffschuhe");
 		sortedItemNames.add("Stoffstirnband");
+		sortedItemNames.add("stumpfe Kupferaxt");
 		sortedItemNames.add("Viermal geflickte Lederhose");
 		
 		controller = Controller.getInstance();
