@@ -1299,6 +1299,7 @@ public class InventarActivity extends Activity {
 						if(slot.getHealValue() != 0){
 							itemDetails.setText("Leben +" + slot.getHealValue());
 						}
+						
 					}
 				}
 			}
