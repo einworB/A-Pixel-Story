@@ -217,7 +217,7 @@ public class Controller {
 	 * @returns the path to the tmx file according to the current level
 	 */
 	public InputStream getLevelPath(int index) {
-		RandomMapGenerator gen = new RandomMapGenerator(context, lastLevel);
+		RandomMapGenerator gen = new RandomMapGenerator(context, lastLevel, 1);
 		if(index < 1 || index > lastLevel) return null;
 		else  {
 			InputStream input = gen.createMap(index, lastTransitionExitSide);
@@ -343,6 +343,10 @@ public class Controller {
 		return questManager.getActiveQuests();
 	}
 	
+	public ArrayList<Quest> getClosedQuests() {
+		return questManager.getClosedQuests();
+	}
+	
 	public int getKillCount(int index) {
 		if(questManager.getActiveQuests().get(index) instanceof KillQuest) {
 		return ((KillQuest) questManager.getActiveQuests().get(index)).getKillCount();
@@ -371,5 +375,9 @@ public class Controller {
 
 	public void removeEquippedArmor(int i) {
 		player.removeEquippedArmor(i);
+	}
+	
+	public OurScene getScene(int i) {
+		return sceneManager.getScene(i);
 	}
 }

@@ -23,10 +23,13 @@ public class RandomMapGenerator {
 	private int level;
 	private int lastTransitionExitSide = -1;
 	private int lastLevel;
-	public RandomMapGenerator(Context context, int lastLevel){
+	private int slot;
+	
+	public RandomMapGenerator(Context context, int lastLevel, int slot){
 		this.context = context;
 		this.lastLevel = lastLevel;
 		rMapArray = new RandomMapArrayGenerator(lastLevel);
+		this.slot = slot;
 	}
 	
 	public InputStream createMap(int index, int lastTransitionExitSide){
@@ -34,7 +37,7 @@ public class RandomMapGenerator {
 		if(index != 1) {
 			this.lastTransitionExitSide = lastTransitionExitSide;
 		}
-		String filename = "LEVEL"+index+".tmx";
+		String filename = "slot" + slot + "level"+index+".tmx";
 		try {
 			FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
 			OutputStreamWriter writer = new OutputStreamWriter(fos);

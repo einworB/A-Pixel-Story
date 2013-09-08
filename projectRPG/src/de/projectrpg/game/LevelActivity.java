@@ -58,6 +58,7 @@ import de.projectrpg.inventory.InventarActivity;
 import de.projectrpg.quest.GetItemQuest;
 import de.projectrpg.quest.KillQuest;
 import de.projectrpg.quest.TalkToQuest;
+import de.projectrpg.save.WriteSaveFile;
 import de.projectrpg.scene.OurScene;
 import de.projectrpg.scene.QuestScene;
 import de.projectrpg.sprites.LootBag;
@@ -877,6 +878,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		Path path = controller.getPath(startTile, endTile, controller.getCurrentScene().getMap());
 		if(path!=null) startPath(path, endTile);
 		else Log.d("RPG", "path=null");
+		hud.detachChild(portraitEnemy);
+		hud.detachChild(redBarEnemy);
 		fleeing = true;
 	}
 
@@ -913,7 +916,20 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 								finish();
 							}
 						})
-						/*.setNeutralButton("Ja & Speichern", null)*/ //TODO solange man nicht speichern kann
+						.setNeutralButton("Ja & Speichern", new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								WriteSaveFile writer = new WriteSaveFile(LevelActivity.this);
+								OurScene[] scene = new OurScene[controller.getLastLevel()];
+								for(int i = 1; i <= controller.getLastLevel(); i++) {
+									scene[i - 1] = controller.getScene(i);
+								}
+								
+								writer.createFile(1, controller.getLastLevel(), questcount, scene, player, controller);
+								finish();
+							}
+						})
 						.setNegativeButton("Nein", null)
 						.create();
 			default:

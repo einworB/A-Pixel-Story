@@ -1,12 +1,10 @@
 package de.projectrpg.start;
 
-import com.example.projectrpg.R;
-import com.example.projectrpg.R.layout;
-import com.example.projectrpg.R.menu;
-
-import android.os.Bundle;
 import android.app.Activity;
+import android.os.Bundle;
 import android.view.Menu;
+
+import com.example.projectrpg.R;
 
 public class HelpActivity extends Activity {
 
