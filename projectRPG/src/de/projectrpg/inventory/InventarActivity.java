@@ -144,7 +144,7 @@ public class InventarActivity extends Activity {
 	private HealItem tempHealItem;
 	
 	private int inventoryUsedSlotCounter = 0;
-	private int money = 10;
+	private int money;
 	private boolean slotsFull = false;
 	
 
@@ -159,11 +159,12 @@ public class InventarActivity extends Activity {
 		Log.d("sell", "setItemsOnOwnSlots beendet");
 		if(checkNeededInterface()){
 			setItemsOnSellSlots();
-			setMoneyTextView(money);
+			setMoneyTextView(controller.getGold());
 			Log.d("sell", "setItemsSellSlots beendet");
 		}
 		else {
 			setItemsOnEquipSlots();
+			setMoneyTextView(controller.getGold());
 			Log.d("sell", "setItemsOnEquipSlots beendet");
 
 		}
@@ -174,7 +175,7 @@ public class InventarActivity extends Activity {
 	}
 
 	private boolean checkNeededInterface() {
-		isSellInterface = false; 	//irgendwie getNeededInterfaceFromLevelActivity();
+		isSellInterface = getIntent().getExtras().getBoolean("isMerchant"); 	//irgendwie getNeededInterfaceFromLevelActivity();
 		if(isSellInterface){
 			Log.d("sell", "in if-abfrage");
 			for(int i=0; i<9; i++){
@@ -246,7 +247,7 @@ public class InventarActivity extends Activity {
 			if (checkNeededInterface()) {
 				setupOnLongClickListenerSell(slotBackgroundList.get(i),slotItemImageList.get(i), slotList.get(i));
 				setupOnLongClickListenerBuy(slotBackgroundListSell.get(i),slotItemImageListSell.get(i), slotListSell.get(i));
-				setupOnClickListener(slotBackgroundListSell.get(i),slotItemImageListSell.get(i), slotListSell.get(i));
+				setupOnClickListenerSell(slotBackgroundListSell.get(i),slotItemImageListSell.get(i), slotListSell.get(i));
 			} else {
 				setupOnLongClickListenerAddEquip(slotBackgroundList.get(i),slotItemImageList.get(i), slotList.get(i));
 				
@@ -428,11 +429,11 @@ public class InventarActivity extends Activity {
 
 	private void getSavedItems() {
 		inventoryUsedSlotCounter = 0;
+		money = controller.getGold();
 
 		putItemInSlot = false;
 		tempSlot = new Slot(0, "leer", "leer", "0");
 		
-		equipedArmorList = new Armor[5];
 		
 		inventoryList = new ArrayList<Item>();
 		
@@ -442,19 +443,39 @@ public class InventarActivity extends Activity {
 		if(checkNeededInterface()){
 			inventoryListMerchant = new ArrayList<Item>();
 			
-			inventoryListMerchant.add(controller.getItemByName("Holzknüppel"));
-			inventoryListMerchant.add(controller.getItemByName("Stoffstirnband"));
-			inventoryListMerchant.add(controller.getItemByName("Stoffhose"));
+			if(controller.getLevel() == 1){
+				inventoryListMerchant.add(controller.getItemByName("Holzknüppel"));
+				inventoryListMerchant.add(controller.getItemByName("Vertrocknetes Brot"));
+				inventoryListMerchant.add(controller.getItemByName("Viermal geflickte Lederhose"));
+			}
+			if(controller.getLevel() == 2){
+				inventoryListMerchant.add(controller.getItemByName("Verstärkter Lederhelm"));
+				inventoryListMerchant.add(controller.getItemByName("Stumpfe Kupferaxt"));
+				inventoryListMerchant.add(controller.getItemByName("fast frischer Schinken"));
+			}
+			if(controller.getLevel() == 3){
+				inventoryListMerchant.add(controller.getItemByName("Gebratene Hähnchenkeule"));
+				inventoryListMerchant.add(controller.getItemByName("bronzener Brustpanzer"));
+				inventoryListMerchant.add(controller.getItemByName("Etwas zu schwerer Eisenhammer"));
+			}
+			if(controller.getLevel() >= 4){
+				inventoryListMerchant.add(controller.getItemByName("Schmiedeeisener Streitkolben"));
+				inventoryListMerchant.add(controller.getItemByName("Goldene Stiefel"));
+				inventoryListMerchant.add(controller.getItemByName("überaus köstlicher Apfelkuchen"));
+			}
 			
 			Log.d("kauf", inventoryListMerchant.get(0).getName());
 			Log.d("kauf", inventoryListMerchant.get(1).getName());
 			Log.d("kauf", inventoryListMerchant.get(2).getName());
+		} else {
+			equipedArmorList = new Armor[5];
+			equipedArmorList = controller.getArmor();
+			
+			equippedWeapon = controller.getEquippedWeapon();
 		}
 
 	
-		equipedArmorList = controller.getArmor();
 		
-		equippedWeapon = controller.getEquippedWeapon();
 			 
 	
 			for (int i = 0; i < inventoryList.size(); i++) {
@@ -577,9 +598,7 @@ public class InventarActivity extends Activity {
 						}
 					}
 				}
-			}
-	
-		
+			} else {
 		for (int i = 0; i < equipedArmorList.length; i++) {
 			if (equipedArmorList[i] != null){
 				slotListEquip.get(equipedArmorList[i].getType()).setItemName(equipedArmorList[i].getName());
@@ -625,10 +644,11 @@ public class InventarActivity extends Activity {
 				}
 			}
 		}
-		if(equippedWeapon != null){
-			weaponSlot = new Slot(0, equippedWeapon.getName(), "0", "1");
-			weaponSlot.setAttackValue(equippedWeapon.getAttackValue());
-			weaponSlot.setlevelNeeded(equippedWeapon.getLevelNeeded());
+			if(equippedWeapon != null){
+				weaponSlot = new Slot(0, equippedWeapon.getName(), "0", "1");
+				weaponSlot.setAttackValue(equippedWeapon.getAttackValue());
+				weaponSlot.setlevelNeeded(equippedWeapon.getLevelNeeded());
+			}
 		}
 	}
 	private void setupOnLongClickListenerSell(final ImageButton slotBackground,
@@ -664,10 +684,14 @@ public class InventarActivity extends Activity {
 					slot.setMarked();
 					clickedItem = slot.getItemName();
 					healValue = slot.getHealValue();
-					if(money >= 10){
-						checkLongClickedItemBuy(slotBackground, slotItem, slot);
+					if(slotsFull){
+						
 					} else {
-						showNotEnoughMoneyNotification();
+						if(money >= 10){
+							checkLongClickedItemBuy(slotBackground, slotItem, slot);
+						} else {
+							showNotEnoughMoneyNotification();
+						}
 					}
 				}
 				return false;
@@ -702,9 +726,11 @@ public class InventarActivity extends Activity {
 				} else {
 					markThisSlot(slotBackground, slot);
 					slot.setMarked();
+					clickedItem = slot.getItemName();
+					healValue = slot.getHealValue();
 					if(healValue != 0){
 						showUseItemNotification();
-					} {
+					} else {
 						checkLongClickedItemAddEquip(slotBackground, slotItem, slot);
 					}
 				}
@@ -788,7 +814,7 @@ public class InventarActivity extends Activity {
 			final ImageButton slotItem, final Slot slot) {
 		AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
-		dialogBuilder.setMessage("Willst du " + clickedItem + " unwiederruflich verkaufen?");
+		dialogBuilder.setMessage("Willst du 1x " + clickedItem + " unwiderruflich verkaufen?");
 		dialogBuilder.setCancelable(false);
 		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
 
@@ -954,10 +980,14 @@ public class InventarActivity extends Activity {
 			for(int i=0; i<9; i++){
 				slotList.add(new Slot(0,"leer", "leer", "0"));
 			}	
+			slotListSell.clear();
+			for(int i=0; i<9; i++){
+				slotListSell.add(new Slot(0,"leer", "leer", "0"));
+			}
 
 		clickedItem = "leer";
 		addmoney();
-		setMoneyTextView(money);
+		setMoneyTextView(controller.getGold());
 		resetItemNameTextView();	
 		getSavedItems();	
 		setItemsOnOwnSlots();
@@ -967,7 +997,7 @@ public class InventarActivity extends Activity {
 	}
 	
 	private void addmoney() {
-		money += 5;
+		controller.changeGold(5 * (controller.getLevel()));
 	}
 
 	private void buyItem() {
@@ -999,7 +1029,7 @@ public class InventarActivity extends Activity {
 
 		clickedItem = "leer";
 		pay();
-		setMoneyTextView(money);
+		setMoneyTextView(controller.getGold());
 		resetItemNameTextView();	
 		getSavedItems();	
 		setItemsOnOwnSlots();
@@ -1009,7 +1039,7 @@ public class InventarActivity extends Activity {
 	}
 	
 	private void pay() {
-		money -= 10;
+		controller.changeGold(-10*(controller.getLevel()));
 	}
 
 	private void addEquipItem(final ImageButton slotBackground,
@@ -1209,13 +1239,13 @@ public class InventarActivity extends Activity {
 					healValue = slot.getHealValue();
 					isInInventory = true;
 					if(slot.getAttackValue() != 0){
-						itemDetails.setText("Angriff +" + slot.getAttackValue());
+						itemDetails.setText("Angriff +" + slot.getAttackValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
 					}
 					if(slot.getDefenseValue() != 0){
-						itemDetails.setText("Verteidigung +" + slot.getDefenseValue());
+						itemDetails.setText("Verteidigung +" + slot.getDefenseValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
 					}
 					if(slot.getHealValue() != 0){
-						itemDetails.setText("Leben +" + slot.getHealValue());
+						itemDetails.setText("Leben +" + slot.getHealValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
 					}
 				}
 			}
@@ -1238,13 +1268,42 @@ public class InventarActivity extends Activity {
 					healValue = slot.getHealValue();
 					isInInventory = false;
 					if(slot.getAttackValue() != 0){
-						itemDetails.setText("Angriff +" + slot.getAttackValue());
+						itemDetails.setText("Angriff +" + slot.getAttackValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
 					}
 					if(slot.getDefenseValue() != 0){
-						itemDetails.setText("Verteidigung +" + slot.getDefenseValue());
+						itemDetails.setText("Verteidigung +" + slot.getDefenseValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
 					}
 					if(slot.getHealValue() != 0){
-						itemDetails.setText("Leben +" + slot.getHealValue());
+						itemDetails.setText("Leben +" + slot.getHealValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
+					}
+				}
+			}
+			
+		});
+	}
+	
+	private void setupOnClickListenerSell(final ImageButton slotBackground, final ImageButton slotItem,
+			final Slot slot) {
+		slotItem.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (slot.getNumberOfItems().equals("0")) {
+				} else {
+					markThisSlot(slotBackground, slot);
+					slot.setMarked();
+					showItemName(slot);
+					clickedItem = slot.getItemName();
+					healValue = slot.getHealValue();
+					isInInventory = true;
+					if(slot.getAttackValue() != 0){
+						itemDetails.setText("Angriff +" + slot.getAttackValue() + "\nPreis: " + (10*(controller.getLevel())) + " Gold");
+					}
+					if(slot.getDefenseValue() != 0){
+						itemDetails.setText("Verteidigung +" + slot.getDefenseValue() + "\nPreis: " + (10*(controller.getLevel())) + " Gold");
+					}
+					if(slot.getHealValue() != 0){
+						itemDetails.setText("Leben +" + slot.getHealValue() + "\nPreis: " + (10*(controller.getLevel())) + " Gold");
 					}
 				}
 			}
@@ -1360,6 +1419,7 @@ public class InventarActivity extends Activity {
 		sortedItemImages.add(getResources().getDrawable(R.drawable.stoffhose));		
 		sortedItemImages.add(getResources().getDrawable(R.drawable.stoffschuhe));		
 		sortedItemImages.add(getResources().getDrawable(R.drawable.stoffstirnband));		
+		sortedItemImages.add(getResources().getDrawable(R.drawable.viermalgeflicktelederhose));		
 		
 		sortedItemNames = new ArrayList<String>();
 		
@@ -1378,6 +1438,7 @@ public class InventarActivity extends Activity {
 		sortedItemNames.add("Stoffhose");
 		sortedItemNames.add("Stoffschuhe");
 		sortedItemNames.add("Stoffstirnband");
+		sortedItemNames.add("Viermal geflickte Lederhose");
 		
 		controller = Controller.getInstance();
 	
