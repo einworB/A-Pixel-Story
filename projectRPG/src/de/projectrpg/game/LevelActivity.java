@@ -542,6 +542,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			hud.detachChild(questButton);
 			hud.unregisterTouchArea(questButton);
 		}
+		if(helpButton.hasParent()) {
+			hud.detachChild(helpButton);
+			hud.unregisterTouchArea(helpButton);
+		}
 		
 		levelTextPlayer.setText("lvl " + player.getLevel());
 		
@@ -579,6 +583,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		if(!questButton.hasParent()) {
 			hud.attachChild(questButton);
 			hud.registerTouchArea(questButton);
+		}
+		if(!helpButton.hasParent()) {
+			hud.attachChild(helpButton);
+			hud.registerTouchArea(helpButton);
 		}
 		hud.detachChild(textScroll);
 		hud.detachChild(text);
