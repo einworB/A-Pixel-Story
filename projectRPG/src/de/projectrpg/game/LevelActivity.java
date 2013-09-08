@@ -907,6 +907,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		if(path!=null) startPath(path, endTile);
 		else Log.d("RPG", "path=null");
 		hud.detachChild(portraitEnemy);
+		hud.detachChild(levelTextOpponent);
 		hud.detachChild(redBarEnemy);
 		fleeing = true;
 	}
@@ -926,6 +927,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		super.onResume();
 		inventarStarted = false;
 		helpStarted = false;
+		if(redBarPlayer!=null){
+			redBarPlayer.setWidth((float)(100-player.getHealth())/3);
+			redBarPlayer.setX(44-redBarPlayer.getWidth());
+		}
+		
 	}
 	
 	@Override
