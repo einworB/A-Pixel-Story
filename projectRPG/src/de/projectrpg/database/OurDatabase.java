@@ -13,8 +13,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-
 import de.projectrpg.quest.GetItemQuest;
 import de.projectrpg.quest.KillQuest;
 import de.projectrpg.quest.Quest;
@@ -216,6 +214,12 @@ public class OurDatabase {
 						Armor armor = new Armor(name, levelNeeded, defenseValue, armorType);
 						return armor;
 					} else return null;
+				} else if(itemType.contentEquals("healItem")){
+					if (cursor.moveToFirst()) {
+						int healValue = cursor.getInt(2);
+						HealItem item = new HealItem(name, levelNeeded, itemType, healValue);
+						return item;
+					} else return null;
 				}
 				else return null;
 		} else return null;
@@ -251,6 +255,13 @@ public class OurDatabase {
 						Armor armor = new Armor(name, levelNeeded, defenseValue, armorType);
 						objects[counter] = armor;
 						Log.d("DB", "armor");
+					}
+				} else if(itemType.contentEquals("healItem")){
+					if (cursor.moveToFirst()) {
+						int healValue = cursor.getInt(2);
+						HealItem item = new HealItem(name, levelNeeded, itemType, healValue);
+						objects[counter] = item;
+						Log.d("DB", "healItem");
 					}
 				}
 				counter++;
@@ -418,6 +429,77 @@ public class OurDatabase {
 		} else return null;
 	}
 		
+	public Quest getQuest(int npcID) {
+		String sql;
+		Quest quest = null;
+		
+		sql = new String("SELECT * FROM quest WHERE npcID='"+npcID+"'");
+		Cursor questCursor = db.rawQuery(sql, null);
+		if(questCursor.moveToFirst()) {
+			
+			String name = questCursor.getString(7);
+			int startTextID = questCursor.getInt(3);
+			int duringTextID = questCursor.getInt(4);
+			int endTextID = questCursor.getInt(5);
+			ArrayList<String> startText = null;
+			ArrayList<String> duringText = null;
+			ArrayList<String> endText = null;
+			sql = new String("SELECT text FROM text WHERE _id='"+startTextID+"'");
+			Cursor textCursor = db.rawQuery(sql, null);
+			if(textCursor.moveToFirst()) {
+				startMerchant = false;
+				String str =textCursor.getString(0);
+				if(str!=null) startText = convertStringToArrayList(str);
+			}
+			sql = new String("SELECT text FROM text WHERE _id='"+duringTextID+"'");
+			textCursor = db.rawQuery(sql, null);
+			if(textCursor.moveToFirst()) {
+				startMerchant = false;
+				String str =textCursor.getString(0);
+				if(str!=null) duringText = convertStringToArrayList(str);
+			}
+			sql = new String("SELECT text FROM text WHERE _id='"+endTextID+"'");
+			textCursor = db.rawQuery(sql, null);
+			if(textCursor.moveToFirst()) {
+				startMerchant = false;
+				String str =textCursor.getString(0);
+				if(str!=null) endText = convertStringToArrayList(str);
+			}
+			
+			int level = questCursor.getInt(6);
+			int specialItemID = questCursor.getInt(9);
+			Item specialReward = null;
+			if(specialItemID!=0){
+				// TODO: get item from database
+			}
+			String type = questCursor.getString(8);
+			if(type.contentEquals("talkTo")){
+				sql = new String("SELECT talkToQuest.npcID FROM talkToQuest, quest WHERE quest._id=talkToQuest.questID");
+				Cursor specificQuestCursor = db.rawQuery(sql, null);
+				if(specificQuestCursor.moveToFirst()){
+					int targetNPC =  specificQuestCursor.getInt(0);
+					quest = new TalkToQuest(name, npcID, startText, duringText, endText, targetNPC, level, specialReward);
+				}
+			}else if(type.contentEquals("killQuest")){
+				sql = new String("SELECT target, killCount FROM killQuest, quest WHERE quest._id=killQuest.questID");
+				Cursor specificQuestCursor = db.rawQuery(sql, null);
+				if(specificQuestCursor.moveToFirst()){
+					String enemyName = specificQuestCursor.getString(0);
+					int killCount = specificQuestCursor.getInt(1);
+					quest = new KillQuest(name, npcID, startText, duringText, endText, enemyName, killCount, level, specialReward);
+				}
+			}else{
+				sql = new String("SELECT itemName, count FROM getItemQuest, quest WHERE quest._id=getItemQuest.questID");
+				Cursor specificQuestCursor = db.rawQuery(sql, null);
+				if(specificQuestCursor.moveToFirst()){
+					String itemName = specificQuestCursor.getString(0);
+					int count = specificQuestCursor.getInt(1);
+					quest = new GetItemQuest(name, npcID, startText, duringText, endText, itemName, count, level, specialReward);
+				}
+			}
+		} return quest;
+	}
+	
 		
         // Add your public helper methods to access and get content from the database.
        // You could return cursors by doing "return myDataBase.query(....)" so it'd be easy
