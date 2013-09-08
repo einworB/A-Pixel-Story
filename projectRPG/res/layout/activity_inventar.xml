@@ -23,7 +23,7 @@
         android:layout_width="210dp"
         android:gravity="right"
 		android:textSize="20sp"
-        android:text="20€"/>
+        android:text="Gold: 20"/>
     
     <TextView 
         android:id="@+id/title_inventar_sell"
@@ -605,14 +605,15 @@
         android:layout_below="@id/slots_table"
         android:background="@drawable/remove_button"/>
     
-    <Button 
-        android:id="@+id/use_item_button"
+    <TextView 
+        android:id="@+id/item_details"
         android:layout_width="120dp"
         android:layout_height="50dp"
         android:layout_toLeftOf="@id/remove_item_button"
         android:layout_alignTop="@id/remove_item_button"
         android:layout_alignLeft="@id/slots_table_sell"
-        android:text="@string/use_item_string"
+        android:gravity="center"
+        android:text=""
         android:textColor="@color/gray"
         android:background="@drawable/slot_unmarked"/>
     

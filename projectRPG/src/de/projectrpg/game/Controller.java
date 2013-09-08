@@ -99,6 +99,14 @@ public class Controller {
 		Log.d("DBTEST", weapon.getName());
 		db.close();
 	}
+	
+	public Item getItemByName(String itemName) {
+		db.open();
+		Item item = (Item) db.getItem(itemName);
+		Log.d("DBTEST", item.getName());
+		db.close();
+		return item;
+	}
 
 	/**
 	 * Issues the Algorithm class to calculate the shortest path between start and destination tile and returns it 
