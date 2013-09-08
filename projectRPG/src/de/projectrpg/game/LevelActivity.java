@@ -65,6 +65,7 @@ import de.projectrpg.sprites.LootBag;
 import de.projectrpg.sprites.NPC;
 import de.projectrpg.sprites.Opponent;
 import de.projectrpg.sprites.Player;
+import de.projectrpg.start.HelpActivity;
 
 /**
  * This is the Activity the Player spends most of the playtime in 
@@ -170,6 +171,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private Sprite startExpBar;
 	/** the exp bar */
 	private Sprite expBar;
+	/** the button to start the helpActivity */
+	private Sprite helpButton;
 	/** the button to start the questscene */
 	private Sprite questButton;
 	/** the button to start the inventory activity */
@@ -189,6 +192,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	
 	/** boolean if the inventar was started already. true if it was started, else false. */
 	private boolean inventarStarted = false;
+	/** boolean if the helpactivity was started already. true if it was started, else false. */
+	private boolean helpStarted = false;
 	/** boolean if the player is fleeing. True if it is fleeing, else false. */
 	private boolean fleeing;
 	/** necessary as var to be able to stop an already started path */
@@ -242,8 +247,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		TextureRegion experienceBackgroundTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "expBackground.png", 236, 175);
 		TextureRegion experienceBarTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "expBar.png", 236, 205);
 		TextureRegion startExperienceBarTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "startExpBar.png", 738, 175);
-		
-		TextureRegion questButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "questButton.png", 758, 175);
+
+		TextureRegion helpButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "helpButton.png", 758, 175);
+		TextureRegion questButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "questButton.png", 812, 175);
 		TextureRegion backToGameButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "backToGameButton.png", 0, 229);
 		TextureRegion backToGameButtonBackgroudTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "backToGameButtonSchatten.png", 408, 229);
 
@@ -293,6 +299,18 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				startQuestScene();
+				return true;
+			}
+		};
+		helpButton = new Sprite(CAMERA_WIDTH-210, CAMERA_HEIGHT-70, 54, 54, helpButtonTextureRegion, getVertexBufferObjectManager()){
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if(!helpStarted){
+					helpStarted = true;
+					Intent intent = new Intent(LevelActivity.this, HelpActivity.class);
+					startActivity(intent);
+				}
+				
 				return true;
 			}
 		};
@@ -464,6 +482,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		hud.attachChild(redBarEnemy);
 		hud.attachChild(inventarButton);
 		hud.attachChild(questButton);
+		hud.attachChild(helpButton);
 		
 		hud.attachChild(levelTextPlayer);
 
@@ -473,6 +492,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		hud.registerTouchArea(inventarButton);
 		hud.registerTouchArea(questButton);
+		hud.registerTouchArea(helpButton);
 		
 		
 		questHud.attachChild(backToGameButtonBackground);
@@ -522,6 +542,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			hud.detachChild(questButton);
 			hud.unregisterTouchArea(questButton);
 		}
+		if(helpButton.hasParent()) {
+			hud.detachChild(helpButton);
+			hud.unregisterTouchArea(helpButton);
+		}
 		
 		levelTextPlayer.setText("lvl " + player.getLevel());
 		
@@ -559,6 +583,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		if(!questButton.hasParent()) {
 			hud.attachChild(questButton);
 			hud.registerTouchArea(questButton);
+		}
+		if(!helpButton.hasParent()) {
+			hud.attachChild(helpButton);
+			hud.registerTouchArea(helpButton);
 		}
 		hud.detachChild(textScroll);
 		hud.detachChild(text);
@@ -897,6 +925,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	protected synchronized void onResume() {
 		super.onResume();
 		inventarStarted = false;
+		helpStarted = false;
 	}
 	
 	@Override
