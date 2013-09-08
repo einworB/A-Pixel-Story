@@ -13,8 +13,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-
 import de.projectrpg.quest.GetItemQuest;
 import de.projectrpg.quest.KillQuest;
 import de.projectrpg.quest.Quest;
@@ -216,6 +214,12 @@ public class OurDatabase {
 						Armor armor = new Armor(name, levelNeeded, defenseValue, armorType);
 						return armor;
 					} else return null;
+				} else if(itemType.contentEquals("healItem")){
+					if (cursor.moveToFirst()) {
+						int healValue = cursor.getInt(2);
+						HealItem item = new HealItem(name, levelNeeded, itemType, healValue);
+						return item;
+					} else return null;
 				}
 				else return null;
 		} else return null;
@@ -251,6 +255,13 @@ public class OurDatabase {
 						Armor armor = new Armor(name, levelNeeded, defenseValue, armorType);
 						objects[counter] = armor;
 						Log.d("DB", "armor");
+					}
+				} else if(itemType.contentEquals("healItem")){
+					if (cursor.moveToFirst()) {
+						int healValue = cursor.getInt(2);
+						HealItem item = new HealItem(name, levelNeeded, itemType, healValue);
+						objects[counter] = item;
+						Log.d("DB", "healItem");
 					}
 				}
 				counter++;
