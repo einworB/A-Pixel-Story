@@ -360,4 +360,8 @@ public class Controller {
 	public void setInventory(ArrayList<Item> tempInventoryList) {
 		player.setInventory(tempInventoryList);
 	}
+
+	public void removeEquippedArmor(int i) {
+		player.removeEquippedArmor(i);
+	}
 }

@@ -68,6 +68,10 @@ public class Player extends FightingSprite {
 	public void removeEquippedArmor(Armor armor) {
 		equippedArmor[armor.getType()] = null;
 	}
+	
+	public void removeEquippedArmor(int i) {
+		equippedArmor[i] = null;
+	}
 
 	public void heal(int heal) {
 		health += heal;

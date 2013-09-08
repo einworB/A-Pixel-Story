@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.projectrpg.R;
@@ -39,8 +40,16 @@ public class InventarActivity extends Activity {
 	private TextView itemName;
 	private TextView titleSellEquip;
 	
+	private TextView equipSlotTypeText1;
+	private TextView equipSlotTypeText2;
+	private TextView equipSlotTypeText3;
+	private TextView equipSlotTypeText4;
+	private TextView equipSlotTypeText5;
+	private TextView weaponSlotTypeText;
+	
 	private Button removeItemButton;
 	private Button useItemButton;
+	private ImageView removeItemBackground;
 	
 	private ImageButton slot1Background;
 	private ImageButton slot2Background;
@@ -114,7 +123,9 @@ public class InventarActivity extends Activity {
 	
 	private Slot weaponSlot = null;
 	private String clickedItem = "leer";
+	private boolean isInInventory;
 	private int healValue = 0;
+	private boolean isSellInterface;
 	
 	private ArrayList<Item> inventoryList = null;
 	private ArrayList<Item> tempInventoryList = null;
@@ -138,35 +149,59 @@ public class InventarActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setupUI();
+		Log.d("sell", "setupUI beendet");
 		getSavedItems();
+		Log.d("sell", "getSavedItems beendet");
 		setItemsOnOwnSlots();
+		Log.d("sell", "setItemsOnOwnSlots beendet");
 		if(checkNeededInterface()){
 			setItemsOnSellSlots();
+			Log.d("sell", "setItemsSellSlots beendet");
 		}
 		else {
 			setItemsOnEquipSlots();
+			Log.d("sell", "setItemsOnEquipSlots beendet");
+
 		}
+		Log.d("sell", "checkNeededInterface beendet");
 		setupAllClickListeners();
+		Log.d("sell", "setupAllClickListeners beendet");
 		
 	}
 
 	private boolean checkNeededInterface() {
-		boolean isSellInterface = false; 	//irgendwie getNeededInterfaceFromLevelActivity();
+		isSellInterface = false; 	//irgendwie getNeededInterfaceFromLevelActivity();
 		if(isSellInterface){
+			Log.d("sell", "in if-abfrage");
 			for(int i=0; i<9; i++){
 				slotBackgroundListSell.get(i).setVisibility(View.VISIBLE);
 				slotItemImageListSell.get(i).setVisibility(View.VISIBLE);
+				Log.d("sell", "sell visible gemacht beendet");
 				if(i<5){
 					slotBackgroundListEquip.get(i).setVisibility(View.INVISIBLE);
 					slotItemImageListEquip.get(i).setVisibility(View.INVISIBLE);
+					Log.d("sell", "slot invisible gemacht beendet");
 				}
-				weaponSlotBackground.setVisibility(View.INVISIBLE);
-				weaponSlotItemImage.setVisibility(View.INVISIBLE);
-				playerEquip.setVisibility(View.INVISIBLE);
-				
-				slotListEquip.clear();
-				titleSellEquip.setText(R.string.title_sell);
 			}	
+			weaponSlotBackground.setVisibility(View.INVISIBLE);
+			weaponSlotItemImage.setVisibility(View.INVISIBLE);
+			playerEquip.setVisibility(View.INVISIBLE);
+			Log.d("sell", "slot invisible2 gemacht beendet");
+
+			
+			useItemButton.setVisibility(View.INVISIBLE);
+			removeItemButton.setVisibility(View.INVISIBLE);
+			removeItemBackground.setVisibility(View.INVISIBLE);
+			
+			equipSlotTypeText1.setVisibility(View.INVISIBLE);
+			equipSlotTypeText2.setVisibility(View.INVISIBLE);
+			equipSlotTypeText3.setVisibility(View.INVISIBLE);
+			equipSlotTypeText4.setVisibility(View.INVISIBLE);
+			equipSlotTypeText5.setVisibility(View.INVISIBLE);
+			weaponSlotTypeText.setVisibility(View.INVISIBLE);
+			
+			slotListEquip.clear();
+			titleSellEquip.setText(R.string.title_sell);
 		} else {
 			for(int i=0; i<9; i++){
 				slotBackgroundListSell.get(i).setVisibility(View.INVISIBLE);
@@ -175,15 +210,29 @@ public class InventarActivity extends Activity {
 					slotBackgroundListEquip.get(i).setVisibility(View.VISIBLE);
 					slotItemImageListEquip.get(i).setVisibility(View.VISIBLE);
 				}
-				weaponSlotBackground.setVisibility(View.VISIBLE);
-				weaponSlotItemImage.setVisibility(View.VISIBLE);
-				playerEquip.setVisibility(View.VISIBLE);
-
-				slotListSell.clear();
-				titleSellEquip.setText(R.string.title_equip);
 			}
+
+			weaponSlotBackground.setVisibility(View.VISIBLE);
+			weaponSlotItemImage.setVisibility(View.VISIBLE);
+			playerEquip.setVisibility(View.VISIBLE);
+			
+			useItemButton.setVisibility(View.VISIBLE);
+			removeItemButton.setVisibility(View.VISIBLE);
+			removeItemBackground.setVisibility(View.VISIBLE);
+			
+			equipSlotTypeText1.setVisibility(View.VISIBLE);
+			equipSlotTypeText2.setVisibility(View.VISIBLE);
+			equipSlotTypeText3.setVisibility(View.VISIBLE);
+			equipSlotTypeText4.setVisibility(View.VISIBLE);
+			equipSlotTypeText5.setVisibility(View.VISIBLE);
+			weaponSlotTypeText.setVisibility(View.VISIBLE);
+
+
+			slotListSell.clear();
+			titleSellEquip.setText(R.string.title_equip);
+
 		}
-		
+		Log.d("sell", "checkNeededInterface beendet");
 		return isSellInterface;
 	}
 
@@ -201,33 +250,35 @@ public class InventarActivity extends Activity {
 				
 				if(i<5){
 					setupOnLongClickListenerRemoveEquip(slotBackgroundListEquip.get(i),slotItemImageListEquip.get(i), slotListEquip.get(i));
-					setupOnClickListener(slotBackgroundListEquip.get(i), slotItemImageListEquip.get(i), slotListEquip.get(i));
+					setupOnClickListenerEquip(slotBackgroundListEquip.get(i), slotItemImageListEquip.get(i), slotListEquip.get(i));
 				}
+				setupOnLongClickListenerRemoveWeapon(weaponSlotBackground, weaponSlotItemImage, weaponSlot);
+				setupOnClickListenerEquip(weaponSlotBackground,	weaponSlotItemImage, weaponSlot);
+				Log.d("remove", "clickListener ausgelöst");
+				removeItemButton.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						if(clickedItem.equalsIgnoreCase("leer")){
+							
+						} else {
+							showRemoveItemNotification();
+							Log.d("remove", clickedItem);
+						}
+					}
+				});
+				useItemButton.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						if(healValue != 0){
+							showUseItemNotification();
+						}
+					}
+				});
 			}
 		}
-		setupOnLongClickListenerRemoveWeapon(weaponSlotBackground, weaponSlotItemImage, weaponSlot);
-		setupOnClickListener(weaponSlotBackground,	weaponSlotItemImage, weaponSlot);
-		Log.d("remove", "clickListener ausgelöst");
-		removeItemButton.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(clickedItem.equalsIgnoreCase("leer")){
-					
-				} else {
-					showRemoveItemNotification();	
-				}
-			}
-		});
-		useItemButton.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(healValue != 0){
-					showUseItemNotification();
-				}
-			}
-		});
+		
 	}
 
 	private void showUseItemNotification() {
@@ -317,22 +368,59 @@ public class InventarActivity extends Activity {
 
 	private void removeItem() {
 		removedItem = false;
+		
+		if(isInInventory){
+			tempInventoryList = new ArrayList<Item>();
+			for(int i=0; i<inventoryList.size(); i++){
+				if(inventoryList.get(i).getName().equalsIgnoreCase(clickedItem) && removedItem == false){
+					removedItem = true;
+				}
+				else{
+					tempInventoryList.add(inventoryList.get(i));
+				}
+			}	
+			setSlotsUnmarked();
+			controller.setInventory(tempInventoryList);
+	
+			slotList.clear();
+			for(int i=0; i<9; i++){
+				slotList.add(new Slot(0,"leer", "leer", "0"));
+			}	
+		} else {
+			Log.d("remove", "In else drinnen");
 					
-		tempInventoryList = new ArrayList<Item>();
-		for(int i=0; i<inventoryList.size(); i++){
-			if(inventoryList.get(i).getName().equalsIgnoreCase(clickedItem) && removedItem == false){
-				removedItem = true;
+			for(int i=0; i<5; i++){
+				Log.d("remove", "In for-schleife drinnen" + equipedArmorList.length + clickedItem);
+				if(slotListEquip.get(i).getItemName().equalsIgnoreCase(clickedItem)){
+					Log.d("remove", "In if-schleife drinnen");
+					controller.removeEquippedArmor(i);
+					Log.d("remove", "In if2 drinnen");
+					removedItem = true;
+				}
 			}
-			else{
-				tempInventoryList.add(inventoryList.get(i));
-			}
-		}	
-		setSlotsUnmarked();
-		controller.setInventory(tempInventoryList);
+			Log.d("remove", "item gelöscht");
 
-		slotList.clear();
-		for(int i=0; i<9; i++){
-			slotList.add(new Slot(0,"leer", "leer", "0"));
+			if(removedItem == false){
+				controller.removeEquippedWeapon(equippedWeapon);
+				Log.d("remove", "weapon if-abfrage drinnen");
+			}
+			Log.d("remove", "weapon if-abfrage übersprungen");
+
+			
+			weaponSlot = new Slot(0, "leer", "leer", "0");
+
+			slotList.clear();
+			for(int i=0; i<9; i++){
+				slotList.add(new Slot(0,"leer", "leer", "0"));
+			}
+			
+			slotListEquip.clear();
+			for(int i=0; i<5; i++){
+				slotListEquip.add(new Slot(0,"leer", "leer", "0"));
+				Log.d("remove", "slots geklärt");
+
+			}
+			setSlotsUnmarked();
 		}
 		
 		resetItemNameTextView();
@@ -341,6 +429,8 @@ public class InventarActivity extends Activity {
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
 		setupAllClickListeners();
+		Log.d("remove", "fertig");
+
 	}
 
 	private void getSavedItems() {
@@ -1006,6 +1096,27 @@ public class InventarActivity extends Activity {
 					showItemName(slot);
 					clickedItem = slot.getItemName();
 					healValue = slot.getHealValue();
+					isInInventory = true;
+				}
+			}
+			
+		});
+	}
+	
+	private void setupOnClickListenerEquip(final ImageButton slotBackground, final ImageButton slotItem,
+			final Slot slot) {
+		slotItem.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (slot.getNumberOfItems().equals("0")) {
+				} else {
+					markThisSlot(slotBackground, slot);
+					slot.setMarked();
+					showItemName(slot);
+					clickedItem = slot.getItemName();
+					healValue = slot.getHealValue();
+					isInInventory = false;
 				}
 			}
 			
@@ -1125,8 +1236,16 @@ public class InventarActivity extends Activity {
 		titleSellEquip = (TextView) findViewById(R.id.title_inventar_sell);
 		itemName = (TextView) findViewById(R.id.item_name_and_number);
 		
+		equipSlotTypeText1 = (TextView) findViewById(R.id.slot_type_armor1);
+		equipSlotTypeText2 = (TextView) findViewById(R.id.slot_type_armor2);
+		equipSlotTypeText3 = (TextView) findViewById(R.id.slot_type_armor3);
+		equipSlotTypeText4 = (TextView) findViewById(R.id.slot_type_armor4);
+		equipSlotTypeText5 = (TextView) findViewById(R.id.slot_type_armor5);
+		weaponSlotTypeText = (TextView) findViewById(R.id.slot_type_weapon);
+		
 		removeItemButton = (Button) findViewById(R.id.remove_item_button);
 		useItemButton = (Button) findViewById(R.id.use_item_button);
+		removeItemBackground = (ImageView) findViewById(R.id.remove_item_background);
 
 		slot1Background = (ImageButton) findViewById(R.id.inventar_slot1);
 		slot2Background = (ImageButton) findViewById(R.id.inventar_slot2);
@@ -1191,6 +1310,10 @@ public class InventarActivity extends Activity {
 		}
 		
 		slotListSell = new ArrayList<Slot>();
+		for(int i=0; i<9; i++){
+			slotListSell.add(new Slot(0,"leer", "leer", "0"));
+		}
+		
 		slotListEquip = new ArrayList<Slot>();
 		for(int i=0; i<5; i++){
 			slotListEquip.add(new Slot(0,"leer", "leer", "0"));
