@@ -14,7 +14,8 @@ public class FightHelper {
 		double playerAgility = player.getAgility();
 		double opponentAgility = opponent.getAgility();
 		double playerAttackValue = player.getAttackValue();
-		double opponentAttackValue = opponent.getAttackValue();
+		double playerDefenseValue = player.getDefenseValue();
+		double opponentAttackValue = opponent.getAttackValue()-(playerDefenseValue/10.0);
 		// crit
 		if(rand.getBoolean(player.getLuck()/10.0)){
 			playerAttackValue *= 1.5;

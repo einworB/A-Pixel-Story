@@ -380,4 +380,12 @@ public class Controller {
 	public OurScene getScene(int i) {
 		return sceneManager.getScene(i);
 	}
+	
+	public int getGold(){
+		return player.getGold();
+	}
+	
+	public void changeGold(int value){
+		player.changeGold(value);
+	}
 }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-import android.util.Log;
 import de.projectrpg.database.Armor;
 import de.projectrpg.database.Item;
 import de.projectrpg.database.Weapon;
@@ -16,6 +15,7 @@ public class Player extends FightingSprite {
 	/** Index 0 = Kopf, 1 = Oberkörper, 2 = Hände, 3 = Beine, 4 = Füße */
 	private Armor[] equippedArmor;
 	private ArrayList<Item> inventory;
+	private int gold;
 
 	private int EXP = 0;
 	private int maxEXP = 0;
@@ -25,6 +25,7 @@ public class Player extends FightingSprite {
 		super(pX, pY, pWidth, pHeight, pTiledTextureRegion, pVertexBufferObjectManager, level);
 		equippedArmor = new Armor[5];
 		inventory = new ArrayList<Item>();
+		gold = 20;
 	}
 	
 	public boolean addArmor(Armor armor){
@@ -103,5 +104,21 @@ public class Player extends FightingSprite {
 
 	public void setInventory(ArrayList<Item> tempInventoryList) {
 		inventory = tempInventoryList;
+	}
+	
+	public int getGold(){
+		return gold;
+	}
+	
+	public void changeGold(int value){
+		gold += value;
+	}
+	
+	public double getDefenseValue(){
+		double defenseValue = 0;
+		for(int i=0; i<5; i++){
+			if(equippedArmor[i]!=null) defenseValue += equippedArmor[i].getDefenseValue(); 
+		}
+		return defenseValue;
 	}
 }
