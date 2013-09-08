@@ -1238,14 +1238,26 @@ public class InventarActivity extends Activity {
 					clickedItem = slot.getItemName();
 					healValue = slot.getHealValue();
 					isInInventory = true;
-					if(slot.getAttackValue() != 0){
-						itemDetails.setText("Angriff +" + slot.getAttackValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
-					}
-					if(slot.getDefenseValue() != 0){
-						itemDetails.setText("Verteidigung +" + slot.getDefenseValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
-					}
-					if(slot.getHealValue() != 0){
-						itemDetails.setText("Leben +" + slot.getHealValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
+					if(checkNeededInterface()){
+						if(slot.getAttackValue() != 0){
+							itemDetails.setText("Angriff +" + slot.getAttackValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
+						}
+						if(slot.getDefenseValue() != 0){
+							itemDetails.setText("Verteidigung +" + slot.getDefenseValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
+						}
+						if(slot.getHealValue() != 0){
+							itemDetails.setText("Leben +" + slot.getHealValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
+						}
+					} else {
+						if(slot.getAttackValue() != 0){
+							itemDetails.setText("Angriff +" + slot.getAttackValue());
+						}
+						if(slot.getDefenseValue() != 0){
+							itemDetails.setText("Verteidigung +" + slot.getDefenseValue());
+						}
+						if(slot.getHealValue() != 0){
+							itemDetails.setText("Leben +" + slot.getHealValue());
+						}
 					}
 				}
 			}
@@ -1267,14 +1279,27 @@ public class InventarActivity extends Activity {
 					clickedItem = slot.getItemName();
 					healValue = slot.getHealValue();
 					isInInventory = false;
-					if(slot.getAttackValue() != 0){
-						itemDetails.setText("Angriff +" + slot.getAttackValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
-					}
-					if(slot.getDefenseValue() != 0){
-						itemDetails.setText("Verteidigung +" + slot.getDefenseValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
-					}
-					if(slot.getHealValue() != 0){
-						itemDetails.setText("Leben +" + slot.getHealValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
+					if(checkNeededInterface()){
+						if(slot.getAttackValue() != 0){
+							itemDetails.setText("Angriff +" + slot.getAttackValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
+						}
+						if(slot.getDefenseValue() != 0){
+							itemDetails.setText("Verteidigung +" + slot.getDefenseValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
+						}
+						if(slot.getHealValue() != 0){
+							itemDetails.setText("Leben +" + slot.getHealValue() + "\nWert: " + (5*(controller.getLevel())) + " Gold");
+						}
+					} else {
+						if(slot.getAttackValue() != 0){
+							itemDetails.setText("Angriff +" + slot.getAttackValue());
+						}
+						if(slot.getDefenseValue() != 0){
+							itemDetails.setText("Verteidigung +" + slot.getDefenseValue());
+						}
+						if(slot.getHealValue() != 0){
+							itemDetails.setText("Leben +" + slot.getHealValue());
+						}
+						
 					}
 				}
 			}
