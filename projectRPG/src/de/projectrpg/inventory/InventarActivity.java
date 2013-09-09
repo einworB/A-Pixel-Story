@@ -1229,9 +1229,8 @@ public class InventarActivity extends Activity {
 		if (slotListEquip.get(tempArmor.getType()).getNumberOfItems()
 				.equalsIgnoreCase("0")) {
 			controller.addArmor(tempArmor);
-			tempInventoryList = new ArrayList<Item>();
+			tempInventoryList = new ArrayList<Item>();				
 			for (int i = 0; i < inventoryList.size(); i++) {
-				removedItem = false;
 
 				if (inventoryList.get(i).getName()
 						.equalsIgnoreCase(tempArmor.getName())
