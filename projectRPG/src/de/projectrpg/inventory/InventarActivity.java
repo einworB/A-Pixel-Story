@@ -1767,7 +1767,7 @@ public class InventarActivity extends Activity {
 		sortedItemNames.add("Bronzene Stiefel");
 		sortedItemNames.add("Bronzene Stulpen");
 		sortedItemNames.add("Brustpanzer aus verstärktem Leder");
-		sortedItemNames.add("Bunter Lederumhang");
+		sortedItemNames.add("Bunter lederner Umhang");
 		sortedItemNames.add("Beinkleider aus Diamant");
 		sortedItemNames.add("Brustpanzer aus Diamant");
 		sortedItemNames.add("Diamanthelm");
