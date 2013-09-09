@@ -1808,7 +1808,7 @@ public class InventarActivity extends Activity {
 		sortedItemNames.add("Rostiger Eisenbrustpanzer");
 		sortedItemNames.add("Rostiger Eisenhelm");
 		sortedItemNames.add("Rostiges Eisenschwert");
-		sortedItemNames.add("Schmiedeeisener Streitkolben");
+		sortedItemNames.add("Schmiedeeiserner Streitkolben");
 		sortedItemNames.add("Stoffhandschuhe");
 		sortedItemNames.add("Stoffhose");
 		sortedItemNames.add("Stoffschuhe");
