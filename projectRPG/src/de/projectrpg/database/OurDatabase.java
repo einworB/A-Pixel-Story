@@ -334,6 +334,7 @@ public class OurDatabase {
 					int randomPosition = rgen.nextInt(questCursor.getCount());
 					questCursor.moveToPosition(randomPosition);
 					
+					int questID = questCursor.getInt(0);
 					String name = questCursor.getString(7);
 					int startTextID = questCursor.getInt(3);
 					int duringTextID = questCursor.getInt(4);
@@ -371,14 +372,14 @@ public class OurDatabase {
 					}
 					String type = questCursor.getString(8);
 					if(type.contentEquals("talkTo")){
-						sql = new String("SELECT talkToQuest.npcID FROM talkToQuest, quest WHERE quest._id=talkToQuest.questID");
+						sql = new String("SELECT talkToQuest.npcID FROM talkToQuest WHERE questID='"+questID+"'");
 						Cursor specificQuestCursor = db.rawQuery(sql, null);
 						if(specificQuestCursor.moveToFirst()){
 							int targetNPC =  specificQuestCursor.getInt(0);
 							quest = new TalkToQuest(name, npcID, startText, duringText, endText, targetNPC, level, specialReward);
 						}
 					}else if(type.contentEquals("killQuest")){
-						sql = new String("SELECT target, killCount FROM killQuest, quest WHERE quest._id=killQuest.questID");
+						sql = new String("SELECT target, killCount FROM killQuest WHERE questID='"+questID+"'");
 						Cursor specificQuestCursor = db.rawQuery(sql, null);
 						if(specificQuestCursor.moveToFirst()){
 							String enemyName = specificQuestCursor.getString(0);
@@ -387,7 +388,7 @@ public class OurDatabase {
 							quest = new KillQuest(name, npcID, startText, duringText, endText, enemyName, killCount, level, specialReward);
 						}
 					}else{
-						sql = new String("SELECT itemName, count FROM getItemQuest, quest WHERE quest._id=getItemQuest.questID");
+						sql = new String("SELECT itemName, count FROM getItemQuest WHERE questID='"+questID+"'");
 						Cursor specificQuestCursor = db.rawQuery(sql, null);
 						if(specificQuestCursor.moveToFirst()){
 							String itemName = specificQuestCursor.getString(0);

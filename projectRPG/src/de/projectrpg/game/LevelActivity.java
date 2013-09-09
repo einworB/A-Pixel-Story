@@ -977,20 +977,20 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 								finish();
 							}
 						})
-						.setNeutralButton("Ja & Speichern", new DialogInterface.OnClickListener() {
-							
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								WriteSaveFile writer = new WriteSaveFile(LevelActivity.this);
-								OurScene[] scene = new OurScene[controller.getLastLevel()];
-								for(int i = 1; i <= controller.getLastLevel(); i++) {
-									scene[i - 1] = controller.getScene(i);
-								}
-								
-								writer.createFile(1, controller.getLastLevel(), questcount, scene, player, controller);
-								finish();
-							}
-						})
+//						.setNeutralButton("Ja & Speichern", new DialogInterface.OnClickListener() {
+//							
+//							@Override
+//							public void onClick(DialogInterface dialog, int which) {
+//								WriteSaveFile writer = new WriteSaveFile(LevelActivity.this);
+//								OurScene[] scene = new OurScene[controller.getLastLevel()];
+//								for(int i = 1; i <= controller.getLastLevel(); i++) {
+//									scene[i - 1] = controller.getScene(i);
+//								}
+//								
+//								writer.createFile(1, controller.getLastLevel(), questcount, scene, player, controller);
+//								finish();
+//							}
+//						})
 						.setNegativeButton("Nein", null)
 						.create();
 			default:
