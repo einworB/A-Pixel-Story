@@ -529,6 +529,12 @@ public class InventarActivity extends Activity {
 											+ ((Weapon) inventoryList.get(i))
 													.getType());
 						}
+						if (inventoryList.get(i) instanceof HealItem) {
+							slotList.get(j).setHealValue(
+									((HealItem) inventoryList.get(i))
+											.getHeal());
+							slotList.get(j).setItemType("6");
+						}
 						putItemInSlot = true;
 					}
 				}
@@ -883,6 +889,7 @@ public class InventarActivity extends Activity {
 					slot.setMarked();
 					clickedItem = slot.getItemName();
 					healValue = slot.getHealValue();
+					Log.d("heil","" + healValue);
 					if (healValue != 0) {
 						showUseItemNotification();
 					} else {
