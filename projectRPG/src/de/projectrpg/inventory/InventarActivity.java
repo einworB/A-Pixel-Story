@@ -1643,7 +1643,6 @@ public class InventarActivity extends Activity {
 		}
 	}
 	
-
 	private void setMoneyTextView(int i) {
 		moneyTextView.setText("Gold: " + i);
 	}
