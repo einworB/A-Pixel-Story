@@ -444,7 +444,7 @@ public class InventarActivity extends Activity {
 			inventoryListMerchant = new ArrayList<Item>();
 			
 			if(controller.getLevel() == 1){
-				inventoryListMerchant.add(controller.getItemByName("Holzknüppel"));
+				inventoryListMerchant.add(controller.getItemByName("Holzknüppel"));				
 				inventoryListMerchant.add(controller.getItemByName("Vertrocknetes Brot"));
 				inventoryListMerchant.add(controller.getItemByName("Viermal geflickte Lederhose"));
 			}
@@ -454,12 +454,12 @@ public class InventarActivity extends Activity {
 				inventoryListMerchant.add(controller.getItemByName("fast frischer Schinken"));
 			}
 			if(controller.getLevel() == 3){
-				inventoryListMerchant.add(controller.getItemByName("Gebratene Hähnchenkeule"));
+				inventoryListMerchant.add(controller.getItemByName("Gebratene Hänchenkeule"));
 				inventoryListMerchant.add(controller.getItemByName("bronzener Brustpanzer"));
 				inventoryListMerchant.add(controller.getItemByName("Etwas zu schwerer Eisenhammer"));
 			}
 			if(controller.getLevel() >= 4){
-				inventoryListMerchant.add(controller.getItemByName("Schmiedeeisener Streitkolben"));
+				inventoryListMerchant.add(controller.getItemByName("Schmiedeeiserner Streitkolben"));
 				inventoryListMerchant.add(controller.getItemByName("Goldene Stiefel"));
 				inventoryListMerchant.add(controller.getItemByName("überaus köstlicher Apfelkuchen"));
 			}
@@ -467,6 +467,8 @@ public class InventarActivity extends Activity {
 			Log.d("kauf", inventoryListMerchant.get(0).getName());
 			Log.d("kauf", inventoryListMerchant.get(1).getName());
 			Log.d("kauf", inventoryListMerchant.get(2).getName());
+
+			
 		} else {
 			equipedArmorList = new Armor[5];
 			equipedArmorList = controller.getArmor();
@@ -687,7 +689,7 @@ public class InventarActivity extends Activity {
 					if(slotsFull){
 						
 					} else {
-						if(money >= 10){
+						if(money >= (10 * controller.getLevel())){
 							checkLongClickedItemBuy(slotBackground, slotItem, slot);
 						} else {
 							showNotEnoughMoneyNotification();
