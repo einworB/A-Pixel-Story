@@ -58,6 +58,7 @@ import de.projectrpg.inventory.InventarActivity;
 import de.projectrpg.quest.GetItemQuest;
 import de.projectrpg.quest.KillQuest;
 import de.projectrpg.quest.TalkToQuest;
+import de.projectrpg.save.LoadSavedGame;
 import de.projectrpg.save.WriteSaveFile;
 import de.projectrpg.scene.OurScene;
 import de.projectrpg.scene.QuestScene;
@@ -206,9 +207,18 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/** the number of the actual quest that should be shown */
 	private int questcount = 0;
 
+	/** the slot where the game is saved*/
+	private int slot;
+	/** if the game should be load from the slot or a new game should be started */
+	private boolean newGame;
+	
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
 		super.onCreate(pSavedInstanceState);
+		
+		Bundle extras = getIntent().getExtras();
+		slot = (Integer) extras.get("slot");
+		newGame = (Boolean) extras.get("newGame");
 	}
 
 	/**
@@ -331,8 +341,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		nextQuestButton = new Sprite(CAMERA_WIDTH/2 + 180, CAMERA_HEIGHT-125, 54, 54, nextQuestButtonTextureRegion, getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if(questcount < controller.getActiveQuests().size()) {
+				if(questcount + 1 < controller.getActiveQuests().size()) {
 					questcount++;
+					startQuestScene();
 				}
 				return true;
 			}
@@ -343,6 +354,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if(questcount > 0) {
 					questcount--;
+					startQuestScene();
 				}
 				return true;
 			}
@@ -366,6 +378,118 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		controller = Controller.getInstance();
 	}
 
+	/**
+	 * creates a scene and its children and adds them to the scene
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Scene onCreateScene() {
+		
+		this.mEngine.registerUpdateHandler(new FPSLogger());
+
+		if(newGame) {
+			
+			int lastLevel = controller.getLastLevel();
+			for(int i=1; i<=lastLevel; i++){			
+				TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i);
+				OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
+				scene.generateAnimatedSprites(opponentTextureRegion, npcTextureRegion, getVertexBufferObjectManager(), i);
+				controller.addSceneToManager(scene);
+			}
+			int questSceneIndex = lastLevel + 1;
+			questScene = new QuestScene(questSceneIndex, controller,getAssets(), this.mEngine, getVertexBufferObjectManager());
+			questScene.attachChild(questScene.getMap().getTMXLayers().get(0));
+			
+			camera.setBounds(0, 0, 30*32, 30*32);	// TODO: insert constants
+			camera.setBoundsEnabled(true);
+			
+			/* set the scene's on touch listener to the activity itself */
+			pinchZoomDetector = new PinchZoomDetector(this);
+			pinchZoomDetector.setEnabled(true);
+			clickDetector = new ClickDetector(this);
+			clickDetector.setEnabled(true);
+			
+			/* Calculate the coordinates for the player sprite, so it's spawned in the center of the camera. */
+			OurScene scene = controller.getCurrentScene();
+			Log.d("RPG", "Scene: "+scene.getID());
+			Log.d("RPG", "Hashmap: "+scene.getSpawns());
+			float[] coords = scene.getSpawn("SPAWN");
+			Log.d("RPG", "Koords: "+coords[0]+","+coords[1]);
+			TMXLayer layer = controller.getTMXLayer();
+			final TMXTile spawnTile = layer.getTMXTileAt(coords[0], coords[1]);
+			final float spawnX = spawnTile.getTileX() + 4;
+			final float spawnY = spawnTile.getTileY();
+	
+			/* Create the sprite and add it to the scene. */
+			player = new Player(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), 1);
+			player.setZIndex(1);
+			int column = spawnTile.getTileColumn();
+			int row = spawnTile.getTileRow();
+			Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
+			if(column==0) player.setCurrentTileIndex(5);
+			else if(row==0) player.setCurrentTileIndex(1);
+			else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(9);
+			else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(13);
+			
+			controller.getCurrentScene().attachChild(player);
+			controller.setPlayer(player);
+			
+			/* let the camera chase the player */
+			camera.setChaseEntity(player);
+			camera.setCenterDirect(spawnX, spawnY);
+			
+			hud = new HUD();
+			questHud = new HUD();
+			
+			camera.setHUD(hud);
+			hud.attachChild(portrait);
+			hud.attachChild(redBarPlayer);
+			hud.attachChild(redBarEnemy);
+			hud.attachChild(inventarButton);
+			hud.attachChild(questButton);
+			hud.attachChild(helpButton);
+			
+			hud.attachChild(levelTextPlayer);
+	
+			hud.attachChild(expBar);
+			hud.attachChild(expBackground);
+			hud.attachChild(startExpBar);
+			
+			hud.registerTouchArea(inventarButton);
+			hud.registerTouchArea(questButton);
+			hud.registerTouchArea(helpButton);
+			
+			
+			questHud.attachChild(backToGameButtonBackground);
+			questHud.attachChild(backToGameButton);
+			questHud.attachChild(questTask);
+			questHud.attachChild(questName);
+			questHud.attachChild(howToCloseQuest);
+			questHud.attachChild(prevQuestGrayButton);
+			questHud.attachChild(nextQuestGrayButton);
+			
+			
+			questHud.registerTouchArea(backToGameButton);
+			questHud.registerTouchArea(nextQuestButton);
+			questHud.registerTouchArea(prevQuestButton);
+			
+			interActionText = (ArrayList<String>) controller.getInteractionText(null).clone();
+			startInteraction();
+			
+			return controller.getCurrentScene();
+			
+		} else {
+			LoadSavedGame gameLoader = new LoadSavedGame(this);
+			//load game
+			gameLoader.loadGame(slot);
+			
+			
+			
+		}
+		return null;
+	}
+
+
 	private void startQuestScene() {
 		
 		camera.setHUD(questHud);
@@ -385,13 +509,13 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				questHud.attachChild(howToCloseQuest);
 			}
 
-			if(controller.getActiveQuests().size() < controller.getActiveQuests().size()) {
+			if((questcount + 1) < controller.getActiveQuests().size()) {
 				questHud.attachChild(nextQuestButton);
-				questHud.unregisterTouchArea(nextQuestButton);
+				questHud.registerTouchArea(nextQuestButton);
 			}
-			if(controller.getActiveQuests().size() > 1) {
+			if(questcount > 0) {
 				questHud.attachChild(prevQuestButton);
-				questHud.unregisterTouchArea(prevQuestButton);
+				questHud.registerTouchArea(prevQuestButton);
 			}
 			
 			if(controller.getActiveQuests().size() != 0) {
@@ -415,105 +539,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		}
 	}
 	
-	/**
-	 * creates a scene and its children and adds them to the scene
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public Scene onCreateScene() {
-		
-		this.mEngine.registerUpdateHandler(new FPSLogger());
-		
-		int lastLevel = controller.getLastLevel();
-		for(int i=1; i<=lastLevel; i++){			
-			TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i);
-			OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
-			scene.generateAnimatedSprites(opponentTextureRegion, npcTextureRegion, getVertexBufferObjectManager(), i);
-			controller.addSceneToManager(scene);
-		}
-		int questSceneIndex = lastLevel + 1;
-		questScene = new QuestScene(questSceneIndex, controller,getAssets(), this.mEngine, getVertexBufferObjectManager());
-		questScene.attachChild(questScene.getMap().getTMXLayers().get(0));
-		
-		camera.setBounds(0, 0, 30*32, 30*32);	// TODO: insert constants
-		camera.setBoundsEnabled(true);
-		
-		/* set the scene's on touch listener to the activity itself */
-		pinchZoomDetector = new PinchZoomDetector(this);
-		pinchZoomDetector.setEnabled(true);
-		clickDetector = new ClickDetector(this);
-		clickDetector.setEnabled(true);
-		
-		/* Calculate the coordinates for the player sprite, so it's spawned in the center of the camera. */
-		OurScene scene = controller.getCurrentScene();
-		Log.d("RPG", "Scene: "+scene.getID());
-		Log.d("RPG", "Hashmap: "+scene.getSpawns());
-		float[] coords = scene.getSpawn("SPAWN");
-		Log.d("RPG", "Koords: "+coords[0]+","+coords[1]);
-		TMXLayer layer = controller.getTMXLayer();
-		final TMXTile spawnTile = layer.getTMXTileAt(coords[0], coords[1]);
-		final float spawnX = spawnTile.getTileX() + 4;
-		final float spawnY = spawnTile.getTileY();
-
-		/* Create the sprite and add it to the scene. */
-		player = new Player(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), 1);
-		player.setZIndex(1);
-		int column = spawnTile.getTileColumn();
-		int row = spawnTile.getTileRow();
-		Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
-		if(column==0) player.setCurrentTileIndex(5);
-		else if(row==0) player.setCurrentTileIndex(1);
-		else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(9);
-		else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(13);
-		
-		controller.getCurrentScene().attachChild(player);
-		controller.setPlayer(player);
-		
-		/* let the camera chase the player */
-		camera.setChaseEntity(player);
-		camera.setCenterDirect(spawnX, spawnY);
-		
-		hud = new HUD();
-		questHud = new HUD();
-		
-		camera.setHUD(hud);
-		hud.attachChild(portrait);
-		hud.attachChild(redBarPlayer);
-		hud.attachChild(redBarEnemy);
-		hud.attachChild(inventarButton);
-		hud.attachChild(questButton);
-		hud.attachChild(helpButton);
-		
-		hud.attachChild(levelTextPlayer);
-
-		hud.attachChild(expBar);
-		hud.attachChild(expBackground);
-		hud.attachChild(startExpBar);
-		
-		hud.registerTouchArea(inventarButton);
-		hud.registerTouchArea(questButton);
-		hud.registerTouchArea(helpButton);
-		
-		
-		questHud.attachChild(backToGameButtonBackground);
-		questHud.attachChild(backToGameButton);
-		questHud.attachChild(questTask);
-		questHud.attachChild(questName);
-		questHud.attachChild(howToCloseQuest);
-		questHud.attachChild(prevQuestGrayButton);
-		questHud.attachChild(nextQuestGrayButton);
-		
-		
-		questHud.registerTouchArea(backToGameButton);
-		questHud.registerTouchArea(nextQuestButton);
-		questHud.registerTouchArea(prevQuestButton);
-		
-		interActionText = (ArrayList<String>) controller.getInteractionText(null).clone();
-		startInteraction();
-		
-		return controller.getCurrentScene();
-	}
-
 	/**
 	 * on scene touch listener, called when player touches the screen 
 	 * gets the path to the touched tile from the controller 

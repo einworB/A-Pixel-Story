@@ -16,6 +16,7 @@ import de.projectrpg.game.Controller;
 import de.projectrpg.quest.GetItemQuest;
 import de.projectrpg.quest.KillQuest;
 import de.projectrpg.quest.Quest;
+import de.projectrpg.quest.TalkToQuest;
 import de.projectrpg.scene.OurScene;
 import de.projectrpg.sprites.NPC;
 import de.projectrpg.sprites.Opponent;
@@ -98,15 +99,20 @@ public class WriteSaveFile {
 		ArrayList<Quest> openQuests = controller.getActiveQuests();
 		for(int i = 0; i < openQuests.size(); i++) {
 			serializer.startTag("", "quest" + i);
-			serializer.attribute("", "npcID", "" + openQuests.get(i).getNpcID());
 			if(openQuests.get(i) instanceof GetItemQuest) {
 				GetItemQuest quest = (GetItemQuest)openQuests.get(i);
 				serializer.attribute("", "type", quest.getType());
+				serializer.attribute("", "npcID", "" + openQuests.get(i).getNpcID());
 				serializer.attribute("", "alreadyFound", "" + quest.getAlreadyFound());
 			} else if(openQuests.get(i) instanceof KillQuest) {
 				KillQuest quest = (KillQuest)openQuests.get(i);
 				serializer.attribute("", "type", quest.getType());
+				serializer.attribute("", "npcID", "" + openQuests.get(i).getNpcID());
 				serializer.attribute("", "alreadyKilled", "" + quest.getAlreadyKilled());				
+			} else if(openQuests.get(i) instanceof TalkToQuest) {
+					TalkToQuest quest = (TalkToQuest)openQuests.get(i);
+					serializer.attribute("", "type", quest.getType());
+					serializer.attribute("", "npcID", "" + openQuests.get(i).getNpcID());
 			}
 			serializer.endTag("", "quest" + i);
 		}
