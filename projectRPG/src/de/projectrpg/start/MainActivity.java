@@ -59,6 +59,8 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(MainActivity.this, LevelActivity.class);
+				i.putExtra("slot", 1);
+				i.putExtra("newGame", true);
 				startActivity(i);
 			}
 		});
