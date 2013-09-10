@@ -877,6 +877,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 						controller.checkQuests(npc);
 						interActionText = (ArrayList<String>) controller.getInteractionText(npc).clone();
 						turnToTile(npc, startTile, destinationTile, scene.getMap());
+						turnToTile(player, destinationTile, startTile, scene.getMap());
 						startInteraction();
 						break;
 					case 3:
