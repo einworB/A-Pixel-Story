@@ -6,7 +6,9 @@ import java.util.HashMap;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.extension.tmx.TMXProperties;
 import org.andengine.extension.tmx.TMXTile;
+import org.andengine.extension.tmx.TMXTileProperty;
 import org.andengine.extension.tmx.TMXTiledMap;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
@@ -59,33 +61,72 @@ public class OurScene extends Scene {
 				boolean alreadySet = false;
 				int[] positions = rgen.getInts(2, 29);
 				TMXTile tile = tmxTiledMap.getTMXLayers().get(0).getTMXTile(positions[0]+1, positions[1]+1);
-				for(int j=0; j<getChildCount(); j++){
-					IEntity entity = getChildByIndex(j);
-					if(entity instanceof Sprite && entity.getX()==tile.getTileX() && entity.getY()==tile.getTileY()){
-						alreadySet = true;
+				if(tileIsntBlockingSpawn(tile)){
+					for(int j=0; j<getChildCount(); j++){
+						IEntity entity = getChildByIndex(j);
+						if(entity instanceof Sprite && entity.getX()==tile.getTileX() && entity.getY()==tile.getTileY()){
+							alreadySet = true;
+							break;
+						}
+					}
+					if(tile.getTMXTileProperties(tmxTiledMap)==null && !alreadySet){
+						if(i==spriteCount){
+							NPC npc = new NPC(tile.getTileX()+4, tile.getTileY(), 24, 32, npcTextureRegion, vertextBufferObjectManager, id); // TODO: bei mehr(weniger) als einem NPC pro Level id anpassen!!!
+							npcInScene.add(npc);
+							attachChild(npc);
+							npc.setCurrentTileIndex(1+(rgen.nextInt(4)*4));
+							Log.d("RPG", "Level "+level+": NPC created.");
+						}
+						else{
+							Opponent opponent = new Opponent(tile.getTileX()+4, tile.getTileY(), 24, 32, opponentTextureRegion, vertextBufferObjectManager, level, false);
+							attachChild(opponent);
+							opponent.setCurrentTileIndex(1+(rgen.nextInt(4)*4));
+							Log.d("RPG", "Level "+level+": Opponent "+i+" created.");
+						}					
 						break;
 					}
 				}
-				if(tile.getTMXTileProperties(tmxTiledMap)==null && !alreadySet){
-					if(i==spriteCount){
-						NPC npc = new NPC(tile.getTileX()+4, tile.getTileY(), 24, 32, npcTextureRegion, vertextBufferObjectManager, id); // TODO: bei mehr(weniger) als einem NPC pro Level id anpassen!!!
-						npcInScene.add(npc);
-						attachChild(npc);
-						npc.setCurrentTileIndex(1+(rgen.nextInt(4)*4));
-						Log.d("RPG", "Level "+level+": NPC created.");
-					}
-					else{
-						Opponent opponent = new Opponent(tile.getTileX()+4, tile.getTileY(), 24, 32, opponentTextureRegion, vertextBufferObjectManager, level, false);
-						attachChild(opponent);
-						opponent.setCurrentTileIndex(1+(rgen.nextInt(4)*4));
-						Log.d("RPG", "Level "+level+": Opponent "+i+" created.");
-					}					
-					break;
-				}
 			}
+				
 		}
 	}
 	
+	private boolean tileIsntBlockingSpawn(TMXTile tile) {
+		int tileColumn = tile.getTileColumn();
+		int tileRow = tile.getTileRow();
+		TMXTile adjacentTile = null;
+		if(tileRow>0){
+			adjacentTile = tmxTiledMap.getTMXLayers().get(0).getTMXTile(tileColumn, tileRow-1);
+			if(isSpawnTile(adjacentTile)) return false;
+		}
+		if(tileRow<29){
+			adjacentTile = tmxTiledMap.getTMXLayers().get(0).getTMXTile(tileColumn, tileRow+1);
+			if(isSpawnTile(adjacentTile)) return false;
+		}
+		if(tileColumn>0){
+			adjacentTile = tmxTiledMap.getTMXLayers().get(0).getTMXTile(tileColumn-1, tileRow);
+			if(isSpawnTile(adjacentTile)) return false;
+		}
+		if(tileColumn<29){
+			adjacentTile = tmxTiledMap.getTMXLayers().get(0).getTMXTile(tileColumn+1, tileRow);
+			if(isSpawnTile(adjacentTile)) return false;
+		}
+		return true;
+	}
+
+	private boolean isSpawnTile(TMXTile tile) {
+		if(tile!=null){
+			if(tile.getTMXTileProperties(tmxTiledMap)!=null){
+				TMXProperties<TMXTileProperty> properties = tile.getTMXTileProperties(tmxTiledMap);
+				for(int i=0; i<properties.size(); i++) {
+					TMXTileProperty property = properties.get(i);
+					if(property.getName().contentEquals("TRANSITION") && property.getValue().contentEquals("SPAWN")) return true;
+				}
+			}
+		}		
+		return false;
+	}
+
 	public ArrayList<NPC> getNPCsInScene() {
 		return npcInScene;
 	}
