@@ -731,7 +731,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 										runOnUiThread(new Runnable() {	
 											@Override
 											public void run() {
-												Toast.makeText(getApplicationContext(), "Looted "+loot.getName(), Toast.LENGTH_LONG).show();
+												Toast.makeText(getApplicationContext(), loot.getName()+" aufgehoben.", Toast.LENGTH_LONG).show();
 											}
 										});
 										break;									
@@ -792,6 +792,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				final float spawnY = spawnTile.getTileY();
 				player.setX(spawnX);
 				player.setY(spawnY);
+				camera.setCenterDirect(spawnX, spawnY);
 				int column = spawnTile.getTileColumn();
 				int row = spawnTile.getTileRow();
 				Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
