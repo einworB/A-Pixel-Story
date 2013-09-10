@@ -34,7 +34,7 @@ public class InventarActivity extends Activity {
 	private static final String EQUIP_HANDS = "2";
 	private static final String EQUIP_LOWER_BODY = "3";
 	private static final String EQUIP_FEET = "4";
-
+	
 	private TextView itemName;
 	private TextView titleSellEquip;
 	private TextView moneyTextView;
@@ -48,6 +48,7 @@ public class InventarActivity extends Activity {
 	private TextView weaponSlotTypeText;
 
 	private Button removeItemButton;
+	private Button interactionButton;
 	private ImageView removeItemBackground;
 
 	private ImageButton slot1Background;
@@ -269,7 +270,6 @@ public class InventarActivity extends Activity {
 				});
 			}
 		}
-
 	}
 
 	private void showUseItemNotification() {
@@ -353,6 +353,7 @@ public class InventarActivity extends Activity {
 		}
 
 		resetItemNameTextView();
+		resetInteractionButtonText();
 
 		getSavedItems();
 		setItemsOnOwnSlots();
@@ -420,6 +421,7 @@ public class InventarActivity extends Activity {
 		}
 
 		resetItemNameTextView();
+		resetInteractionButtonText();
 		clickedItem = "leer";
 
 		getSavedItems();
@@ -944,12 +946,12 @@ public class InventarActivity extends Activity {
 
 	private void checkLongClickedItemSell(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
-		showSellNotification(slotBackground, slotItem, slot);
+		showSellNotification();
 	}
 
 	private void checkLongClickedItemBuy(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
-		showBuyNotification(slotBackground, slotItem, slot);
+		showBuyNotification();
 	}
 
 	private void checkLongClickedItemAddEquip(final ImageButton slotBackground,
@@ -969,17 +971,16 @@ public class InventarActivity extends Activity {
 	private void checkLongClickedItemRemoveEquip(
 			final ImageButton slotBackground, final ImageButton slotItem,
 			final Slot slot) {
-		showRemoveEquipNotification(slotBackground, slotItem, slot);
+		showRemoveEquipNotification();
 	}
 
 	private void checkLongClickedItemRemoveWeapon(
 			ImageButton weaponSlotBackground, ImageButton weaponSlotItem,
 			Slot slot) {
-		showRemoveWeaponNotification(weaponSlotBackground, weaponSlotItem, slot);
+		showRemoveWeaponNotification();
 	}
 
-	private void showSellNotification(final ImageButton slotBackground,
-			final ImageButton slotItem, final Slot slot) {
+	private void showSellNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
 		dialogBuilder.setMessage("Willst du 1x " + clickedItem
@@ -1019,10 +1020,10 @@ public class InventarActivity extends Activity {
 			public void onClick(DialogInterface dialog, int id) {
 				// if this button is clicked, the item will be sold
 				if (slot.getDefenseValue() != 0) {
-					addEquipItem(slotBackground, slotItem, slot);
+					addEquipItem();
 				}
 				if (slot.getAttackValue() != 0) {
-					addWeaponItem(slotBackground, slotItem, slot);
+					addWeaponItem();
 				}
 
 			}
@@ -1038,9 +1039,59 @@ public class InventarActivity extends Activity {
 		AlertDialog dialog = dialogBuilder.create();
 		dialog.show();
 	}
+	
+	private void showAddWeaponNotification() {
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Willst du dieses Item wirklich anlegen?");
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
 
-	private void showRemoveEquipNotification(final ImageButton slotBackground,
-			final ImageButton slotItem, final Slot slot) {
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				// if this button is clicked, the item will be sold
+					addWeaponItem();
+			}
+		});
+		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				// if this button is clicked, just close
+				// the dialog box and do nothing
+				dialog.cancel();
+			}
+		});
+
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();
+	}
+	
+	private void showAddArmorNotification() {
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Willst du dieses Item wirklich anlegen?");
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				// if this button is clicked, the item will be sold
+					addEquipItem();
+			}
+		});
+		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				// if this button is clicked, just close
+				// the dialog box and do nothing
+				dialog.cancel();
+			}
+		});
+
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();
+	}
+	
+
+	private void showRemoveEquipNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
 		dialogBuilder.setMessage("Willst du dieses Item wirklich ablegen?");
@@ -1051,7 +1102,7 @@ public class InventarActivity extends Activity {
 			public void onClick(DialogInterface dialog, int id) {
 				// if this button is clicked, the item will be sold
 
-				removeEquipItem(slotBackground, slotItem, slot);
+				removeEquipItem();
 
 			}
 		});
@@ -1067,8 +1118,7 @@ public class InventarActivity extends Activity {
 		dialog.show();
 	}
 
-	private void showBuyNotification(final ImageButton slotBackground,
-			final ImageButton slotItem, final Slot slot) {
+	private void showBuyNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
 		dialogBuilder.setMessage("Willst du 1x " + clickedItem
@@ -1098,9 +1148,7 @@ public class InventarActivity extends Activity {
 	
 
 
-	private void showRemoveWeaponNotification(
-			final ImageButton weaponSlotBackground,
-			final ImageButton weaponSlotItem, final Slot slot) {
+	private void showRemoveWeaponNotification() {
 
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
@@ -1112,7 +1160,7 @@ public class InventarActivity extends Activity {
 			public void onClick(DialogInterface dialog, int id) {
 				// if this button is clicked, the item will be sold
 
-				removeWeaponItem(weaponSlotBackground, weaponSlotItem, slot);
+				removeWeaponItem();
 
 			}
 		});
@@ -1153,15 +1201,21 @@ public class InventarActivity extends Activity {
 			slotListSell.add(new Slot(0, "leer", "leer", "0"));
 		}
 
-		clickedItem = "leer";
+		
 		addmoney();
+		clickedItem = "leer";
 		setMoneyTextView(controller.getGold());
 		resetItemNameTextView();
+		resetInteractionButtonText();
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnSellSlots();
 		setupAllClickListeners();
 		Log.d("remove", "fertig");
+	}
+
+	private void resetInteractionButtonText() {
+		interactionButton.setText("");
 	}
 
 	private void addmoney() {
@@ -1200,6 +1254,7 @@ public class InventarActivity extends Activity {
 		pay();
 		setMoneyTextView(controller.getGold());
 		resetItemNameTextView();
+		resetInteractionButtonText();
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnSellSlots();
@@ -1211,12 +1266,10 @@ public class InventarActivity extends Activity {
 		controller.changeGold(-10 * (controller.getLevel()));
 	}
 
-	private void addEquipItem(final ImageButton slotBackground,
-			final ImageButton slotItem, final Slot slot) {
+	private void addEquipItem() {
 
 		removedItem = false;
-		tempArmor = new Armor(slot.getItemName(), slot.getLevelNeeded(),
-				slot.getDefenseValue(), Integer.parseInt(slot.getItemType()));
+		tempArmor = (Armor) controller.getItemByName(clickedItem);
 		Log.d("testArmor",
 				"" + tempArmor.getName() + tempArmor.getLevelNeeded()
 						+ tempArmor.getDefenseValue() + tempArmor.getType());
@@ -1260,6 +1313,7 @@ public class InventarActivity extends Activity {
 		}
 
 		resetItemNameTextView();
+		resetInteractionButtonText();
 		setSlotsUnmarked();
 		getSavedItems();
 		setItemsOnOwnSlots();
@@ -1268,12 +1322,10 @@ public class InventarActivity extends Activity {
 		Log.d("testArmor", "" + inventoryList.size());
 	}
 
-	private void addWeaponItem(ImageButton slotBackground,
-			ImageButton slotItem, Slot slot) {
+	private void addWeaponItem() {
 		removedItem = false;
 
-		tempWeapon = new Weapon(slot.getItemName(), slot.getLevelNeeded(),
-				slot.getAttackValue(), 0);
+		tempWeapon = (Weapon) controller.getItemByName(clickedItem);
 		tempItem = (Item) tempWeapon;
 		tempItem.setItemType("weapon");
 		tempWeapon = (Weapon) tempItem;
@@ -1303,6 +1355,7 @@ public class InventarActivity extends Activity {
 		}
 
 		resetItemNameTextView();
+		resetInteractionButtonText();
 
 		getSavedItems();
 		setItemsOnOwnSlots();
@@ -1316,16 +1369,13 @@ public class InventarActivity extends Activity {
 		itemDetails.setText("");
 	}
 
-	private void removeEquipItem(final ImageButton slotBackground,
-			final ImageButton slotItem, final Slot slot) {
-		inventoryList.add((Item) equipedArmorList[(Integer.parseInt(slot
-				.getItemType()))]);
+	private void removeEquipItem() {
+		inventoryList.add(((Item)controller.getItemByName(clickedItem)));
 
 		controller.setInventory(inventoryList);
 		setSlotsUnmarked();
 
-		controller.removeEquippedArmor(equipedArmorList[(Integer.parseInt(slot
-				.getItemType()))]);
+		controller.removeEquippedArmor((Armor) controller.getItemByName(clickedItem));
 
 		slotList.clear();
 		for (int i = 0; i < 9; i++) {
@@ -1338,6 +1388,7 @@ public class InventarActivity extends Activity {
 		}
 
 		resetItemNameTextView();
+		resetInteractionButtonText();
 
 		getSavedItems();
 		setItemsOnOwnSlots();
@@ -1346,10 +1397,9 @@ public class InventarActivity extends Activity {
 		Log.d("testArmor", "" + inventoryList.size());
 	}
 
-	private void removeWeaponItem(final ImageButton weaponSlotBackground,
-			final ImageButton weaponSlotItem, final Slot slot) {
+	private void removeWeaponItem() {
 
-		inventoryList.add((Item) equippedWeapon);
+		inventoryList.add((Item) controller.getItemByName(clickedItem));
 
 		controller.setInventory(inventoryList);
 		setSlotsUnmarked();
@@ -1364,6 +1414,7 @@ public class InventarActivity extends Activity {
 		weaponSlot = new Slot(0, "leer", "leer", "0");
 
 		resetItemNameTextView();
+		resetInteractionButtonText();
 
 		getSavedItems();
 		setItemsOnOwnSlots();
@@ -1421,33 +1472,85 @@ public class InventarActivity extends Activity {
 							itemDetails.setText("Angriff +"
 									+ slot.getAttackValue() + "\nWert: "
 									+ (5 * (controller.getLevel())) + " Gold");
+							interactionButton.setText("Item\nverkaufen");
 						}
 						if (slot.getDefenseValue() != 0) {
 							itemDetails.setText("Verteidigung +"
 									+ slot.getDefenseValue() + "\nWert: "
 									+ (5 * (controller.getLevel())) + " Gold");
+							interactionButton.setText("Item\nverkaufen");
 						}
 						if (slot.getHealValue() != 0) {
 							itemDetails.setText("Leben +" + slot.getHealValue()
 									+ "\nWert: "
 									+ (5 * (controller.getLevel())) + " Gold");
+							interactionButton.setText("Item\nverkaufen");
 						}
+						setInteractionButtonSell();
 					} else {
 						if (slot.getAttackValue() != 0) {
 							itemDetails.setText("Angriff +"
 									+ slot.getAttackValue());
+							interactionButton.setText("Waffe\nanlegen");
+							setInteractionButtonAddWeapon();
+							
 						}
 						if (slot.getDefenseValue() != 0) {
 							itemDetails.setText("Verteidigung +"
 									+ slot.getDefenseValue());
+							interactionButton.setText("Rüstung\nanlegen");
+							setInteractionButtonAddArmor();
 						}
 						if (slot.getHealValue() != 0) {
 							itemDetails.setText("Leben +" + slot.getHealValue());
+							interactionButton.setText("Nahrung\nessen");
+							setInteractionButtonUseItem();
 						}
 					}
 				}
 			}
+		});
+	}
 
+	private void setInteractionButtonUseItem() {
+		interactionButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showUseItemNotification();
+			}
+		});
+		
+	}
+
+	private void setInteractionButtonAddArmor() {
+		interactionButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showAddArmorNotification();
+			}
+		});
+		
+	}
+
+	private void setInteractionButtonAddWeapon() {
+		interactionButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showAddWeaponNotification();
+			}
+		});
+	}
+
+	private void setInteractionButtonSell() {
+		interactionButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showSellNotification();
+			}
 		});
 	}
 
@@ -1465,39 +1568,55 @@ public class InventarActivity extends Activity {
 					clickedItem = slot.getItemName();
 					healValue = slot.getHealValue();
 					isInInventory = false;
-					if (checkNeededInterface()) {
-						if (slot.getAttackValue() != 0) {
-							itemDetails.setText("Angriff +"
-									+ slot.getAttackValue() + "\nWert: "
-									+ (5 * (controller.getLevel())) + " Gold");
-						}
-						if (slot.getDefenseValue() != 0) {
-							itemDetails.setText("Verteidigung +"
-									+ slot.getDefenseValue() + "\nWert: "
-									+ (5 * (controller.getLevel())) + " Gold");
-						}
-						if (slot.getHealValue() != 0) {
-							itemDetails.setText("Leben +" + slot.getHealValue()
-									+ "\nWert: "
-									+ (5 * (controller.getLevel())) + " Gold");
-						}
-					} else {
-						if (slot.getAttackValue() != 0) {
-							itemDetails.setText("Angriff +"
-									+ slot.getAttackValue());
-						}
-						if (slot.getDefenseValue() != 0) {
-							itemDetails.setText("Verteidigung +"
-									+ slot.getDefenseValue());
-						}
-						if (slot.getHealValue() != 0) {
-							itemDetails.setText("Leben +" + slot.getHealValue());
-						}
-
+					
+					if (slot.getAttackValue() != 0) {
+						itemDetails.setText("Angriff +"
+								+ slot.getAttackValue());
+						interactionButton.setText("Waffe\nablegen");
+						setInteractionButtonRemoveWeapon();
+					}
+					if (slot.getDefenseValue() != 0) {
+						itemDetails.setText("Verteidigung +"
+								+ slot.getDefenseValue());
+						interactionButton.setText("Rüstung\nablegen");
+						setInteractionButtonRemoveArmor();
 					}
 				}
 			}
 
+		});
+	}
+
+	private void setInteractionButtonRemoveArmor() {
+		interactionButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showRemoveEquipNotification();
+				
+			}
+		});
+	}
+
+	private void setInteractionButtonRemoveWeapon() {
+		interactionButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showRemoveWeaponNotification();
+				
+			}
+		});
+	}
+
+	private void setInteractionButtonBuy() {
+		interactionButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showBuyNotification();
+				
+			}
 		});
 	}
 
@@ -1519,17 +1638,21 @@ public class InventarActivity extends Activity {
 						itemDetails.setText("Angriff +" + slot.getAttackValue()
 								+ "\nPreis: " + (10 * (controller.getLevel()))
 								+ " Gold");
+						interactionButton.setText("Waffe\nkaufen");
 					}
 					if (slot.getDefenseValue() != 0) {
 						itemDetails.setText("Verteidigung +"
 								+ slot.getDefenseValue() + "\nPreis: "
 								+ (10 * (controller.getLevel())) + " Gold");
+						interactionButton.setText("Rüstung\nkaufen");
 					}
 					if (slot.getHealValue() != 0) {
 						itemDetails.setText("Leben +" + slot.getHealValue()
 								+ "\nPreis: " + (10 * (controller.getLevel()))
 								+ " Gold");
+						interactionButton.setText("Nahrung\nkaufen");
 					}
+					setInteractionButtonBuy();
 				}
 			}
 
@@ -1836,6 +1959,10 @@ public class InventarActivity extends Activity {
 		weaponSlotTypeText = (TextView) findViewById(R.id.slot_type_weapon);
 
 		removeItemButton = (Button) findViewById(R.id.remove_item_button);
+		
+		interactionButton = (Button) findViewById(R.id.interaction_button);
+		resetInteractionButtonText();
+		
 		itemDetails = (TextView) findViewById(R.id.item_details);
 		removeItemBackground = (ImageView) findViewById(R.id.remove_item_background);
 

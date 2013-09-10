@@ -7,6 +7,14 @@
     android:paddingTop="5dp" 
     android:paddingLeft="10dp" 
     android:paddingRight="10dp" >
+    
+    <Button 
+        android:id="@+id/interaction_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="105dp"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"/>
 
     
     
