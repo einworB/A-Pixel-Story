@@ -30,8 +30,8 @@ public class LevelLoader {
 		return opponentList;
 	}
 
-	public void addNpc(float positionX, float positionY, int id){
-		npcList.add(new NpcObjects(positionX, positionY, id));
+	public void addNpc(float positionX, float positionY, int id, int level){
+		npcList.add(new NpcObjects(positionX, positionY, id, level));
 	}
 	
 	public ArrayList<NpcObjects> getNpcList(){
@@ -50,11 +50,13 @@ public class LevelLoader {
 		private float positionX;
 		private float positionY;
 		private int id;
+		private int level;
 		
-		public NpcObjects(float positionX, float positionY, int id) {
+		public NpcObjects(float positionX, float positionY, int id, int level) {
 			this.positionX = positionX;
 			this.positionY = positionY;
 			this.id = id;
+			this.level = level;
 		}
 		
 		public float getPositionX() {
@@ -66,6 +68,10 @@ public class LevelLoader {
 		
 		public int getID() {
 			return id;
+		}
+		
+		public int getLevel() {
+			return level;
 		}
 	}
 	

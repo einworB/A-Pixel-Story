@@ -16,6 +16,10 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import android.content.Context;
 import android.util.Log;
 import de.projectrpg.game.LevelActivity;
+import de.projectrpg.save.LevelLoader;
+import de.projectrpg.save.LevelLoader.NpcObjects;
+import de.projectrpg.save.LevelLoader.OpponentObjects;
+import de.projectrpg.save.LoadSavedGame;
 import de.projectrpg.sprites.NPC;
 import de.projectrpg.sprites.Opponent;
 import de.projectrpg.util.OurRandomGenerator;
@@ -88,6 +92,27 @@ public class OurScene extends Scene {
 				}
 			}
 				
+		}
+	}
+	
+	public void loadAnimatedSprites(TiledTextureRegion opponentTextureRegion, TiledTextureRegion npcTextureRegion, VertexBufferObjectManager vertextBufferObjectManager, int level, LoadSavedGame loadSavedGame) {
+		LevelLoader loader = loadSavedGame.getLevelLoader(level);
+		ArrayList<OpponentObjects> opponents = loader.getOpponentList();
+		ArrayList<NpcObjects> npcs = loader.getNpcList();
+		
+		for(int i = 0; i < opponents.size(); i++) {
+			if (opponents.get(i).getLevel() == level) {
+				Opponent opponent = new Opponent((opponents.get(i).getPositionX()), (opponents.get(i).getPositionY()), 24, 32, opponentTextureRegion, vertextBufferObjectManager, level, opponents.get(i).getEpic());
+				attachChild(opponent);
+			}
+		}
+		
+		for(int i = 0; i < npcs.size(); i++) {
+			if (npcs.get(i).getLevel() == level) {
+				NPC npc = new NPC(npcs.get(i).getPositionX(), npcs.get(i).getPositionY(), 24, 32, npcTextureRegion, vertextBufferObjectManager, npcs.get(i).getID());
+				npcInScene.add(npc);
+				attachChild(npc);
+			}
 		}
 	}
 	

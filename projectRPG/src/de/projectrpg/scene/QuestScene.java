@@ -17,13 +17,11 @@ import de.projectrpg.quest.QuestManager;
 
 public class QuestScene extends Scene {
 	private int id;
-	TMXMapLoader loader;
 	TMXTiledMap tmxMap;
 	
 	public QuestScene(int id, Controller controller, AssetManager assetManager, Engine engine, VertexBufferObjectManager vertexBufferObjectManager) {
 		super();
 		this.id = id;
-		loader = new TMXMapLoader(controller);
 		TMXLoader loader = new TMXLoader(assetManager, engine.getTextureManager(), TextureOptions.BILINEAR_PREMULTIPLYALPHA, vertexBufferObjectManager);
 		try {
 			tmxMap = loader.loadFromAsset("tmx/gras.tmx");

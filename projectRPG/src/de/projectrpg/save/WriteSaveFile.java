@@ -48,7 +48,7 @@ public class WriteSaveFile {
 		
 		String filename = "slot" + slot +".xml";
 		try {
-			FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
+			FileOutputStream fos = context.openFileOutput(filename, Context.MODE_WORLD_READABLE);
 			OutputStreamWriter writer = new OutputStreamWriter(fos);
 			writer.write(writeXml());
 			writer.flush();
@@ -96,35 +96,43 @@ public class WriteSaveFile {
 
 	private void writeQuestData() throws IllegalArgumentException, IllegalStateException, IOException {
 		serializer.startTag("", "openquests");
+		serializer.endTag("", "openquests");
+
 		ArrayList<Quest> openQuests = controller.getActiveQuests();
 		for(int i = 0; i < openQuests.size(); i++) {
+			
 			serializer.startTag("", "quest" + i);
+			
 			if(openQuests.get(i) instanceof GetItemQuest) {
 				GetItemQuest quest = (GetItemQuest)openQuests.get(i);
 				serializer.attribute("", "type", quest.getType());
 				serializer.attribute("", "npcID", "" + openQuests.get(i).getNpcID());
-				serializer.attribute("", "alreadyFound", "" + quest.getAlreadyFound());
+				serializer.attribute("", "progress", "" + quest.getAlreadyFound());
 			} else if(openQuests.get(i) instanceof KillQuest) {
 				KillQuest quest = (KillQuest)openQuests.get(i);
 				serializer.attribute("", "type", quest.getType());
 				serializer.attribute("", "npcID", "" + openQuests.get(i).getNpcID());
-				serializer.attribute("", "alreadyKilled", "" + quest.getAlreadyKilled());				
+				serializer.attribute("", "progress", "" + quest.getAlreadyKilled());				
 			} else if(openQuests.get(i) instanceof TalkToQuest) {
-					TalkToQuest quest = (TalkToQuest)openQuests.get(i);
-					serializer.attribute("", "type", quest.getType());
-					serializer.attribute("", "npcID", "" + openQuests.get(i).getNpcID());
+				TalkToQuest quest = (TalkToQuest)openQuests.get(i);
+				serializer.attribute("", "type", quest.getType());
+				serializer.attribute("", "npcID", "" + openQuests.get(i).getNpcID());
 			}
+			
 			serializer.endTag("", "quest" + i);
 		}
+		serializer.startTag("", "openquests");
 		serializer.endTag("", "openquests");
 
 		ArrayList<Quest> closedQuests = controller.getClosedQuests();
 		serializer.startTag("", "closedQuests");
+		serializer.endTag("", "closedQuests");
 		for(int i = 0; i < closedQuests.size(); i++) {
 			serializer.startTag("", "quest" + i);
 			serializer.attribute("", "npcID", "" + closedQuests.get(i).getNpcID());
 			serializer.endTag("", "quest" + i);
 		}
+		serializer.startTag("", "closedQuests");
 		serializer.endTag("", "closedQuests");
 	}
 
@@ -136,7 +144,9 @@ public class WriteSaveFile {
 		serializer.attribute("", "playerlevel", "" + player.getLevel());
 		serializer.attribute("", "exp", "" + player.getEXP());
 		serializer.attribute("", "health", "" + player.getHealth());
-		
+
+		serializer.endTag("", "player");
+
 		serializer.startTag("", "equipped");
 		String str;
 		if(player.getEquippedWeapon() != null) {
@@ -185,19 +195,21 @@ public class WriteSaveFile {
 		}
 		serializer.endTag("", "inventory");
 		
+		serializer.startTag("", "player");
 		serializer.endTag("", "player");
 	}
 
 	private void writeLevelData() throws IllegalArgumentException, IllegalStateException, IOException {
 		for(int i = 1; i <= levelcount; i++) {
 			OurScene scene = sceneArray[i - 1];
-			
+
 			serializer.startTag("", "level" + i);
+			serializer.endTag("", "level" + i);
 			
-			serializer.startTag("", "mapName");
+			serializer.startTag("", "mapname");
 			serializer.attribute("", "name", "slot" + slot + "level" + i + ".tmx");
-			serializer.endTag("", "mapName");
-			
+			serializer.endTag("", "mapname");
+
 //			serializer.startTag("", "map");
 //			serializer.attribute("", "tileset", map.getTMXTileSets().get(0).getName());
 //			serializer.startTag("", "tiles");
@@ -213,6 +225,7 @@ public class WriteSaveFile {
 //			serializer.endTag("", "map");
 
 			serializer.startTag("", "opponents");
+			serializer.endTag("", "opponents");
 			int opponentcount = 1;
 			for(int k = 0; k < scene.getChildCount(); k++) {
 				if(scene.getChildByIndex(k) instanceof Opponent) {
@@ -231,10 +244,12 @@ public class WriteSaveFile {
 					opponentcount++;
 				}
 			}
+			serializer.startTag("", "opponents");
 			serializer.endTag("", "opponents");
 			
 			int npcCount = 1;
 			serializer.startTag("", "npcs");
+			serializer.endTag("", "npcs");
 			for(int k = 0; k < scene.getChildCount(); k++) {
 				if(scene.getChildByIndex(k) instanceof NPC) {
 					NPC npc = (NPC)scene.getChildByIndex(k);
@@ -246,8 +261,9 @@ public class WriteSaveFile {
 					npcCount++;
 				}
 			}
+
+			serializer.startTag("", "npcs");
 			serializer.endTag("", "npcs");
-			
 /*			int lootbagCount = 1;
 			serializer.startTag("", "lootbags");
 			for(int k = 0; k < scene.getChildCount(); k++) {
@@ -263,6 +279,8 @@ public class WriteSaveFile {
 			}
 			serializer.endTag("", "lootbags");
 */		
+
+			serializer.startTag("", "level" + i);
 			serializer.endTag("", "level" + i);
 		}
 	}

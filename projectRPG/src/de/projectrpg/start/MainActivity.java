@@ -69,8 +69,10 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-
+				Intent i = new Intent(MainActivity.this, LevelActivity.class);
+				i.putExtra("slot", 1);
+				i.putExtra("newGame", false);
+				startActivity(i);
 			}
 		});
 

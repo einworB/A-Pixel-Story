@@ -103,7 +103,7 @@ public class Controller {
 	public Item getItemByName(String itemName) {
 		db.open();
 		Item item = (Item) db.getItem(itemName);
-		Log.d("DBTEST", item.getName());
+//		Log.d("DBTEST", item.getName());
 		db.close();
 		return item;
 	}
@@ -244,8 +244,12 @@ public class Controller {
 	}
 
 	public TMXTiledMap loadTMXMap(AssetManager assets, Engine engine,
-			VertexBufferObjectManager vertexBufferObjectManager, int index) {
-		return mapLoader.loadTMXMap(assets, engine, vertexBufferObjectManager, getLevelPath(index));
+			VertexBufferObjectManager vertexBufferObjectManager, int index, InputStream input) {
+		Log.d("projekt", "input: " + input);
+		if(input == null) {
+			input = getLevelPath(index);
+		}
+		return mapLoader.loadTMXMap(assets, engine, vertexBufferObjectManager, input);
 	}
 
 
@@ -269,6 +273,10 @@ public class Controller {
 		return items;
 	}
 
+	public void setLevel(int level) {
+		this.level = level;
+	}
+	
 	public int getLevel(){
 		return level;
 	}
