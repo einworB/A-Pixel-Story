@@ -3,17 +3,20 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_inventar"
+    android:background="@color/black"
     android:paddingTop="5dp" 
     android:paddingLeft="10dp" 
     android:paddingRight="10dp" >
     
     <Button 
         android:id="@+id/interaction_button"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_marginTop="105dp"
         android:gravity="center"
+        android:background="@drawable/interaction_button"
+        android:textSize="12sp"
+        android:textColor="@color/gray"
         android:layout_centerHorizontal="true"/>
 
     

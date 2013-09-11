@@ -916,6 +916,7 @@ public class InventarActivity extends Activity {
 				} else {
 					markThisSlot(slotBackground, slot);
 					slot.setMarked();
+					clickedItem = slot.getItemName();
 					checkLongClickedItemRemoveEquip(slotBackground, slotItem,
 							slot);
 				}
@@ -936,6 +937,7 @@ public class InventarActivity extends Activity {
 				} else {
 					markThisSlot(weaponSlotBackground, slot);
 					slot.setMarked();
+					clickedItem = slot.getItemName();
 					checkLongClickedItemRemoveWeapon(weaponSlotBackground,
 							weaponSlotItem, slot);
 				}
