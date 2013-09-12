@@ -10,8 +10,8 @@ public class TalkToQuest extends Quest{
 	private int targetNpcID;
 
 
-	public TalkToQuest(String name, int npcID, ArrayList<String> startText, ArrayList<String> duringText, ArrayList<String> endText, int targetNpcID, int level, Item specialReward){
-		super(name, npcID, startText, duringText, endText, level, specialReward);
+	public TalkToQuest(int id, String name, int npcID, ArrayList<String> startText, ArrayList<String> duringText, ArrayList<String> endText, int targetNpcID, int level, Item specialReward, String shortText){
+		super(id, name, npcID, startText, duringText, endText, level, specialReward, shortText);
 		this.targetNpcID = targetNpcID;
 	}
 	

@@ -11,8 +11,8 @@ public class GetItemQuest extends Quest{
 	private int count;
 	private int alreadyFound;
 
-	public GetItemQuest(String name, int npcID, ArrayList<String> startText, ArrayList<String> duringText, ArrayList<String> endText, String itemName, int count, int level, Item specialReward){
-		super(name, npcID, startText, duringText, endText, level, specialReward);
+	public GetItemQuest(int id, String name, int npcID, ArrayList<String> startText, ArrayList<String> duringText, ArrayList<String> endText, String itemName, int count, int level, Item specialReward, String shortText){
+		super(id, name, npcID, startText, duringText, endText, level, specialReward, shortText);
 		this.itemName = itemName;
 		this.count = count;
 		alreadyFound = 0;

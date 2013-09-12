@@ -12,8 +12,8 @@ public class KillQuest extends Quest{
 	private int alreadyKilled;
 
 	
-	public KillQuest(String name, int npcID, ArrayList<String> startText, ArrayList<String> duringText, ArrayList<String> endText, String enemyName, int killCount, int level, Item specialReward){
-		super(name, npcID, startText, duringText, endText, level, specialReward);
+	public KillQuest(int id, String name, int npcID, ArrayList<String> startText, ArrayList<String> duringText, ArrayList<String> endText, String enemyName, int killCount, int level, Item specialReward, String shortText){
+		super(id, name, npcID, startText, duringText, endText, level, specialReward, shortText);
 		this.enemyName = enemyName;
 		this.killCount = killCount;
 		alreadyKilled = 0;

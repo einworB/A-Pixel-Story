@@ -14,8 +14,11 @@ public class Quest {
 	private ArrayList<String> endText;
 	private int npcID;
 	private boolean fulfilled;
+	private int id;
+	private String shortText;
 
-	public Quest(String name, int npcID, ArrayList<String> startText, ArrayList<String> duringText, ArrayList<String> endText, int level, Item specialLoot){
+	public Quest(int id, String name, int npcID, ArrayList<String> startText, ArrayList<String> duringText, ArrayList<String> endText, int level, Item specialLoot, String shortText){
+		this.id = id;
 		this.name = name;
 		this.npcID = npcID;
 		this.startText = startText;
@@ -23,7 +26,12 @@ public class Quest {
 		this.endText = endText;
 		this.level = level;
 		this.specialLoot = specialLoot;
+		this.shortText = shortText;
 		fulfilled = false;
+	}
+	
+	public int getID(){
+		return id;
 	}
 	
 	public String getName(){
@@ -61,4 +69,8 @@ public class Quest {
 	public boolean isFulfilled(){
 		return fulfilled;
 	}
-}
+	
+	public String getShortText(){
+		return shortText;
+	}
+	}

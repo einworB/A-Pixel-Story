@@ -331,82 +331,92 @@ public class OurDatabase {
 				sql = new String("SELECT * FROM quest WHERE npcID='"+npcID+"'");
 				Cursor questCursor = db.rawQuery(sql, null);
 				if(questCursor.moveToFirst()) {
-					int randomPosition = rgen.nextInt(questCursor.getCount());
-					questCursor.moveToPosition(randomPosition);
-					
-					int questID = questCursor.getInt(0);
-					String name = questCursor.getString(7);
-					int startTextID = questCursor.getInt(3);
-					int duringTextID = questCursor.getInt(4);
-					int endTextID = questCursor.getInt(5);
-					ArrayList<String> startText = null;
-					ArrayList<String> duringText = null;
-					ArrayList<String> endText = null;
-					sql = new String("SELECT text FROM text WHERE _id='"+startTextID+"'");
-					Cursor textCursor = db.rawQuery(sql, null);
-					if(textCursor.moveToFirst()) {
-						startMerchant = false;
-						String str =textCursor.getString(0);
-						if(str!=null) startText = convertStringToArrayList(str);
-					}
-					sql = new String("SELECT text FROM text WHERE _id='"+duringTextID+"'");
-					textCursor = db.rawQuery(sql, null);
-					if(textCursor.moveToFirst()) {
-						startMerchant = false;
-						String str =textCursor.getString(0);
-						if(str!=null) duringText = convertStringToArrayList(str);
-					}
-					sql = new String("SELECT text FROM text WHERE _id='"+endTextID+"'");
-					textCursor = db.rawQuery(sql, null);
-					if(textCursor.moveToFirst()) {
-						startMerchant = false;
-						String str =textCursor.getString(0);
-						if(str!=null) endText = convertStringToArrayList(str);
-					}
-					
-					int level = questCursor.getInt(6);
-					int specialItemID = questCursor.getInt(9);
-					Item specialReward = null;
-					if(specialItemID!=0){
-						// TODO: get item from database
-					}
-					String type = questCursor.getString(8);
-					if(type.contentEquals("talkTo")){
-						sql = new String("SELECT talkToQuest.npcID FROM talkToQuest WHERE questID='"+questID+"'");
-						Cursor specificQuestCursor = db.rawQuery(sql, null);
-						if(specificQuestCursor.moveToFirst()){
-							int targetNPC =  specificQuestCursor.getInt(0);
-							quest = new TalkToQuest(name, npcID, startText, duringText, endText, targetNPC, level, specialReward);
+//					int randomPosition = rgen.nextInt(questCursor.getCount());
+//					questCursor.moveToPosition(randomPosition);
+					do{					
+						int previousID = questCursor.getInt(1);
+						boolean previousFulfilled = false;
+						for(int i=0; i<closedQuests.size(); i++){
+							if(closedQuests.get(i).getID()==previousID){
+								previousFulfilled = true;
+								break;
+							}
 						}
-					}else if(type.contentEquals("killQuest")){
-						sql = new String("SELECT target, killCount FROM killQuest WHERE questID='"+questID+"'");
-						Cursor specificQuestCursor = db.rawQuery(sql, null);
-						if(specificQuestCursor.moveToFirst()){
-							String enemyName = specificQuestCursor.getString(0);
-							int killCount = specificQuestCursor.getInt(1);
-							Log.d("projekt", "killcount: " + killCount);
-							quest = new KillQuest(name, npcID, startText, duringText, endText, enemyName, killCount, level, specialReward);
+						if(previousID==0 || previousFulfilled){
+							int questID = questCursor.getInt(0);
+							String name = questCursor.getString(7);
+							int startTextID = questCursor.getInt(3);
+							int duringTextID = questCursor.getInt(4);
+							int endTextID = questCursor.getInt(5);
+							ArrayList<String> startText = null;
+							ArrayList<String> duringText = null;
+							ArrayList<String> endText = null;
+							sql = new String("SELECT text FROM text WHERE _id='"+startTextID+"'");
+							Cursor textCursor = db.rawQuery(sql, null);
+							if(textCursor.moveToFirst()) {
+								startMerchant = false;
+								String str =textCursor.getString(0);
+								if(str!=null) startText = convertStringToArrayList(str);
+							}
+							sql = new String("SELECT text FROM text WHERE _id='"+duringTextID+"'");
+							textCursor = db.rawQuery(sql, null);
+							if(textCursor.moveToFirst()) {
+								startMerchant = false;
+								String str =textCursor.getString(0);
+								if(str!=null) duringText = convertStringToArrayList(str);
+							}
+							sql = new String("SELECT text FROM text WHERE _id='"+endTextID+"'");
+							textCursor = db.rawQuery(sql, null);
+							if(textCursor.moveToFirst()) {
+								startMerchant = false;
+								String str =textCursor.getString(0);
+								if(str!=null) endText = convertStringToArrayList(str);
+							}
+							
+							int level = questCursor.getInt(6);
+							int specialItemID = questCursor.getInt(9);
+							Item specialReward = null;
+							if(specialItemID!=0){
+								// TODO: get item from database
+							}
+							String type = questCursor.getString(8);
+							String shortText = questCursor.getString(10);
+							if(type.contentEquals("talkTo")){
+								sql = new String("SELECT talkToQuest.npcID FROM talkToQuest WHERE questID='"+questID+"'");
+								Cursor specificQuestCursor = db.rawQuery(sql, null);
+								if(specificQuestCursor.moveToFirst()){
+									int targetNPC =  specificQuestCursor.getInt(0);
+									quest = new TalkToQuest(questID, name, npcID, startText, duringText, endText, targetNPC, level, specialReward, shortText);
+								}
+							}else if(type.contentEquals("killQuest")){
+								sql = new String("SELECT target, killCount FROM killQuest WHERE questID='"+questID+"'");
+								Cursor specificQuestCursor = db.rawQuery(sql, null);
+								if(specificQuestCursor.moveToFirst()){
+									String enemyName = specificQuestCursor.getString(0);
+									int killCount = specificQuestCursor.getInt(1);
+									Log.d("projekt", "killcount: " + killCount);
+									quest = new KillQuest(questID, name, npcID, startText, duringText, endText, enemyName, killCount, level, specialReward, shortText);
+								}
+							}else{
+								sql = new String("SELECT itemName, count FROM getItemQuest WHERE questID='"+questID+"'");
+								Cursor specificQuestCursor = db.rawQuery(sql, null);
+								if(specificQuestCursor.moveToFirst()){
+									String itemName = specificQuestCursor.getString(0);
+									int count = specificQuestCursor.getInt(1);
+									quest = new GetItemQuest(questID, name, npcID, startText, duringText, endText, itemName, count, level, specialReward, shortText);
+								}
+							}
+							questManager.startQuest(quest);
+							return quest.getStartText();
 						}
-					}else{
-						sql = new String("SELECT itemName, count FROM getItemQuest WHERE questID='"+questID+"'");
-						Cursor specificQuestCursor = db.rawQuery(sql, null);
-						if(specificQuestCursor.moveToFirst()){
-							String itemName = specificQuestCursor.getString(0);
-							int count = specificQuestCursor.getInt(1);
-							quest = new GetItemQuest(name, npcID, startText, duringText, endText, itemName, count, level, specialReward);
-						}
-					}
-					questManager.startQuest(quest);
-					return quest.getStartText();
-				} else {
-					sql = new String("SELECT text FROM text WHERE _id='"+textID+"'");
-					Cursor textCursor = db.rawQuery(sql, null);
-					if(textCursor.moveToFirst()) {
-						startMerchant = true;
-						return convertStringToArrayList(textCursor.getString(0));
-					} else return null;
+					} while(questCursor.moveToNext());
 				}
-					
+				sql = new String("SELECT text FROM text WHERE _id='"+textID+"'");
+				Cursor textCursor = db.rawQuery(sql, null);
+				if(textCursor.moveToFirst()) {
+					startMerchant = true;               
+					return convertStringToArrayList(textCursor.getString(0));
+				} else return null;					
 			}
 		}		
 	}
@@ -439,6 +449,7 @@ public class OurDatabase {
 		Cursor questCursor = db.rawQuery(sql, null);
 		if(questCursor.moveToFirst()) {
 			
+			int questID = questCursor.getInt(0);
 			String name = questCursor.getString(7);
 			int startTextID = questCursor.getInt(3);
 			int duringTextID = questCursor.getInt(4);
@@ -475,12 +486,13 @@ public class OurDatabase {
 				// TODO: get item from database
 			}
 			String type = questCursor.getString(8);
+			String shortText = questCursor.getString(10);
 			if(type.contentEquals("talkTo")){
 				sql = new String("SELECT talkToQuest.npcID FROM talkToQuest, quest WHERE quest._id=talkToQuest.questID");
 				Cursor specificQuestCursor = db.rawQuery(sql, null);
 				if(specificQuestCursor.moveToFirst()){
 					int targetNPC =  specificQuestCursor.getInt(0);
-					quest = new TalkToQuest(name, npcID, startText, duringText, endText, targetNPC, level, specialReward);
+					quest = new TalkToQuest(questID, name, npcID, startText, duringText, endText, targetNPC, level, specialReward, shortText);
 				}
 			}else if(type.contentEquals("killQuest")){
 				sql = new String("SELECT target, killCount FROM killQuest, quest WHERE quest._id=killQuest.questID");
@@ -488,7 +500,7 @@ public class OurDatabase {
 				if(specificQuestCursor.moveToFirst()){
 					String enemyName = specificQuestCursor.getString(0);
 					int killCount = specificQuestCursor.getInt(1);
-					quest = new KillQuest(name, npcID, startText, duringText, endText, enemyName, killCount, level, specialReward);
+					quest = new KillQuest(questID, name, npcID, startText, duringText, endText, enemyName, killCount, level, specialReward, shortText);
 				}
 			}else{
 				sql = new String("SELECT itemName, count FROM getItemQuest, quest WHERE quest._id=getItemQuest.questID");
@@ -496,7 +508,7 @@ public class OurDatabase {
 				if(specificQuestCursor.moveToFirst()){
 					String itemName = specificQuestCursor.getString(0);
 					int count = specificQuestCursor.getInt(1);
-					quest = new GetItemQuest(name, npcID, startText, duringText, endText, itemName, count, level, specialReward);
+					quest = new GetItemQuest(questID, name, npcID, startText, duringText, endText, itemName, count, level, specialReward, shortText);
 				}
 			}
 		} return quest;
