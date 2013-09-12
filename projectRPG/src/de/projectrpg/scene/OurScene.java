@@ -91,7 +91,6 @@ public class OurScene extends Scene {
 					}
 				}
 			}
-				
 		}
 	}
 	
@@ -103,6 +102,8 @@ public class OurScene extends Scene {
 		for(int i = 0; i < opponents.size(); i++) {
 			if (opponents.get(i).getLevel() == level) {
 				Opponent opponent = new Opponent((opponents.get(i).getPositionX()), (opponents.get(i).getPositionY()), 24, 32, opponentTextureRegion, vertextBufferObjectManager, level, opponents.get(i).getEpic());
+				opponent.setCurrentTileIndex(opponents.get(i).getDirection());
+				opponent.changeHealth(-(opponent.getHealth() - opponents.get(i).getHealth()));
 				attachChild(opponent);
 			}
 		}
@@ -110,6 +111,7 @@ public class OurScene extends Scene {
 		for(int i = 0; i < npcs.size(); i++) {
 			if (npcs.get(i).getLevel() == level) {
 				NPC npc = new NPC(npcs.get(i).getPositionX(), npcs.get(i).getPositionY(), 24, 32, npcTextureRegion, vertextBufferObjectManager, npcs.get(i).getID());
+				npc.setCurrentTileIndex(npcs.get(i).getDirection());
 				npcInScene.add(npc);
 				attachChild(npc);
 			}

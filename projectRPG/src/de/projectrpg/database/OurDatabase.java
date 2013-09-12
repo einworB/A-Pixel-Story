@@ -302,7 +302,7 @@ public class OurDatabase {
 			boolean isFulfilled = quest.isFulfilled();
 			
 			if(isFulfilled){
-				questManager.endQuest(openQuests.indexOf(quest));
+				questManager.endQuestByIndex(openQuests.indexOf(quest));
 				if(quest.getID()!=1){
 					return quest.getEndText();
 				}else{

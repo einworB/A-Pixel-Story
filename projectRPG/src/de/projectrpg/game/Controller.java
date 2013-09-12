@@ -1,7 +1,6 @@
 package de.projectrpg.game;
 
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -23,6 +22,7 @@ import de.projectrpg.database.HealItem;
 import de.projectrpg.database.Item;
 import de.projectrpg.database.OurDatabase;
 import de.projectrpg.database.Weapon;
+import de.projectrpg.quest.GetItemQuest;
 import de.projectrpg.quest.KillQuest;
 import de.projectrpg.quest.Quest;
 import de.projectrpg.quest.QuestManager;
@@ -325,6 +325,30 @@ public class Controller {
 		questManager.checkQuests(item);
 	}
 
+	public void startQuest(int npcID, int progress) {
+		db.open();
+		Quest quest = db.getQuest(npcID);
+		db.close();
+		questManager.startQuest(quest);
+		if(quest instanceof GetItemQuest) {
+			((GetItemQuest)quest).setAlreadyFound(progress);
+			if(((GetItemQuest) quest).getItemCount() == progress) {
+				quest.setFulfilled();
+			}
+		} else if(quest instanceof KillQuest) {
+			((KillQuest)quest).setAlreadyKilled(progress);
+			if(((KillQuest) quest).getKillCount() == progress) {
+				quest.setFulfilled();
+			}
+		}
+	}
+	
+	public void endQuest(int npcID) {
+		db.open();
+		questManager.endQuest(db.getQuest(npcID));
+		db.close();
+	}
+	
 	public void removeItemFromInventory(Item item) {
 		player.removeItemFromInventory(item);
 	}

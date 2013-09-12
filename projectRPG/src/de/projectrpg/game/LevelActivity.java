@@ -442,6 +442,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			camera.setChaseEntity(player);
 			camera.setCenterDirect(spawnX, spawnY);
 			
+
 		} else {
 			Log.d("projekt", "loadGame");
 
@@ -492,6 +493,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			int playerLevel = gameLoader.getPlayerData().getPlayerLevel();
 			player = new Player(positionX, positionY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), playerLevel);
 			player.setZIndex(1);
+			player.setCurrentTileIndex(gameLoader.getPlayerData().getDirection());
 
 			controller.getCurrentScene().attachChild(player);
 			controller.setPlayer(player);
@@ -512,6 +514,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			for(int i = 0; i < gameLoader.getPlayerData().getInventory().size(); i++) {
 				inventory.add(controller.getItemByName(gameLoader.getPlayerData().getInventory().get(i)));
 			}
+			
 			player.setInventory(inventory);
 			
 			String[] armor = gameLoader.getPlayerData().getArmor();
@@ -527,6 +530,15 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				player.setWeapon((Weapon)controller.getItemByName(gameLoader.getPlayerData().getWeapon()));
 			}
 			
+			for(int i = 0; i < gameLoader.getClosedQuestList().size();i++) {
+				Log.d("projekt", "quest npcId: " + gameLoader.getClosedQuestList().get(i).getNpcID());
+				controller.endQuest(gameLoader.getClosedQuestList().get(i).getNpcID());
+			}
+			
+			for(int i = 0; i < gameLoader.getOpenQuestList().size();i++) {
+				Log.d("projekt", "quest npcId: " + gameLoader.getOpenQuestList().get(i).getNpcID());
+				controller.startQuest(gameLoader.getOpenQuestList().get(i).getNpcID(), gameLoader.getOpenQuestList().get(i).getProgress());
+			}
 		}
 
 		hud = new HUD();
@@ -564,9 +576,13 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		questHud.registerTouchArea(nextQuestButton);
 		questHud.registerTouchArea(prevQuestButton);
 		
-		interActionText = (ArrayList<String>) controller.getInteractionText(null).clone();
-		startInteraction();
-
+		if(newGame) {
+			interActionText = (ArrayList<String>) controller.getInteractionText(null).clone();
+			startInteraction();
+		} else {
+			levelTextPlayer.setText("lvl " + player.getLevel());
+		}
+		
 		return controller.getCurrentScene();
 	}
 
