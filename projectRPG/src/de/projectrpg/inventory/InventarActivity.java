@@ -1346,6 +1346,7 @@ public class InventarActivity extends Activity {
 		Log.d("testArmor", "" + inventoryList.size());
 	}
 
+	
 	private void showLevelTooLowNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle(R.string.achtung);
