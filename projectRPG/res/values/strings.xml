@@ -19,6 +19,9 @@
     <string name="help_string">HELP</string>
     <string name="default_description"></string>
     <string name="title_activity_help">HelpActivity</string>
+    <string name="achtung">Achtung</string>
+    <string name="title_activity_help">HelpActivity</string>
+    
 
     <string name="help_player_text">Das bist du!</string>
     <string name="help_merchant_text">So sehen alle aus mit denen du reden kannst. Von ihnen kannst du Quests bekommen oder auch Dinge kaufen.</string>

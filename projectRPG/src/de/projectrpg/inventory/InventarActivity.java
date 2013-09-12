@@ -329,23 +329,27 @@ public class InventarActivity extends Activity {
 	}
 
 	private void useItem() {
-		removedItem = false;
-		tempInventoryList = new ArrayList<Item>();
-		for (int i = 0; i < inventoryList.size(); i++) {
-			if (inventoryList.get(i).getName().equalsIgnoreCase(clickedItem)
-					&& removedItem == false) {
-				removedItem = true;
-
-				tempHealItem = new HealItem(inventoryList.get(i).getName(),
-						inventoryList.get(i).getLevelNeeded(), "healItem",
-						healValue);
-				controller.heal(tempHealItem);
-			} else {
-				tempInventoryList.add(inventoryList.get(i));
+		if(controller.getItemByName(clickedItem).getLevelNeeded() > controller.getPlayerLevel()){
+			showLevelTooLowNotification();
+		} else {
+			removedItem = false;
+			tempInventoryList = new ArrayList<Item>();
+			for (int i = 0; i < inventoryList.size(); i++) {
+				if (inventoryList.get(i).getName().equalsIgnoreCase(clickedItem)
+						&& removedItem == false) {
+					removedItem = true;
+	
+					tempHealItem = new HealItem(inventoryList.get(i).getName(),
+							inventoryList.get(i).getLevelNeeded(), "healItem",
+							healValue);
+					controller.heal(tempHealItem);
+				} else {
+					tempInventoryList.add(inventoryList.get(i));
+				}
 			}
+			setSlotsUnmarked();
+			controller.setInventory(tempInventoryList);
 		}
-		setSlotsUnmarked();
-		controller.setInventory(tempInventoryList);
 
 		slotList.clear();
 		for (int i = 0; i < 9; i++) {
@@ -358,7 +362,18 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
+		resetInteractionButton();
 		setupAllClickListeners();
+	}
+
+	private void resetInteractionButton() {
+		interactionButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// deaktiviert den Button
+			}
+		});
 	}
 
 	private void removeItem() {
@@ -1204,7 +1219,7 @@ public class InventarActivity extends Activity {
 		}
 
 		
-		addmoney();
+		addmoney(controller.getItemByName(clickedItem).getLevelNeeded());
 		clickedItem = "leer";
 		setMoneyTextView(controller.getGold());
 		resetItemNameTextView();
@@ -1212,6 +1227,7 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnSellSlots();
+		resetInteractionButton();
 		setupAllClickListeners();
 		Log.d("remove", "fertig");
 	}
@@ -1220,8 +1236,8 @@ public class InventarActivity extends Activity {
 		interactionButton.setText("");
 	}
 
-	private void addmoney() {
-		controller.changeGold(5 * (controller.getLevel()));
+	private void addmoney(int i) {
+		controller.changeGold(5 * i);
 	}
 
 	private void buyItem() {
@@ -1252,61 +1268,66 @@ public class InventarActivity extends Activity {
 			slotListSell.add(new Slot(0, "leer", "leer", "0"));
 		}
 
+		pay(controller.getItemByName(clickedItem).getLevelNeeded());
 		clickedItem = "leer";
-		pay();
 		setMoneyTextView(controller.getGold());
 		resetItemNameTextView();
 		resetInteractionButtonText();
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnSellSlots();
+		resetInteractionButton();
 		setupAllClickListeners();
 		Log.d("remove", "fertig");
 	}
 
-	private void pay() {
-		controller.changeGold(-10 * (controller.getLevel()));
+	private void pay(int i) {
+		controller.changeGold(-10 * i);
 	}
 
 	private void addEquipItem() {
-
-		removedItem = false;
-		tempArmor = (Armor) controller.getItemByName(clickedItem);
-		Log.d("testArmor",
-				"" + tempArmor.getName() + tempArmor.getLevelNeeded()
-						+ tempArmor.getDefenseValue() + tempArmor.getType());
-		tempItem = (Item) tempArmor;
-		Log.d("testArmor",
-				"" + tempItem.getName() + tempItem.getLevelNeeded()
-						+ ((Armor) tempItem).getDefenseValue()
-						+ ((Armor) tempItem).getType());
-
-		tempItem.setItemType("armor");
-		tempArmor = (Armor) tempItem;
-		Log.d("testArmor",
-				"" + tempArmor.getName() + tempArmor.getLevelNeeded()
-						+ tempArmor.getDefenseValue() + tempArmor.getType()
-						+ tempArmor.getItemType());
-
-		if (slotListEquip.get(tempArmor.getType()).getNumberOfItems()
-				.equalsIgnoreCase("0")) {
-			controller.addArmor(tempArmor);
-			tempInventoryList = new ArrayList<Item>();				
-			for (int i = 0; i < inventoryList.size(); i++) {
-
-				if (inventoryList.get(i).getName()
-						.equalsIgnoreCase(tempArmor.getName())
-						&& removedItem == false) {
-					removedItem = true;
-				} else {
-					tempInventoryList.add(inventoryList.get(i));
-				}
-			}
-
-			controller.setInventory(tempInventoryList);
+		if(controller.getItemByName(clickedItem).getLevelNeeded() > controller.getPlayerLevel()){
+			showLevelTooLowNotification();
 		} else {
 
-			showUsedSlotNotification();
+			removedItem = false;
+			tempArmor = (Armor) controller.getItemByName(clickedItem);
+			Log.d("neu",
+					"" + tempArmor.getName() + tempArmor.getLevelNeeded()
+							+ tempArmor.getDefenseValue() + tempArmor.getType());
+			tempItem = (Item) tempArmor;
+			Log.d("neu",
+					"" + tempItem.getName() + tempItem.getLevelNeeded()
+							+ ((Armor) tempItem).getDefenseValue()
+							+ ((Armor) tempItem).getType());
+	
+			tempItem.setItemType("armor");
+			tempArmor = (Armor) tempItem;
+			Log.d("neu",
+					"" + tempArmor.getName() + tempArmor.getLevelNeeded()
+							+ tempArmor.getDefenseValue() + tempArmor.getType()
+							+ tempArmor.getItemType());
+	
+			if (slotListEquip.get(tempArmor.getType()).getNumberOfItems()
+					.equalsIgnoreCase("0")) {
+				controller.addArmor(tempArmor);
+				tempInventoryList = new ArrayList<Item>();				
+				for (int i = 0; i < inventoryList.size(); i++) {
+	
+					if (inventoryList.get(i).getName()
+							.equalsIgnoreCase(tempArmor.getName())
+							&& removedItem == false) {
+						removedItem = true;
+					} else {
+						tempInventoryList.add(inventoryList.get(i));
+					}
+				}
+	
+				controller.setInventory(tempInventoryList);
+			} else {
+	
+				showUsedSlotNotification();
+			}
 		}
 
 		slotList.clear();
@@ -1320,35 +1341,55 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
+		resetInteractionButton();
 		setupAllClickListeners();
 		Log.d("testArmor", "" + inventoryList.size());
 	}
 
-	private void addWeaponItem() {
-		removedItem = false;
+	private void showLevelTooLowNotification() {
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+		dialogBuilder.setTitle(R.string.achtung);
+		dialogBuilder.setMessage("Du musst mindestens Level " + controller.getItemByName(clickedItem).getLevelNeeded() + " haben um dieses Item nutzen zu können!");
+		dialogBuilder.setPositiveButton("OK", new Dialog.OnClickListener() {
 
-		tempWeapon = (Weapon) controller.getItemByName(clickedItem);
-		tempItem = (Item) tempWeapon;
-		tempItem.setItemType("weapon");
-		tempWeapon = (Weapon) tempItem;
-		setSlotsUnmarked();
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
 
-		if (weaponSlot.getNumberOfItems().equalsIgnoreCase("0")) {
-
-			controller.setWeapon(tempWeapon);
-			tempInventoryList = new ArrayList<Item>();
-			for (int i = 0; i < inventoryList.size(); i++) {
-				if (inventoryList.get(i).getName()
-						.equalsIgnoreCase(tempWeapon.getName())
-						&& removedItem == false) {
-					removedItem = true;
-				} else {
-					tempInventoryList.add(inventoryList.get(i));
-				}
 			}
-			controller.setInventory(tempInventoryList);
+		});
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();
+	}
+
+	private void addWeaponItem() {
+		if(controller.getItemByName(clickedItem).getLevelNeeded() > controller.getPlayerLevel()){
+			showLevelTooLowNotification();
 		} else {
-			showUsedSlotNotification();
+			removedItem = false;
+	
+			tempWeapon = (Weapon) controller.getItemByName(clickedItem);
+			tempItem = (Item) tempWeapon;
+			tempItem.setItemType("weapon");
+			tempWeapon = (Weapon) tempItem;
+			setSlotsUnmarked();
+	
+			if (weaponSlot.getNumberOfItems().equalsIgnoreCase("0")) {
+	
+				controller.setWeapon(tempWeapon);
+				tempInventoryList = new ArrayList<Item>();
+				for (int i = 0; i < inventoryList.size(); i++) {
+					if (inventoryList.get(i).getName()
+							.equalsIgnoreCase(tempWeapon.getName())
+							&& removedItem == false) {
+						removedItem = true;
+					} else {
+						tempInventoryList.add(inventoryList.get(i));
+					}
+				}
+				controller.setInventory(tempInventoryList);
+			} else {
+				showUsedSlotNotification();
+			}
 		}
 
 		slotList.clear();
@@ -1362,6 +1403,7 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
+		resetInteractionButton();
 		setupAllClickListeners();
 
 	}
@@ -1372,12 +1414,17 @@ public class InventarActivity extends Activity {
 	}
 
 	private void removeEquipItem() {
-		inventoryList.add(((Item)controller.getItemByName(clickedItem)));
-
-		controller.setInventory(inventoryList);
-		setSlotsUnmarked();
-
-		controller.removeEquippedArmor((Armor) controller.getItemByName(clickedItem));
+		
+		if(controller.getItemByName(clickedItem).getLevelNeeded() > controller.getPlayerLevel()){
+			showLevelTooLowNotification();
+		} else {
+			inventoryList.add(((Item)controller.getItemByName(clickedItem)));
+	
+			controller.setInventory(inventoryList);
+			setSlotsUnmarked();
+	
+			controller.removeEquippedArmor((Armor) controller.getItemByName(clickedItem));
+		}
 
 		slotList.clear();
 		for (int i = 0; i < 9; i++) {
@@ -1395,18 +1442,23 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
+		resetInteractionButton();
 		setupAllClickListeners();
 		Log.d("testArmor", "" + inventoryList.size());
 	}
 
 	private void removeWeaponItem() {
-
-		inventoryList.add((Item) controller.getItemByName(clickedItem));
-
-		controller.setInventory(inventoryList);
-		setSlotsUnmarked();
-
-		controller.removeEquippedWeapon(equippedWeapon);
+		if(controller.getItemByName(clickedItem).getLevelNeeded() > controller.getPlayerLevel()){
+			showLevelTooLowNotification();
+		} else {
+			inventoryList.add((Item) controller.getItemByName(clickedItem));
+	
+			controller.setInventory(inventoryList);
+			setSlotsUnmarked();
+	
+			controller.removeEquippedWeapon(equippedWeapon);
+			
+		}
 
 		slotList.clear();
 		for (int i = 0; i < 9; i++) {
@@ -1414,6 +1466,7 @@ public class InventarActivity extends Activity {
 		}
 
 		weaponSlot = new Slot(0, "leer", "leer", "0");
+		
 
 		resetItemNameTextView();
 		resetInteractionButtonText();
@@ -1421,6 +1474,7 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
+		resetInteractionButton();
 		setupAllClickListeners();
 	}
 
@@ -1473,19 +1527,19 @@ public class InventarActivity extends Activity {
 						if (slot.getAttackValue() != 0) {
 							itemDetails.setText("Angriff +"
 									+ slot.getAttackValue() + "\nWert: "
-									+ (5 * (controller.getLevel())) + " Gold");
+									+ (5 * (controller.getItemByName(clickedItem).getLevelNeeded())) + " Gold");
 							interactionButton.setText("Item\nverkaufen");
 						}
 						if (slot.getDefenseValue() != 0) {
 							itemDetails.setText("Verteidigung +"
 									+ slot.getDefenseValue() + "\nWert: "
-									+ (5 * (controller.getLevel())) + " Gold");
+									+ (5 * (controller.getItemByName(clickedItem).getLevelNeeded())) + " Gold");
 							interactionButton.setText("Item\nverkaufen");
 						}
 						if (slot.getHealValue() != 0) {
 							itemDetails.setText("Leben +" + slot.getHealValue()
 									+ "\nWert: "
-									+ (5 * (controller.getLevel())) + " Gold");
+									+ (5 * (controller.getItemByName(clickedItem).getLevelNeeded())) + " Gold");
 							interactionButton.setText("Item\nverkaufen");
 						}
 						setInteractionButtonSell();
@@ -1638,19 +1692,19 @@ public class InventarActivity extends Activity {
 					isInInventory = true;
 					if (slot.getAttackValue() != 0) {
 						itemDetails.setText("Angriff +" + slot.getAttackValue()
-								+ "\nPreis: " + (10 * (controller.getLevel()))
+								+ "\nPreis: " + (10 * (controller.getItemByName(clickedItem).getLevelNeeded()))
 								+ " Gold");
 						interactionButton.setText("Waffe\nkaufen");
 					}
 					if (slot.getDefenseValue() != 0) {
 						itemDetails.setText("Verteidigung +"
 								+ slot.getDefenseValue() + "\nPreis: "
-								+ (10 * (controller.getLevel())) + " Gold");
+								+ (10 * (controller.getItemByName(clickedItem).getLevelNeeded())) + " Gold");
 						interactionButton.setText("Rüstung\nkaufen");
 					}
 					if (slot.getHealValue() != 0) {
 						itemDetails.setText("Leben +" + slot.getHealValue()
-								+ "\nPreis: " + (10 * (controller.getLevel()))
+								+ "\nPreis: " + (10 * (controller.getItemByName(clickedItem).getLevelNeeded()))
 								+ " Gold");
 						interactionButton.setText("Nahrung\nkaufen");
 					}
