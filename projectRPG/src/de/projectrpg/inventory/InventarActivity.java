@@ -290,8 +290,9 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				// if this button is clicked, just close
-				// the dialog box and do nothing
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 				dialog.cancel();
 			}
 		});
@@ -318,8 +319,9 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				// if this button is clicked, just close
-				// the dialog box and do nothing
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 				dialog.cancel();
 			}
 		});
@@ -886,6 +888,9 @@ public class InventarActivity extends Activity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 
 			}
 		});
@@ -1015,8 +1020,9 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				// if this button is clicked, just close
-				// the dialog box and do nothing
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 				dialog.cancel();
 			}
 		});
@@ -1049,6 +1055,9 @@ public class InventarActivity extends Activity {
 			public void onClick(DialogInterface dialog, int id) {
 				// if this button is clicked, just close
 				// the dialog box and do nothing
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 				dialog.cancel();
 			}
 		});
@@ -1072,8 +1081,9 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				// if this button is clicked, just close
-				// the dialog box and do nothing
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 				dialog.cancel();
 			}
 		});
@@ -1097,8 +1107,9 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				// if this button is clicked, just close
-				// the dialog box and do nothing
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 				dialog.cancel();
 			}
 		});
@@ -1125,8 +1136,9 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				// if this button is clicked, just close
-				// the dialog box and do nothing
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 				dialog.cancel();
 			}
 		});
@@ -1153,8 +1165,9 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				// if this button is clicked, just close
-				// the dialog box and do nothing
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 				dialog.cancel();
 			}
 		});
@@ -1183,8 +1196,9 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				// if this button is clicked, just close
-				// the dialog box and do nothing
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 				dialog.cancel();
 			}
 		});
@@ -1355,6 +1369,9 @@ public class InventarActivity extends Activity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 
 			}
 		});
@@ -1488,6 +1505,9 @@ public class InventarActivity extends Activity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 
 			}
 		});
@@ -1503,6 +1523,9 @@ public class InventarActivity extends Activity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				resetInteractionButton();
+				resetInteractionButtonText();
+				resetItemNameTextView();
 
 			}
 		});
