@@ -303,7 +303,14 @@ public class OurDatabase {
 			
 			if(isFulfilled){
 				questManager.endQuest(openQuests.indexOf(quest));
-				return quest.getEndText();
+				if(quest.getID()!=1){
+					return quest.getEndText();
+				}else{
+					ArrayList<String> text = new ArrayList<String>();
+					text.addAll(quest.getEndText());
+					text.addAll(getText(npc, questManager));
+					return text;
+				}
 			}
 			else{
 				return quest.getDuringText();
