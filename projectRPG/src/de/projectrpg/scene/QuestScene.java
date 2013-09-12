@@ -13,7 +13,6 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import android.content.res.AssetManager;
 import de.projectrpg.game.Controller;
 import de.projectrpg.quest.Quest;
-import de.projectrpg.quest.QuestManager;
 
 public class QuestScene extends Scene {
 	private int id;
@@ -42,9 +41,12 @@ public class QuestScene extends Scene {
 		return activeQuests.get(index).getName();
 	}
 	
-	public String getTalkToTask(String npcName) {
-		return "Suche jemanden der mit dir spricht!";
-		//.        ..Sprich mit " + npcName + 
+	public String getTask(Quest quest) {
+		return quest.getShortText();
+	}
+
+	public String getTalkToTask(Quest quest) {
+		return quest.getShortText();
 	}
 	
 	public String getKillTask(int count) {

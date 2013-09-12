@@ -91,13 +91,52 @@
 	        android:layout_toRightOf="@+id/help_stop_image"
 	        android:layout_alignTop="@+id/help_stop_image"
 	        android:text="@string/help_stop_text" />
+	    
+	    
+	    
+	    
+	     <ImageView
+		    android:id="@+id/help_levelup_image"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="5dp"
+	        android:layout_marginRight="5dp"
+	        android:layout_below="@+id/help_stop_image"
+	        android:background="@drawable/levelup"
+	        android:contentDescription="@string/hello_world"/>
+	    <TextView
+	        android:id="@+id/help_levelup_text"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_toRightOf="@+id/help_levelup_image"
+	        android:layout_alignTop="@+id/help_levelup_image"
+	        android:text="@string/help_levelup_text" />
+	     <ImageView
+		    android:id="@+id/help_leveldown_image"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="5dp"
+	        android:layout_marginRight="5dp"
+	        android:layout_below="@+id/help_levelup_image"
+	        android:background="@drawable/leveldown"
+	        android:contentDescription="@string/hello_world"/>
+	    <TextView
+	        android:id="@+id/help_leveldown_text"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_toRightOf="@+id/help_leveldown_image"
+	        android:layout_alignTop="@+id/help_leveldown_image"
+	        android:text="@string/help_leveldown_text" />
+	    
+	    
+	    
 	    <ImageView
 		    android:id="@+id/help_quests_image"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginBottom="5dp"
 	        android:layout_marginRight="5dp"
-	        android:layout_below="@+id/help_stop_image"
+	        android:layout_below="@+id/help_leveldown_image"
 	        android:background="@drawable/quests"
 	        android:contentDescription="@string/hello_world"/>
 	    <TextView

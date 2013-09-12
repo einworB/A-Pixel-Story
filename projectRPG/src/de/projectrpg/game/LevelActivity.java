@@ -59,9 +59,6 @@ import de.projectrpg.database.Armor;
 import de.projectrpg.database.Item;
 import de.projectrpg.database.Weapon;
 import de.projectrpg.inventory.InventarActivity;
-import de.projectrpg.quest.GetItemQuest;
-import de.projectrpg.quest.KillQuest;
-import de.projectrpg.quest.TalkToQuest;
 import de.projectrpg.save.LoadSavedGame;
 import de.projectrpg.save.WriteSaveFile;
 import de.projectrpg.scene.OurScene;
@@ -616,19 +613,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			}
 			
 			if(controller.getActiveQuests().size() != 0) {
-				questName.setText(questScene.getQuestTitel(controller.getActiveQuests(), questcount)); 
-
-				if(controller.getActiveQuests().get(questcount) instanceof TalkToQuest) {
-					questTask.setText(questScene.getTalkToTask((controller.getNPCWithID(controller.getCurrentScene(), controller.getActiveQuests().get(questcount).getNpcID()).getName())));
-					
-				} else if(controller.getActiveQuests().get(questcount) instanceof GetItemQuest) {
-					
-					GetItemQuest quest = (GetItemQuest)controller.getActiveQuests().get(questcount);
-					questTask.setText(questScene.getItemTask(quest.getItemName(), quest.getItemCount())); 
-					
-				} else if(controller.getActiveQuests().get(questcount) instanceof KillQuest) {
-					questTask.setText(questScene.getKillTask(controller.getKillCount(questcount))); 
-				}
+				questName.setText(questScene.getQuestTitel(controller.getActiveQuests(), questcount));
+				questTask.setText(questScene.getTask(controller.getActiveQuests().get(questcount)));
 			}
 		} else {
 			questTask.setText("Keine Aktiven Quests!");
