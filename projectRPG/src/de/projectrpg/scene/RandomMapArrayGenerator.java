@@ -1,5 +1,6 @@
 package de.projectrpg.scene;
 
+import android.util.Log;
 import de.projectrpg.util.OurRandomGenerator;
 
 
@@ -238,17 +239,18 @@ public class RandomMapArrayGenerator {
 		int houseX = 0;
 		int houseY = 0;
 		if(houseCount > 0) {
-			houseX = (1 + rGen.nextInt(26)); //numbers from 1-27 because the house has 3 tiles width
-			houseY = (1 + rGen.nextInt(25)); //numbers from 1-26 because the house has 3 tiles height and the house should be reachable from bottom
 			while(true) {
-				if((mapArray[0][houseY] != 13) && (mapArray[0][houseY + 1] != 13) && (mapArray[0][houseY + 2] != 13) 
-						&& (mapArray[0][houseY] != 23) && (mapArray[0][houseY + 1] != 23) && (mapArray[0][houseY + 2] != 23)) {
-					if((mapArray[houseX][0] != 13) && (mapArray[houseX + 1][0] != 13) && (mapArray[houseX][0] != 23) && (mapArray[houseX + 1][0] != 23)) {
-						if((mapArray[houseX][29] != 13) && (mapArray[houseX + 1][29] != 13) && (mapArray[houseX][29] != 23) && (mapArray[houseX + 1][29] != 23)) {
-
-							houseX = (1 + rGen.nextInt(26)); //numbers from 1-27 because the house has 3 tiles width
-							houseY = (1 + rGen.nextInt(25)); //numbers from 1-26 because the house has 3 tiles height and the house should be reachable from bottom
-							break;
+				houseX = (1 + rGen.nextInt(26)); //numbers from 1-27 because the house has 3 tiles width
+				houseY = (1 + rGen.nextInt(25)); //numbers from 1-26 because the house has 3 tiles height and the house should be reachable from bottom
+				if(mapArray[houseX][houseY] == -1 && mapArray[houseX + 1][houseY] == -1 
+						&& mapArray[houseX + 2][houseY] == -1 && mapArray[houseX][houseY + 1] == -1 
+						&& mapArray[houseX + 1][houseY + 1] == -1 && mapArray[houseX + 2][houseY + 1] == -1) {
+					if((mapArray[0][houseY] != 13) && (mapArray[0][houseY + 1] != 13) && (mapArray[0][houseY + 2] != 13) 
+							&& (mapArray[0][houseY] != 23) && (mapArray[0][houseY + 1] != 23) && (mapArray[0][houseY + 2] != 23)) {
+						if((mapArray[houseX][0] != 13) && (mapArray[houseX + 1][0] != 13) && (mapArray[houseX][0] != 23) && (mapArray[houseX + 1][0] != 23)) {
+							if((mapArray[houseX][29] != 13) && (mapArray[houseX + 1][29] != 13) && (mapArray[houseX][29] != 23) && (mapArray[houseX + 1][29] != 23)) {
+								break;
+							}
 						}
 					}
 				}
@@ -273,10 +275,10 @@ public class RandomMapArrayGenerator {
 						&& mapArray[house2X + 1][house2Y + 1] == -1 && mapArray[house2X + 2][house2Y + 1] == -1) {
 					
 					//if the house should stand on one side check if there is a spawn or transition tile
-					if((mapArray[0][houseY] != 13) && (mapArray[0][houseY + 1] != 13) && (mapArray[0][houseY + 2] != 13) 
-							&& (mapArray[0][houseY] != 23) && (mapArray[0][houseY + 1] != 23) && (mapArray[0][houseY + 2] != 23)) {
-						if((mapArray[houseX][0] != 13) && (mapArray[houseX + 1][0] != 13) && (mapArray[houseX][0] != 23) && (mapArray[houseX + 1][0] != 23)) {
-							if((mapArray[houseX][29] != 13) && (mapArray[houseX + 1][29] != 13) && (mapArray[houseX][29] != 23) && (mapArray[houseX + 1][29] != 23)) {
+					if((mapArray[0][house2Y] != 13) && (mapArray[0][house2Y + 1] != 13) && (mapArray[0][house2Y + 2] != 13) 
+							&& (mapArray[0][house2Y] != 23) && (mapArray[0][house2Y + 1] != 23) && (mapArray[0][house2Y + 2] != 23)) {
+						if((mapArray[house2X][0] != 13) && (mapArray[house2X + 1][0] != 13) && (mapArray[house2X][0] != 23) && (mapArray[house2X + 1][0] != 23)) {
+							if((mapArray[house2X][29] != 13) && (mapArray[house2X + 1][29] != 13) && (mapArray[house2X][29] != 23) && (mapArray[house2X + 1][29] != 23)) {
 								
 								//all tiles are clear so set the house tiles
 								mapArray[house2X][house2Y] = 4;
