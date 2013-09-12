@@ -396,4 +396,8 @@ public class Controller {
 	public void changeGold(int value){
 		player.changeGold(value);
 	}
+	
+	public int getPlayerLevel(){
+		return player.getLevel();
+	}
 }
