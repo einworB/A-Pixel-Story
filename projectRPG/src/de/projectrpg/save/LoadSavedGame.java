@@ -86,7 +86,9 @@ public class LoadSavedGame {
                         				float positionY = Float.parseFloat(parser.getAttributeValue(null, "positionY"));
                         				int opponentLevel = Integer.parseInt(parser.getAttributeValue(null, "level"));
                         				boolean isEpic = Boolean.parseBoolean(parser.getAttributeValue(null, "isEpic"));
-                        				levelLoader.addOpponent(positionX, positionY, opponentLevel, isEpic);
+                        				int direction = Integer.parseInt(parser.getAttributeValue(null, "direction"));
+                        				float health = Float.parseFloat(parser.getAttributeValue(null, "health"));
+                        				levelLoader.addOpponent(positionX, positionY, opponentLevel, isEpic, direction, health);
                         			}
                         			parser.next();
                         			parser.next();
@@ -105,7 +107,9 @@ public class LoadSavedGame {
                         				float positionX = Float.parseFloat(parser.getAttributeValue(null, "positionX"));
                         				float positionY = Float.parseFloat(parser.getAttributeValue(null, "positionY"));
                         				int id = Integer.parseInt(parser.getAttributeValue(null, "ID"));
-                        				levelLoader.addNpc(positionX, positionY, id, level);
+                        				int direction = Integer.parseInt(parser.getAttributeValue(null, "direction"));
+                        				
+                        				levelLoader.addNpc(positionX, positionY, id, level, direction);
                         			}
                         			parser.next();
                         			parser.next();
@@ -161,7 +165,8 @@ public class LoadSavedGame {
                 		int playerLevel = Integer.parseInt(parser.getAttributeValue(null, "playerlevel"));
                 		float health = Float.parseFloat(parser.getAttributeValue(null, "health"));
                 		int exp = Integer.parseInt(parser.getAttributeValue(null, "exp"));
-                		player = new PlayerObject(inLevel, positionX, positionY, playerLevel, health, exp);
+        				int direction = Integer.parseInt(parser.getAttributeValue(null, "direction"));
+                		player = new PlayerObject(inLevel, positionX, positionY, playerLevel, health, exp, direction);
                 		parser.next();
                 		parser.next();
                 		String startTagName2 = null;
@@ -212,11 +217,11 @@ public class LoadSavedGame {
 	}
 	
 	public void addOpenQuest(int npcID, String type, int progress){
-		openQuestList.add(new QuestObjects(npcID));
+		openQuestList.add(new QuestObjects(npcID, type, progress));
 	}
 	
 	public void addClosedQuest(int npcID){
-		closedQuestList.add(new QuestObjects(npcID));
+		closedQuestList.add(new QuestObjects(npcID, null, 0));
 	}
 
 	public ArrayList<QuestObjects> getOpenQuestList(){
@@ -233,15 +238,20 @@ public class LoadSavedGame {
 
 	public class QuestObjects {
 		private int npcID;
+		private int progress;
 		
-		public QuestObjects(int npcID) {
+		public QuestObjects(int npcID, String type, int progress) {
 			this.npcID = npcID;
+			this.progress = progress;
 		}
 		
 		public int getNpcID() {
 			return npcID;
 		}
 		
+		public int getProgress() {
+			return progress;
+		}
 	}
 	
 	public class PlayerObject {
@@ -254,14 +264,16 @@ public class LoadSavedGame {
 		private String weapon;
 		private String[] armor = new String[5];
 		private ArrayList<String> inventory = new ArrayList<String>();
+		private int direction;
 		
-		public PlayerObject(int level, float positionX, float positionY, int playerLevel, float health, int exp) {
+		public PlayerObject(int level, float positionX, float positionY, int playerLevel, float health, int exp, int direction) {
 			this.level = level;
 			this.positionX = positionX;
 			this.positionY = positionY;
 			this.playerLevel = playerLevel;
 			this.health = health;
 			this.exp = exp;
+			this.direction = direction;
 		}
 		
 		public void setWeapon(String weapon) {
@@ -327,6 +339,10 @@ public class LoadSavedGame {
 		}
 		public ArrayList<String> getInventory() {
 			return inventory;
+		}
+		
+		public int getDirection() {
+			return direction;
 		}
 	}
 	

@@ -26,7 +26,11 @@ public class QuestManager {
 		activeQuests.add(quest);
 	}
 	
-	public void endQuest(int i){
+	public void endQuest(Quest quest) {
+		closedQuests.add(quest);
+	}
+	
+	public void endQuestByIndex(int i){
 		controller.addExp(activeQuests.get(i).getLevel()*150);
 		closedQuests.add(activeQuests.remove(i));
 	}

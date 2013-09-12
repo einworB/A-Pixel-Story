@@ -32,6 +32,10 @@ public class GetItemQuest extends Quest{
 		return alreadyFound;
 	}
 	
+	public void setAlreadyFound(int alreadyFound) {
+		this.alreadyFound = alreadyFound;
+	}
+	
 	public int getItemCount(){
 		return count;
 	}

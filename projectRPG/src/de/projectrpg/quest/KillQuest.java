@@ -37,6 +37,10 @@ public class KillQuest extends Quest{
 		return alreadyKilled;
 	}
 	
+	public void setAlreadyKilled(int alreadyKilled) {
+		this.alreadyKilled = alreadyKilled;
+	}
+	
 	public String getType() {
 		return "KillQuest";
 	}

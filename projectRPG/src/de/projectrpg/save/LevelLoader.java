@@ -23,15 +23,15 @@ public class LevelLoader {
 		return mapName;
 	}
 	
-	public void addOpponent(float positionX, float positionY, int level, boolean isEpic){
-		opponentList.add(new OpponentObjects(positionX, positionY, level, isEpic));
+	public void addOpponent(float positionX, float positionY, int level, boolean isEpic, int direction, float health){
+		opponentList.add(new OpponentObjects(positionX, positionY, level, isEpic, direction, health));
 	}
 	public ArrayList<OpponentObjects> getOpponentList(){
 		return opponentList;
 	}
 
-	public void addNpc(float positionX, float positionY, int id, int level){
-		npcList.add(new NpcObjects(positionX, positionY, id, level));
+	public void addNpc(float positionX, float positionY, int id, int level, int direction){
+		npcList.add(new NpcObjects(positionX, positionY, id, level, direction));
 	}
 	
 	public ArrayList<NpcObjects> getNpcList(){
@@ -51,12 +51,14 @@ public class LevelLoader {
 		private float positionY;
 		private int id;
 		private int level;
+		private int direction;
 		
-		public NpcObjects(float positionX, float positionY, int id, int level) {
+		public NpcObjects(float positionX, float positionY, int id, int level, int direction) {
 			this.positionX = positionX;
 			this.positionY = positionY;
 			this.id = id;
 			this.level = level;
+			this.direction = direction;
 		}
 		
 		public float getPositionX() {
@@ -73,6 +75,10 @@ public class LevelLoader {
 		public int getLevel() {
 			return level;
 		}
+		
+		public int getDirection() {
+			return direction;
+		}
 	}
 	
 	public class OpponentObjects{
@@ -82,12 +88,16 @@ public class LevelLoader {
 		private float positionY;
 		private int level;
 		private boolean isEpic;
+		private int direction;
+		private float health;
 		
-		public OpponentObjects(float positionX, float positionY, int level, boolean isEpic){
+		public OpponentObjects(float positionX, float positionY, int level, boolean isEpic, int direction, float health){
 			this.positionX = positionX;
 			this.positionY = positionY;
 			this.level = level;
 			this.isEpic = isEpic;
+			this.direction = direction;
+			this.health = health;
 		}
 		
 		public float getPositionX(){
@@ -104,6 +114,14 @@ public class LevelLoader {
 		
 		public boolean getEpic(){
 			return isEpic;
+		}
+		
+		public int getDirection() {
+			return direction;
+		}
+		
+		public float getHealth() {
+			return health;
 		}
 	}
 }

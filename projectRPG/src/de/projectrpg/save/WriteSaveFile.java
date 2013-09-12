@@ -144,6 +144,7 @@ public class WriteSaveFile {
 		serializer.attribute("", "playerlevel", "" + player.getLevel());
 		serializer.attribute("", "exp", "" + player.getEXP());
 		serializer.attribute("", "health", "" + player.getHealth());
+		serializer.attribute("", "direction", "" + player.getCurrentTileIndex());
 
 		serializer.endTag("", "player");
 
@@ -240,6 +241,8 @@ public class WriteSaveFile {
 					} else {
 						serializer.attribute("", "isEpic", "false");
 					}
+					serializer.attribute("", "direction", "" + opponent.getCurrentTileIndex());
+					serializer.attribute("", "health", "" + opponent.getHealth());
 					serializer.endTag("", "opponent" + opponentcount);
 					opponentcount++;
 				}
@@ -257,6 +260,7 @@ public class WriteSaveFile {
 					serializer.attribute("", "positionX", "" + npc.getX());
 					serializer.attribute("", "positionY", "" + npc.getY());
 					serializer.attribute("", "ID", "" + npc.getID());
+					serializer.attribute("", "direction", "" + npc.getCurrentTileIndex());
 					serializer.endTag("", "npc" + npcCount);
 					npcCount++;
 				}
