@@ -12,6 +12,8 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.res.AssetManager;
 import de.projectrpg.game.Controller;
+import de.projectrpg.quest.GetItemQuest;
+import de.projectrpg.quest.KillQuest;
 import de.projectrpg.quest.Quest;
 
 public class QuestScene extends Scene {
@@ -25,7 +27,6 @@ public class QuestScene extends Scene {
 		try {
 			tmxMap = loader.loadFromAsset("tmx/gras.tmx");
 		} catch (TMXLoadException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -45,15 +46,13 @@ public class QuestScene extends Scene {
 		return quest.getShortText();
 	}
 
-	public String getTalkToTask(Quest quest) {
-		return quest.getShortText();
-	}
-	
-	public String getKillTask(int count) {
-		return "Bringe " + count + " von diesen Kreaturen um!";
-	}
-	
-	public String getItemTask(String itemType, int count) {
-		return "Bringe mir " + count + " von diesen " + itemType + "!";
+	public String getProgress(Quest quest) {
+		if((quest instanceof KillQuest)) {
+			return ((KillQuest)quest).getAlreadyKilled() + " von " + ((KillQuest)quest).getKillCount();
+		}
+		if((quest instanceof GetItemQuest)) {
+			return ((GetItemQuest)quest).getAlreadyFound() + " von " + ((GetItemQuest)quest).getItemCount();
+		}
+		return "";
 	}
 }

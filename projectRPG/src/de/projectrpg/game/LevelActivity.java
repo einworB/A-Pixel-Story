@@ -212,6 +212,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private int slot;
 	/** if the game should be load from the slot or a new game should be started */
 	private boolean newGame;
+	private Text questProgress;
 	
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
@@ -370,10 +371,12 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		questName = new Text(20, 20, fontQuestTitel, "", 100, getVertexBufferObjectManager());
 		questTask = new Text(20, 90, font, "", 200, getVertexBufferObjectManager());
+		questProgress = new Text(20, 130, font, "", 20, getVertexBufferObjectManager());
+		
 		howToCloseQuest = new Text(20, CAMERA_HEIGHT - 230, fontQuestHowTo, "Gehe zurück zu der Person die dir den Quest gegeben hat um ihn abzuschließen", new TextOptions(AutoWrap.WORDS, CAMERA_WIDTH-30, HorizontalAlign.LEFT, 5), getVertexBufferObjectManager());
 		levelTextPlayer = new Text(3, 50, fontQuestHowTo, "lvl 1", 5, getVertexBufferObjectManager());
 		levelTextOpponent = new Text(CAMERA_WIDTH - 51, 50, fontQuestHowTo, "lvl 1", 5, getVertexBufferObjectManager()); //TODO gegner maximal level 9 .. sonst verschieben
-
+		
 		
 		Controller.initInstance(this, expBar);
 		controller = Controller.getInstance();
@@ -564,10 +567,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		questHud.attachChild(backToGameButton);
 		questHud.attachChild(questTask);
 		questHud.attachChild(questName);
+		questHud.attachChild(questProgress);
 		questHud.attachChild(howToCloseQuest);
 		questHud.attachChild(prevQuestGrayButton);
 		questHud.attachChild(nextQuestGrayButton);
-		
 		
 		questHud.registerTouchArea(backToGameButton);
 		questHud.registerTouchArea(nextQuestButton);
@@ -615,10 +618,12 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			if(controller.getActiveQuests().size() != 0) {
 				questName.setText(questScene.getQuestTitel(controller.getActiveQuests(), questcount));
 				questTask.setText(questScene.getTask(controller.getActiveQuests().get(questcount)));
+				questProgress.setText(questScene.getProgress(controller.getActiveQuests().get(questcount)));
 			}
 		} else {
 			questTask.setText("Keine Aktiven Quests!");
 			questName.setText("");
+			questProgress.setText("");
 		}
 	}
 	
