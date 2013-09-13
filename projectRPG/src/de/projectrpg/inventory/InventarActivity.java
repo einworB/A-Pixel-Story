@@ -293,6 +293,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 				dialog.cancel();
 			}
 		});
@@ -322,6 +323,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 				dialog.cancel();
 			}
 		});
@@ -865,7 +867,7 @@ public class InventarActivity extends Activity {
 					if (slotsFull) {
 
 					} else {
-						if (money >= (10 * controller.getLevel())) {
+						if (money >= (10 * controller.getItemByName(clickedItem).getLevelNeeded())) {
 							checkLongClickedItemBuy(slotBackground, slotItem,
 									slot);
 						} else {
@@ -891,6 +893,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 
 			}
 		});
@@ -1023,6 +1026,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 				dialog.cancel();
 			}
 		});
@@ -1058,6 +1062,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 				dialog.cancel();
 			}
 		});
@@ -1084,6 +1089,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 				dialog.cancel();
 			}
 		});
@@ -1110,6 +1116,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 				dialog.cancel();
 			}
 		});
@@ -1139,6 +1146,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 				dialog.cancel();
 			}
 		});
@@ -1168,6 +1176,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 				dialog.cancel();
 			}
 		});
@@ -1199,6 +1208,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 				dialog.cancel();
 			}
 		});
@@ -1372,6 +1382,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 
 			}
 		});
@@ -1508,6 +1519,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 
 			}
 		});
@@ -1526,6 +1538,7 @@ public class InventarActivity extends Activity {
 				resetInteractionButton();
 				resetInteractionButtonText();
 				resetItemNameTextView();
+				setSlotsUnmarked();
 
 			}
 		});
