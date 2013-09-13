@@ -290,7 +290,7 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
@@ -320,7 +320,7 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
@@ -366,11 +366,11 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
-		resetInteractionButton();
+		resetInteractionButtons();
 		setupAllClickListeners();
 	}
 
-	private void resetInteractionButton() {
+	private void resetInteractionButtons() {
 		interactionButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -378,6 +378,7 @@ public class InventarActivity extends Activity {
 				// deaktiviert den Button
 			}
 		});
+		clickedItem = "leer";
 	}
 
 	private void removeItem() {
@@ -890,7 +891,7 @@ public class InventarActivity extends Activity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
@@ -1023,7 +1024,7 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
@@ -1059,7 +1060,7 @@ public class InventarActivity extends Activity {
 			public void onClick(DialogInterface dialog, int id) {
 				// if this button is clicked, just close
 				// the dialog box and do nothing
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
@@ -1086,7 +1087,7 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
@@ -1113,7 +1114,7 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
@@ -1143,7 +1144,7 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
@@ -1173,7 +1174,7 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
@@ -1205,7 +1206,7 @@ public class InventarActivity extends Activity {
 		});
 		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
@@ -1251,7 +1252,7 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnSellSlots();
-		resetInteractionButton();
+		resetInteractionButtons();
 		setupAllClickListeners();
 		Log.d("remove", "fertig");
 	}
@@ -1300,7 +1301,7 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnSellSlots();
-		resetInteractionButton();
+		resetInteractionButtons();
 		setupAllClickListeners();
 		Log.d("remove", "fertig");
 	}
@@ -1365,7 +1366,7 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
-		resetInteractionButton();
+		resetInteractionButtons();
 		setupAllClickListeners();
 		Log.d("testArmor", "" + inventoryList.size());
 	}
@@ -1379,7 +1380,7 @@ public class InventarActivity extends Activity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
@@ -1432,7 +1433,7 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
-		resetInteractionButton();
+		resetInteractionButtons();
 		setupAllClickListeners();
 
 	}
@@ -1471,7 +1472,7 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
-		resetInteractionButton();
+		resetInteractionButtons();
 		setupAllClickListeners();
 		Log.d("testArmor", "" + inventoryList.size());
 	}
@@ -1503,7 +1504,7 @@ public class InventarActivity extends Activity {
 		getSavedItems();
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
-		resetInteractionButton();
+		resetInteractionButtons();
 		setupAllClickListeners();
 	}
 
@@ -1516,7 +1517,7 @@ public class InventarActivity extends Activity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
@@ -1535,7 +1536,7 @@ public class InventarActivity extends Activity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				resetInteractionButton();
+				resetInteractionButtons();
 				resetInteractionButtonText();
 				resetItemNameTextView();
 				setSlotsUnmarked();
