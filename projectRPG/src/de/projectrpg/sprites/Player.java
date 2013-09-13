@@ -16,7 +16,6 @@ public class Player extends FightingSprite {
 	private Armor[] equippedArmor;
 	private ArrayList<Item> inventory;
 	private int gold;
-
 	private int EXP = 0;
 	private int maxEXP = 0;
 	
@@ -75,7 +74,9 @@ public class Player extends FightingSprite {
 	}
 
 	public void heal(int heal) {
-		health += heal;
+		if((health + heal) <= maxHealth) {
+			health += heal;
+		} else health = maxHealth;
 	}
 
 	public void removeEquippedWeapon(Weapon weapon) {

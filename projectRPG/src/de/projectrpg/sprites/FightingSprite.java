@@ -8,6 +8,7 @@ public class FightingSprite extends AnimatedSprite {
 	
 	protected int level;
 	protected double health;
+	protected double maxHealth;
 	private int agility;
 	private int luck;
 	private double concentration;
@@ -16,6 +17,7 @@ public class FightingSprite extends AnimatedSprite {
 		super(pX, pY, pWidth, pHeight, pTiledTextureRegion, pVertexBufferObjectManager);
 		this.level = level;
 		health = 100;
+		maxHealth = health;
 		agility = level;
 		luck = level;
 		concentration = 0.5 + level/10;
