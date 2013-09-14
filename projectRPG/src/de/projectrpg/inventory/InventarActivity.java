@@ -142,7 +142,6 @@ public class InventarActivity extends Activity {
 	private HealItem tempHealItem;
 
 	private int inventoryUsedSlotCounter = 0;
-	private int money;
 	private boolean slotsFull = false;
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -454,7 +453,6 @@ public class InventarActivity extends Activity {
 
 	private void getSavedItems() {
 		inventoryUsedSlotCounter = 0;
-		money = controller.getGold();
 
 		putItemInSlot = false;
 		tempSlot = new Slot(0, "leer", "leer", "0");
@@ -868,9 +866,8 @@ public class InventarActivity extends Activity {
 					if (slotsFull) {
 
 					} else {
-						if (money >= (10 * controller.getItemByName(clickedItem).getLevelNeeded())) {
-							checkLongClickedItemBuy(slotBackground, slotItem,
-									slot);
+						if (controller.getGold() >= (10 * controller.getItemByName(clickedItem).getLevelNeeded())) {
+							checkLongClickedItemBuy();
 						} else {
 							showNotEnoughMoneyNotification();
 						}
@@ -975,8 +972,7 @@ public class InventarActivity extends Activity {
 		showSellNotification();
 	}
 
-	private void checkLongClickedItemBuy(final ImageButton slotBackground,
-			final ImageButton slotItem, final Slot slot) {
+	private void checkLongClickedItemBuy() {
 		showBuyNotification();
 	}
 
@@ -1708,8 +1704,11 @@ public class InventarActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				showBuyNotification();
-				
+				if (controller.getGold() >= (10 * controller.getItemByName(clickedItem).getLevelNeeded())) {
+					checkLongClickedItemBuy();
+				} else {
+					showNotEnoughMoneyNotification();
+				}
 			}
 		});
 	}
