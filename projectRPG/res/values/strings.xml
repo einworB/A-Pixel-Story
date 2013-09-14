@@ -12,11 +12,11 @@
     <string name="description_load_game">loads the game</string>
     <string name="description_options">shows optionsmenu</string>
     <string name="description_help">shows helpmenu</string>
-    <string name="new_game_string">NEW GAME</string>
-    <string name="load_game_string">LOAD GAME</string>
-    <string name="options_string">OPTIONS</string>
+    <string name="new_game_string">SPIEL STARTEN</string>
+    <string name="load_game_string">SPIEL LADEN</string>
+    <string name="options_string">OPTIONEN</string>
     <string name="use_item_string">ausgewähltes\nItem benutzen</string>
-    <string name="help_string">HELP</string>
+    <string name="help_string">HILFE</string>
     <string name="default_description"></string>
     <string name="title_activity_help">HelpActivity</string>
     <string name="achtung">Achtung</string>

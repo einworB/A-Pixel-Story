@@ -79,9 +79,82 @@
         </RelativeLayout>
     </HorizontalScrollView>
 
+    <HorizontalScrollView
+        android:id="@+id/scroll3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/scroll"
+        android:layout_marginTop="50dp"
+        android:scrollbars="none" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/clouds4"
+                android:layout_width="640dp"
+                android:layout_height="85dp"
+                android:background="@drawable/parallax_background_layer_mid"
+                android:contentDescription="@string/default_description" />
+
+            <ImageView
+                android:id="@+id/clouds5"
+                android:layout_width="640dp"
+                android:layout_height="85dp"
+                android:layout_alignLeft="@id/clouds4"
+                android:layout_marginLeft="640dp"
+                android:background="@drawable/parallax_background_layer_mid"
+                android:contentDescription="@string/default_description" />
+
+            <ImageView
+                android:layout_width="640dp"
+                android:layout_height="85dp"
+                android:layout_alignLeft="@id/clouds4"
+                android:layout_marginLeft="1280dp"
+                android:background="@drawable/parallax_background_layer_mid"
+                android:contentDescription="@string/default_description" />
+        </RelativeLayout>
+    </HorizontalScrollView>
     
-    
-    
+    <HorizontalScrollView
+        android:id="@+id/scroll4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/scroll2"
+        android:layout_alignParentBottom="true"
+        android:scrollbars="none" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/ground4"
+                android:layout_width="640dp"
+                android:layout_height="187dp"
+                android:background="@drawable/parallax_background_layer_front"
+                android:contentDescription="@string/default_description" />
+
+            <ImageView
+                android:id="@+id/ground5"
+                android:layout_width="640dp"
+                android:layout_height="187dp"
+                android:layout_alignLeft="@id/ground4"
+                android:layout_marginLeft="640dp"
+                android:background="@drawable/parallax_background_layer_front"
+                android:contentDescription="@string/default_description" />
+
+            <ImageView
+                android:layout_width="640dp"
+                android:layout_height="187dp"
+                android:layout_alignLeft="@id/ground4"
+                android:layout_marginLeft="1280dp"
+                android:background="@drawable/parallax_background_layer_front"
+                android:contentDescription="@string/default_description" />
+        </RelativeLayout>
+    </HorizontalScrollView>
+
     <TextView
         android:id="@+id/title_textview"
         android:layout_width="wrap_content"
@@ -90,6 +163,29 @@
         android:text="@string/startmenu_title"
         android:textSize="50sp"
         android:textColor="@color/white" />
+    
+    <ImageButton
+        android:id="@+id/new_game_imageview"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@id/title_textview"
+        android:layout_marginTop="85dp"
+        android:background="@drawable/new_game_button"
+        android:contentDescription="@string/description_start_game"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/new_game_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/new_game_imageview"
+        android:layout_alignTop="@id/new_game_imageview"
+        android:gravity="center_vertical"
+        android:text="@string/new_game_string"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
 
     <TableLayout
         android:id="@+id/Tabelle"
@@ -102,52 +198,18 @@
 
         <TableRow android:id="@+id/row_one" >
 
-            <ImageButton
-                android:id="@+id/new_game_imageview"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:gravity="center"
-                android:background="@drawable/new_game_button"
-                android:contentDescription="@string/description_start_game" />
+            <View
+                android:layout_width="120dp"
+                android:layout_height="70dp" />
             
             <TextView 
-                android:id="@+id/new_game_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="70dp"
-                android:layout_marginLeft="10dp"
-                android:gravity="center_vertical"
-                android:text="@string/new_game_string"
-                android:textSize="20sp"
-        		android:textColor="@color/white"/>
+                android:layout_width="120dp"
+                android:layout_height="70dp"/>
             
             <View 
                 android:layout_width="100dp"
                 android:layout_height="70dp"/>
             
-            <ImageButton
-                android:id="@+id/load_game_imageview"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:gravity="center"
-                android:background="@drawable/load_game_button"
-                android:contentDescription="@string/description_load_game" />
-            
-            <TextView 
-                android:id="@+id/load_game_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="70dp"
-                android:layout_marginLeft="10dp"
-                android:gravity="center_vertical"
-                android:text="@string/load_game_string"
-                android:textSize="20sp"
-        		android:textColor="@color/white"/>
-            
-            
-        </TableRow>
-        
-        <TableRow android:id="@+id/row_two"
-            android:layout_marginTop="20dp" >
-
             <ImageButton
                 android:id="@+id/options_imageview"
                 android:layout_width="70dp"
@@ -165,6 +227,20 @@
                 android:text="@string/options_string"
                 android:textSize="20sp"
         		android:textColor="@color/white"/>
+            
+            
+        </TableRow>
+        
+        <TableRow android:id="@+id/row_two"
+            android:layout_marginTop="20dp" >
+
+            <View
+                android:layout_width="70dp"
+                android:layout_height="70dp" />
+            
+            <View 
+                android:layout_width="70dp"
+                android:layout_height="70dp"/>
             
             <View 
                 android:layout_width="100dp"
@@ -188,6 +264,46 @@
                 android:textSize="20sp"
         		android:textColor="@color/white"/>
             
+            
+        </TableRow>
+    </TableLayout>
+    
+    <TableLayout
+        android:id="@+id/saved_games_slots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" >
+
+        <TableRow android:id="@+id/row" >
+            
+            <TextView 
+                android:id="@+id/saved_game_slot1"
+                android:layout_width="140dp"
+                android:layout_height="180dp"
+                android:gravity="center_horizontal"
+                android:text="\nSlot 1\n\nneues Spiel\nbeginnen"
+                android:background="@drawable/slot_unmarked"
+                android:textSize="14sp"
+        		android:textColor="@color/white"
+        		android:visibility="invisible" />
+            
+            <View 
+                android:layout_width="50dp"
+                android:layout_height="180dp" />
+            
+            <TextView 
+                android:id="@+id/saved_game_slot2"
+                android:layout_width="140dp"
+                android:layout_height="180dp"
+                android:gravity="center_horizontal"
+                android:text="\nSlot 2\n\ngespeichertes\nSpiel laden"
+                android:background="@drawable/slot_unmarked"
+                android:textSize="14sp"
+        		android:textColor="@color/white"
+        		android:visibility="invisible"  />
             
         </TableRow>
     </TableLayout>
