@@ -539,6 +539,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				Log.d("projekt", "quest npcId: " + gameLoader.getOpenQuestList().get(i).getNpcID());
 				controller.startQuest(gameLoader.getOpenQuestList().get(i).getNpcID(), gameLoader.getOpenQuestList().get(i).getProgress());
 			}
+			
+			controller.changeGold(-(controller.getGold() - gameLoader.getPlayerData().getGold()));
 		}
 
 		hud = new HUD();

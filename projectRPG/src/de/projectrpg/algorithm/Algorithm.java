@@ -25,9 +25,6 @@ import de.projectrpg.sprites.Opponent;
 /**
  * Get the path the sprite should move.
  * Calculated with the a star algorithm.
- * 
- * @author Lena
- *
  */
 public class Algorithm {
 
@@ -63,10 +60,10 @@ public class Algorithm {
 	
 	/**
 	 * The constructor of the algorithm. Set the instance variables to the given values.
-	 * @param startPosition: the tile where the path should start (where the player stands)
-	 * @param endPosition: the tile at which the player clicked.
-	 * @param tmxTiledMap: the map with the tiles
-	 * @param scene: the scene
+	 * @param startPosition the tile where the path should start (where the player stands)
+	 * @param endPosition the tile at which the player clicked.
+	 * @param tmxTiledMap the map with the tiles
+	 * @param scene the scene
 	 */
 	public Algorithm(TMXTile startPosition, TMXTile endPosition, TMXTiledMap tmxTiledMap, Scene scene) {
 		this.endPosition = endPosition;
@@ -176,8 +173,12 @@ public class Algorithm {
         int ToCol = endPosition.getTileColumn();
         int ToRow = endPosition.getTileRow();
         // Find the path. This needs to be refreshed
-        path = aStarPathFinder.findPath(pathFinderMap, 0, 0, tiledMap.getTileColumns()-1, tiledMap.getTileRows()-1, layer, 
-        		FromCol, FromRow, ToCol, ToRow, false, heuristic, costCallback);
+        try {
+            path = aStarPathFinder.findPath(pathFinderMap, 0, 0, tiledMap.getTileColumns()-1, tiledMap.getTileRows()-1, layer, 
+            		FromCol, FromRow, ToCol, ToRow, false, heuristic, costCallback);        	
+        } catch(Throwable ex) {
+        	return null;
+        }
         //Moves the sprite along the path
     	return loadPathFound();
 	}

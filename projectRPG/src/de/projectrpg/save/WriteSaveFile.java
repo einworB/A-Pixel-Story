@@ -22,21 +22,45 @@ import de.projectrpg.sprites.NPC;
 import de.projectrpg.sprites.Opponent;
 import de.projectrpg.sprites.Player;
 
+/**
+ * Write the xml file to save the actual game
+ */
 public class WriteSaveFile {
 	
+	/** the context */
 	private Context context;
+	/** the xml serializer */
 	private XmlSerializer serializer;
+	/** the actual quest that should be shown in the questscene*/
 	private int questcount;
+	/** the count of the level in the game*/
 	private int levelcount;
+	/** an array with all scenes of the game*/
 	private OurScene[] sceneArray;
+	/** the player*/
 	private Player player;
+	/** the controller*/
 	private Controller controller;
+	/** the save slot where the game should be saved */
 	private int slot;
 	
+	/**
+	 * The constructor
+	 * @param context
+	 */
 	public WriteSaveFile(Context context) {
 		this.context = context;
 	}
 	
+	/** 
+	 * create the save file if it doesn't exist. Then write the data into it.
+	 * @param slot the save slot where the game should be saved
+	 * @param levelcount the count of the level in the game
+	 * @param questcount the actual quest that should be shown in the questscene
+	 * @param scene an array with all scenes of the game
+	 * @param player
+	 * @param controller
+	 */
 	public void createFile(int slot, int levelcount, int questcount, OurScene[] scene, Player player, Controller controller){
 		this.levelcount = levelcount;
 		this.questcount = questcount;
@@ -48,7 +72,7 @@ public class WriteSaveFile {
 		
 		String filename = "slot" + slot +".xml";
 		try {
-			FileOutputStream fos = context.openFileOutput(filename, Context.MODE_WORLD_READABLE);
+			FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
 			OutputStreamWriter writer = new OutputStreamWriter(fos);
 			writer.write(writeXml());
 			writer.flush();
@@ -61,6 +85,10 @@ public class WriteSaveFile {
 		}
 	}
 
+	/**
+	 * Setup the xml serializer and write the data..
+	 * @return the file content as String
+	 */
 	private String writeXml() {
 	    serializer = Xml.newSerializer();
 	    StringWriter writer = new StringWriter();
@@ -81,6 +109,13 @@ public class WriteSaveFile {
 	   
 	}
 
+	/**
+	 * Set all variables that are used to reload the game.
+	 * Write the level, quest and player data
+	 * @throws IllegalArgumentException
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
 	private void setupDoc() throws IllegalArgumentException, IllegalStateException, IOException {
 		serializer.startDocument("UTF-8", true);
 		
@@ -94,6 +129,15 @@ public class WriteSaveFile {
 		writePlayerData();
 	}
 
+	/**
+	 * Save all data that are needed to load the quests.
+	 * It is a list of open and closed quests. 
+	 * For the open quests the type of quest, the npcID and the quest progress.
+	 * For the closed only the npcID
+	 * @throws IllegalArgumentException
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
 	private void writeQuestData() throws IllegalArgumentException, IllegalStateException, IOException {
 		serializer.startTag("", "openquests");
 		serializer.endTag("", "openquests");
@@ -136,6 +180,16 @@ public class WriteSaveFile {
 		serializer.endTag("", "closedQuests");
 	}
 
+	/**
+	 * Write all Player data. The level in which the player stands. 
+	 * The position, viewing direction and the level of the player. 
+	 * The exp, health and gold.
+	 * Save which armor and weapon the player is wearing and 
+	 * the content of the inventory.
+	 * @throws IllegalArgumentException
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
 	private void writePlayerData() throws IllegalArgumentException, IllegalStateException, IOException {
 		serializer.startTag("", "player");
 		serializer.attribute("", "level", "" + controller.getCurrentScene().getID());
@@ -145,6 +199,7 @@ public class WriteSaveFile {
 		serializer.attribute("", "exp", "" + player.getEXP());
 		serializer.attribute("", "health", "" + player.getHealth());
 		serializer.attribute("", "direction", "" + player.getCurrentTileIndex());
+		serializer.attribute("", "gold", "" + player.getGold());
 
 		serializer.endTag("", "player");
 
@@ -200,6 +255,15 @@ public class WriteSaveFile {
 		serializer.endTag("", "player");
 	}
 
+	/**
+	 * Write all data that are used especially for each level. 
+	 * Which opponents and npcs are at the level and how the map name is.
+	 * For an opponent the position, health, viewing direction, level and the boolean if the opponent is epic is needed. 
+	 * For a npc the position, viewing direction and id.
+	 * @throws IllegalArgumentException
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
 	private void writeLevelData() throws IllegalArgumentException, IllegalStateException, IOException {
 		for(int i = 1; i <= levelcount; i++) {
 			OurScene scene = sceneArray[i - 1];
@@ -210,20 +274,6 @@ public class WriteSaveFile {
 			serializer.startTag("", "mapname");
 			serializer.attribute("", "name", "slot" + slot + "level" + i + ".tmx");
 			serializer.endTag("", "mapname");
-
-//			serializer.startTag("", "map");
-//			serializer.attribute("", "tileset", map.getTMXTileSets().get(0).getName());
-//			serializer.startTag("", "tiles");
-//			
-//			for(int x = 0; x < map.getTileColumns(); x++) {
-//				for(int y = 0; y < map.getTileRows(); y++) {
-//					serializer.startTag("", "tile");
-//					serializer.attribute("", "gid", "" + layer.getTMXTile(x, y).getGlobalTileID());
-//					serializer.endTag("", "tile");
-//				}
-//			}
-//			serializer.endTag("", "tiles");
-//			serializer.endTag("", "map");
 
 			serializer.startTag("", "opponents");
 			serializer.endTag("", "opponents");
@@ -265,24 +315,8 @@ public class WriteSaveFile {
 					npcCount++;
 				}
 			}
-
 			serializer.startTag("", "npcs");
 			serializer.endTag("", "npcs");
-/*			int lootbagCount = 1;
-			serializer.startTag("", "lootbags");
-			for(int k = 0; k < scene.getChildCount(); k++) {
-				if(scene.getChildByIndex(k) instanceof LootBag) {
-					LootBag lootbag = (LootBag)layer.getChildByIndex(k);
-					serializer.startTag("", "lootbag" + lootbagCount);
-					serializer.attribute("", "positionX", "" + lootbag.getX());
-					serializer.attribute("", "positionY", "" + lootbag.getY());
-					serializer.attribute("", "opponent", "" + lootbag.getLootRoot());
-					
-					serializer.endTag("", "lootbag" + lootbagCount);
-				}
-			}
-			serializer.endTag("", "lootbags");
-*/		
 
 			serializer.startTag("", "level" + i);
 			serializer.endTag("", "level" + i);
