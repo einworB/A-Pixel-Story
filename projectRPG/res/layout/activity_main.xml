@@ -164,52 +164,45 @@
         android:textSize="50sp"
         android:textColor="@color/white" />
     
-    <ImageButton
-        android:id="@+id/new_game_imageview"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginLeft="10dp"
-        android:layout_below="@id/title_textview"
-        android:layout_marginTop="85dp"
-        android:background="@drawable/new_game_button"
-        android:contentDescription="@string/description_start_game"
-        android:gravity="center" />
-
-    <TextView
-        android:id="@+id/new_game_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="70dp"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@id/new_game_imageview"
-        android:layout_alignTop="@id/new_game_imageview"
-        android:gravity="center_vertical"
-        android:text="@string/new_game_string"
-        android:textColor="@color/white"
-        android:textSize="20sp" />
+    
 
     <TableLayout
         android:id="@+id/Tabelle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/title_textview"
-        android:layout_marginTop="40dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" >
-
-        <TableRow android:id="@+id/row_one" >
+        android:layout_centerVertical="true">
+        
+        <TableRow android:id="@+id/row_one"
+            android:layout_marginBottom="20dp" >
+            
 
             <View
-                android:layout_width="120dp"
-                android:layout_height="70dp" />
-            
-            <TextView 
-                android:layout_width="120dp"
-                android:layout_height="70dp"/>
+                android:layout_width="70dp"
+                android:layout_height="100dp" />
             
             <View 
-                android:layout_width="100dp"
-                android:layout_height="70dp"/>
+                android:layout_width="70dp"
+                android:layout_height="100dp"/>
             
+            <View 
+                android:layout_width="50dp"
+                android:layout_height="100dp"/>
+            
+            <View
+                android:layout_width="70dp"
+                android:layout_height="100dp" />
+            
+            <View 
+                android:layout_width="70dp"
+                android:layout_height="100dp"/>
+            
+            
+        </TableRow>
+        
+        <TableRow android:id="@+id/row_two">
+
             <ImageButton
                 android:id="@+id/options_imageview"
                 android:layout_width="70dp"
@@ -220,7 +213,7 @@
             
             <TextView 
                 android:id="@+id/options_textview"
-                android:layout_width="wrap_content"
+                android:layout_width="110dp"
                 android:layout_height="70dp"
                 android:layout_marginLeft="10dp"
                 android:gravity="center_vertical"
@@ -228,22 +221,8 @@
                 android:textSize="20sp"
         		android:textColor="@color/white"/>
             
-            
-        </TableRow>
-        
-        <TableRow android:id="@+id/row_two"
-            android:layout_marginTop="20dp" >
-
-            <View
-                android:layout_width="70dp"
-                android:layout_height="70dp" />
-            
             <View 
-                android:layout_width="70dp"
-                android:layout_height="70dp"/>
-            
-            <View 
-                android:layout_width="100dp"
+                android:layout_width="50dp"
                 android:layout_height="70dp"/>
             
             <ImageButton
@@ -256,7 +235,7 @@
             
             <TextView 
                 android:id="@+id/help_textview"
-                android:layout_width="wrap_content"
+                android:layout_width="60dp"
                 android:layout_height="70dp"
                 android:layout_marginLeft="10dp"
                 android:gravity="center_vertical"
@@ -265,10 +244,41 @@
         		android:textColor="@color/white"/>
             
             
-        </TableRow>
+        </TableRow>   
     </TableLayout>
     
     <TableLayout
+        android:id="@+id/Tabelle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/Tabelle"
+        android:layout_centerHorizontal="true" >
+
+        <TableRow
+            android:layout_marginTop="20dp">
+
+            <ImageButton
+                android:id="@+id/new_game_imageview"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:background="@drawable/new_game_button"
+                android:contentDescription="@string/description_start_game"
+                android:gravity="center" />
+           
+
+            <TextView
+                android:id="@+id/new_game_textview"
+                android:layout_width="300dp"
+                android:layout_height="70dp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:text="@string/new_game_string"
+                android:textColor="@color/white"
+                android:textSize="30sp" />
+        </TableRow>
+    </TableLayout>
+    
+<TableLayout
         android:id="@+id/saved_games_slots"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
