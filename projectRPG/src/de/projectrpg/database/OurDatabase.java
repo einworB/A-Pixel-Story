@@ -502,15 +502,16 @@ public class OurDatabase {
 					quest = new TalkToQuest(questID, name, npcID, startText, duringText, endText, targetNPC, level, specialReward, shortText);
 				}
 			}else if(type.contentEquals("killQuest")){
-				sql = new String("SELECT target, killCount FROM killQuest, quest WHERE quest._id=killQuest.questID");
+				sql = new String("SELECT target, killCount FROM killQuest, quest WHERE quest._id=killQuest.questID and quest.npcID='" + npcID + "'");
 				Cursor specificQuestCursor = db.rawQuery(sql, null);
 				if(specificQuestCursor.moveToFirst()){
 					String enemyName = specificQuestCursor.getString(0);
 					int killCount = specificQuestCursor.getInt(1);
+					Log.d("projekt", "database killcount: " + killCount);
 					quest = new KillQuest(questID, name, npcID, startText, duringText, endText, enemyName, killCount, level, specialReward, shortText);
 				}
 			}else{
-				sql = new String("SELECT itemName, count FROM getItemQuest, quest WHERE quest._id=getItemQuest.questID");
+				sql = new String("SELECT itemName, count FROM getItemQuest, quest WHERE quest._id=getItemQuest.questID and quest.npcID='" + npcID + "'");
 				Cursor specificQuestCursor = db.rawQuery(sql, null);
 				if(specificQuestCursor.moveToFirst()){
 					String itemName = specificQuestCursor.getString(0);
