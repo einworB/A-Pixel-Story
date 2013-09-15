@@ -213,6 +213,13 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/** if the game should be load from the slot or a new game should be started */
 	private boolean newGame;
 	private Text questProgress;
+	private Font fontpercent;
+	private Text percent0;
+	private Text percent1;
+	private Text percent2;
+	private Text percent3;
+	private Text percent4;
+	private Text percent5;
 	
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
@@ -281,7 +288,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		this.fontQuestTitel.load();
 		this.fontQuestHowTo = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 25);
 		this.fontQuestHowTo.load();		
-		
+		this.fontpercent = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 18);
+		this.fontpercent.load();
 		
 		textScroll = new Sprite(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-40, 175, textScrollTextureRegion, this.getVertexBufferObjectManager());
 		
@@ -376,7 +384,13 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		howToCloseQuest = new Text(20, CAMERA_HEIGHT - 230, fontQuestHowTo, "Gehe zurück zu der Person die dir den Quest gegeben hat um ihn abzuschließen", new TextOptions(AutoWrap.WORDS, CAMERA_WIDTH-30, HorizontalAlign.LEFT, 5), getVertexBufferObjectManager());
 		levelTextPlayer = new Text(3, 50, fontQuestHowTo, "lvl 1", 5, getVertexBufferObjectManager());
 		levelTextOpponent = new Text(CAMERA_WIDTH - 51, 50, fontQuestHowTo, "lvl 1", 5, getVertexBufferObjectManager()); //TODO gegner maximal level 9 .. sonst verschieben
-		
+
+		percent0 = new Text(70, 40, fontpercent, "0%", getVertexBufferObjectManager());
+		percent1 = new Text(175, 40, fontpercent, "20%", getVertexBufferObjectManager());
+		percent2 = new Text(290, 40, fontpercent, "40%", getVertexBufferObjectManager());
+		percent3 = new Text(405, 40, fontpercent, "60%", getVertexBufferObjectManager());
+		percent4 = new Text(525, 40, fontpercent, "80%", getVertexBufferObjectManager());
+		percent5 = new Text(610, 40, fontpercent, "100%", getVertexBufferObjectManager());
 		
 		Controller.initInstance(this, expBar);
 		controller = Controller.getInstance();
@@ -559,6 +573,13 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		hud.attachChild(expBar);
 		hud.attachChild(expBackground);
 		hud.attachChild(startExpBar);
+		
+		hud.attachChild(percent0);
+		hud.attachChild(percent1);
+		hud.attachChild(percent2);
+		hud.attachChild(percent3);
+		hud.attachChild(percent4);
+		hud.attachChild(percent5);
 		
 		hud.registerTouchArea(inventarButton);
 		hud.registerTouchArea(questButton);
