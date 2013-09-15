@@ -483,7 +483,7 @@ public class InventarActivity extends Activity {
 			}
 			if (controller.getLevel() == 3) {
 				inventoryListMerchant.add(controller
-						.getItemByName("Gebratene Hänchenkeule"));
+						.getItemByName("Gebratene Hähnchenkeule"));
 				inventoryListMerchant.add(controller
 						.getItemByName("bronzener Brustpanzer"));
 				inventoryListMerchant.add(controller
@@ -2000,7 +2000,7 @@ public class InventarActivity extends Activity {
 		sortedItemNames.add("Etwas zu schwerer Eisenhammer");
 		sortedItemNames.add("fast frischer Schinken");
 		sortedItemNames.add("Fauler Apfel");
-		sortedItemNames.add("Gebratene Hänchenkeule");
+		sortedItemNames.add("Gebratene Hähnchenkeule");
 		sortedItemNames.add("Goldener Beinkleider");
 		sortedItemNames.add("Goldener Brustpanzer");
 		sortedItemNames.add("Goldener Helm");
