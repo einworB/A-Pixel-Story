@@ -519,7 +519,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			
 			player.changeHealth(-(player.getHealth() - gameLoader.getPlayerData().getHealth()));
 			controller.changeGold(player.getGold());
-			controller.addExp(gameLoader.getPlayerData().getExp());
+			controller.addExp(gameLoader.getPlayerData().getSavedExp());
 			redBarPlayer.setWidth((float)(100-player.getHealth())/3);
 			redBarPlayer.setX(44-redBarPlayer.getWidth());
 			
@@ -781,6 +781,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 						/* move down */
 						case 4:
 							player.animate(new long[]{200, 200, 200, 200}, 0, 3, true);
+							break;
+						default:
 							break;
 					}	
 				}

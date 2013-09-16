@@ -197,7 +197,7 @@ public class OurDatabase {
 				String itemType = cursor.getString(1);
 				int itemID = cursor.getInt(0);
 				int levelNeeded = cursor.getInt(3);
-				sql = new String("SELECT * FROM "+itemType+" WHERE itemID='"+itemID+"'");
+				sql = String.format("SELECT * FROM %s WHERE itemID='%s'", itemType, itemID);
 				cursor = db.rawQuery(sql, null);
 				if(itemType.contentEquals("weapon")){
 					if (cursor.moveToFirst()) {
@@ -225,7 +225,7 @@ public class OurDatabase {
 		} else return null;
 	}
 	public Item getLoot(int loot) {
-		String sql = new String("SELECT * FROM item WHERE levelNeeded='"+loot+"'");
+		String sql = String.format("SELECT * FROM item WHERE levelNeeded='%s'", loot);
 		Cursor itemCursor = db.rawQuery(sql, null);
 		int itemCount = itemCursor.getCount();
 		Item[] objects = new Item[itemCount];
@@ -238,7 +238,7 @@ public class OurDatabase {
 				String itemType = itemCursor.getString(1);
 				String name = itemCursor.getString(2);
 				int levelNeeded = itemCursor.getInt(3);
-				sql = new String("SELECT * FROM "+itemType+" WHERE itemID='"+itemID+"'");
+				sql = String.format("SELECT * FROM %s WHERE itemID='%s'", itemType, itemID);
 				Cursor cursor = db.rawQuery(sql, null);
 				if(itemType.contentEquals("weapon")){
 					if (cursor.moveToFirst()) {
@@ -281,7 +281,7 @@ public class OurDatabase {
 		String sql;
 		if(npc!=null){
 			npcID = npc.getID(); 
-			sql = new String("SELECT * FROM npc WHERE _id='"+npcID+"'");
+			sql = String.format("SELECT * FROM npc WHERE _id='%s'", npcID);
 			Cursor npcCursor = db.rawQuery(sql, null);
 			if (npcCursor.moveToFirst()) {
 				textID = npcCursor.getInt(1);
@@ -327,7 +327,7 @@ public class OurDatabase {
 				}
 			}
 			if(questClosed){
-				sql = new String("SELECT text FROM text WHERE _id='"+textID+"'");
+				sql = String.format("SELECT text FROM text WHERE _id='%s'", textID);
 				Cursor textCursor = db.rawQuery(sql, null);
 				if(textCursor.moveToFirst()) {
 					startMerchant = true;
@@ -335,7 +335,7 @@ public class OurDatabase {
 				} else return null;
 			}
 			else{
-				sql = new String("SELECT * FROM quest WHERE npcID='"+npcID+"'");
+				sql = String.format("SELECT * FROM quest WHERE npcID='%s'", npcID);
 				Cursor questCursor = db.rawQuery(sql, null);
 				if(questCursor.moveToFirst()) {
 //					int randomPosition = rgen.nextInt(questCursor.getCount());
@@ -358,21 +358,21 @@ public class OurDatabase {
 							ArrayList<String> startText = null;
 							ArrayList<String> duringText = null;
 							ArrayList<String> endText = null;
-							sql = new String("SELECT text FROM text WHERE _id='"+startTextID+"'");
+							sql = String.format("SELECT text FROM text WHERE _id='%s'", startTextID);
 							Cursor textCursor = db.rawQuery(sql, null);
 							if(textCursor.moveToFirst()) {
 								startMerchant = false;
 								String str =textCursor.getString(0);
 								if(str!=null) startText = convertStringToArrayList(str);
 							}
-							sql = new String("SELECT text FROM text WHERE _id='"+duringTextID+"'");
+							sql = String.format("SELECT text FROM text WHERE _id='%s'", duringTextID);
 							textCursor = db.rawQuery(sql, null);
 							if(textCursor.moveToFirst()) {
 								startMerchant = false;
 								String str =textCursor.getString(0);
 								if(str!=null) duringText = convertStringToArrayList(str);
 							}
-							sql = new String("SELECT text FROM text WHERE _id='"+endTextID+"'");
+							sql = String.format("SELECT text FROM text WHERE _id='%s'", endTextID);
 							textCursor = db.rawQuery(sql, null);
 							if(textCursor.moveToFirst()) {
 								startMerchant = false;
@@ -389,14 +389,14 @@ public class OurDatabase {
 							String type = questCursor.getString(8);
 							String shortText = questCursor.getString(10);
 							if(type.contentEquals("talkTo")){
-								sql = new String("SELECT talkToQuest.npcID FROM talkToQuest WHERE questID='"+questID+"'");
+								sql = String.format("SELECT talkToQuest.npcID FROM talkToQuest WHERE questID='%s'", questID);
 								Cursor specificQuestCursor = db.rawQuery(sql, null);
 								if(specificQuestCursor.moveToFirst()){
 									int targetNPC =  specificQuestCursor.getInt(0);
 									quest = new TalkToQuest(questID, name, npcID, startText, duringText, endText, targetNPC, level, specialReward, shortText);
 								}
 							}else if(type.contentEquals("killQuest")){
-								sql = new String("SELECT target, killCount FROM killQuest WHERE questID='"+questID+"'");
+								sql = String.format("SELECT target, killCount FROM killQuest WHERE questID='%s'", questID);
 								Cursor specificQuestCursor = db.rawQuery(sql, null);
 								if(specificQuestCursor.moveToFirst()){
 									String enemyName = specificQuestCursor.getString(0);
@@ -405,7 +405,7 @@ public class OurDatabase {
 									quest = new KillQuest(questID, name, npcID, startText, duringText, endText, enemyName, killCount, level, specialReward, shortText);
 								}
 							}else{
-								sql = new String("SELECT itemName, count FROM getItemQuest WHERE questID='"+questID+"'");
+								sql = String.format("SELECT itemName, count FROM getItemQuest WHERE questID='%s'", questID);
 								Cursor specificQuestCursor = db.rawQuery(sql, null);
 								if(specificQuestCursor.moveToFirst()){
 									String itemName = specificQuestCursor.getString(0);
@@ -418,10 +418,10 @@ public class OurDatabase {
 						}
 					} while(questCursor.moveToNext());
 				}
-				sql = new String("SELECT text FROM text WHERE _id='"+textID+"'");
+				sql = String.format("SELECT text FROM text WHERE _id='%s'", textID);
 				Cursor textCursor = db.rawQuery(sql, null);
 				if(textCursor.moveToFirst()) {
-					startMerchant = true;               
+					startMerchant = true;
 					return convertStringToArrayList(textCursor.getString(0));
 				} else return null;					
 			}
@@ -441,7 +441,7 @@ public class OurDatabase {
 		return result;
 	}
 	public String getNPCName(int id) {
-		String sql = new String("SELECT name FROM npc WHERE _id='"+id+"'");
+		String sql = String.format("SELECT name FROM npc WHERE _id='%s'", id);
 		Cursor cursor = db.rawQuery(sql, null);
 		if(cursor.moveToFirst()){
 			return cursor.getString(0);
@@ -452,7 +452,7 @@ public class OurDatabase {
 		String sql;
 		Quest quest = null;
 		
-		sql = new String("SELECT * FROM quest WHERE npcID='"+npcID+"'");
+		sql = String.format("SELECT * FROM quest WHERE npcID='%s'", npcID);
 		Cursor questCursor = db.rawQuery(sql, null);
 		if(questCursor.moveToFirst()) {
 			
@@ -464,21 +464,21 @@ public class OurDatabase {
 			ArrayList<String> startText = null;
 			ArrayList<String> duringText = null;
 			ArrayList<String> endText = null;
-			sql = new String("SELECT text FROM text WHERE _id='"+startTextID+"'");
+			sql = String.format("SELECT text FROM text WHERE _id='%s'", startTextID);
 			Cursor textCursor = db.rawQuery(sql, null);
 			if(textCursor.moveToFirst()) {
 				startMerchant = false;
 				String str =textCursor.getString(0);
 				if(str!=null) startText = convertStringToArrayList(str);
 			}
-			sql = new String("SELECT text FROM text WHERE _id='"+duringTextID+"'");
+			sql = String.format("SELECT text FROM text WHERE _id='%s'", duringTextID);
 			textCursor = db.rawQuery(sql, null);
 			if(textCursor.moveToFirst()) {
 				startMerchant = false;
 				String str =textCursor.getString(0);
 				if(str!=null) duringText = convertStringToArrayList(str);
 			}
-			sql = new String("SELECT text FROM text WHERE _id='"+endTextID+"'");
+			sql = String.format("SELECT text FROM text WHERE _id='%s'", endTextID);
 			textCursor = db.rawQuery(sql, null);
 			if(textCursor.moveToFirst()) {
 				startMerchant = false;
@@ -495,14 +495,14 @@ public class OurDatabase {
 			String type = questCursor.getString(8);
 			String shortText = questCursor.getString(10);
 			if(type.contentEquals("talkTo")){
-				sql = new String("SELECT talkToQuest.npcID FROM talkToQuest, quest WHERE quest._id=talkToQuest.questID");
+				sql = "SELECT talkToQuest.npcID FROM talkToQuest, quest WHERE quest._id=talkToQuest.questID";
 				Cursor specificQuestCursor = db.rawQuery(sql, null);
 				if(specificQuestCursor.moveToFirst()){
 					int targetNPC =  specificQuestCursor.getInt(0);
 					quest = new TalkToQuest(questID, name, npcID, startText, duringText, endText, targetNPC, level, specialReward, shortText);
 				}
 			}else if(type.contentEquals("killQuest")){
-				sql = new String("SELECT target, killCount FROM killQuest, quest WHERE quest._id=killQuest.questID and quest.npcID='" + npcID + "'");
+				sql = String.format("SELECT target, killCount FROM killQuest, quest WHERE quest._id=killQuest.questID and quest.npcID='%s'", npcID);
 				Cursor specificQuestCursor = db.rawQuery(sql, null);
 				if(specificQuestCursor.moveToFirst()){
 					String enemyName = specificQuestCursor.getString(0);
@@ -511,7 +511,7 @@ public class OurDatabase {
 					quest = new KillQuest(questID, name, npcID, startText, duringText, endText, enemyName, killCount, level, specialReward, shortText);
 				}
 			}else{
-				sql = new String("SELECT itemName, count FROM getItemQuest, quest WHERE quest._id=getItemQuest.questID and quest.npcID='" + npcID + "'");
+				sql = String.format("SELECT itemName, count FROM getItemQuest, quest WHERE quest._id=getItemQuest.questID and quest.npcID='%s'", npcID);
 				Cursor specificQuestCursor = db.rawQuery(sql, null);
 				if(specificQuestCursor.moveToFirst()){
 					String itemName = specificQuestCursor.getString(0);

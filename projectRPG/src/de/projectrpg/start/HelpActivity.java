@@ -6,6 +6,9 @@ import android.view.Menu;
 
 import com.example.projectrpg.R;
 
+/**
+ * The activity to help the user to play the game.
+ */
 public class HelpActivity extends Activity {
 
 	@Override

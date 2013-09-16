@@ -41,6 +41,7 @@ public class LoadSavedGame {
 		this.context = context;
 		openQuestList = new ArrayList<QuestObjects>();
 		closedQuestList = new ArrayList<QuestObjects>();
+		levelLoaders = new LevelLoader[1];
 	}
 	
 	/**
@@ -266,7 +267,10 @@ public class LoadSavedGame {
 	 * @return the level loader at the specific index
 	 */
 	public LevelLoader getLevelLoader(int level) {
-		return levelLoaders[level - 1];
+		if(levelLoaders.length >= level - 1) {
+			return levelLoaders[level - 1];			
+		}
+		return null;
 	}
 	
 	/**
@@ -314,7 +318,7 @@ public class LoadSavedGame {
 	/**
 	 * Inner class.  A quest Object to load a quest
 	 */
-	public class QuestObjects {
+	public static class QuestObjects {
 		/** the npc id*/
 		private int npcID;
 		/** the progress of the quest*/
@@ -351,7 +355,7 @@ public class LoadSavedGame {
 	/**
 	 * Inner class. A player object with all data to relaod the player.
 	 */
-	public class PlayerObject {
+	public static class PlayerObject {
 		/** the level in which the player stands*/
 		private int level;
 		/** the x position of the player*/
@@ -503,7 +507,7 @@ public class LoadSavedGame {
 		 * get the experience of the player
 		 * @return the experience of the player
 		 */
-		public int getExp() {
+		public int getSavedExp() {
 			return exp;
 		}
 		

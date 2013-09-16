@@ -94,7 +94,7 @@ public class LevelLoader {
 	/**
 	 * Inner class. A Npc object with all data to reload a npc on a map.
 	 */
-	public class NpcObjects {
+	public static class NpcObjects {
 		/** the x position of the npc*/
 		private float positionX;
 		/** the y position of the npc*/
@@ -166,7 +166,7 @@ public class LevelLoader {
 	/**
 	 * Inner class. A Opponent object with all data to reload a Opponent on a map.
 	 */
-	public class OpponentObjects{
+	public static class OpponentObjects{
 		/** the x position of the opponent*/
 		private float positionX;
 		/** the y position of the opponent*/

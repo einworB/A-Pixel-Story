@@ -16,10 +16,23 @@ import de.projectrpg.quest.GetItemQuest;
 import de.projectrpg.quest.KillQuest;
 import de.projectrpg.quest.Quest;
 
+/**
+ * The scene to show the quests in the game
+ */
 public class QuestScene extends Scene {
+	/** the id of the scene*/
 	private int id;
-	TMXTiledMap tmxMap;
+	/** the map for the background of the map*/
+	private TMXTiledMap tmxMap;
 	
+	/**
+	 * the constructor
+	 * @param id the id of the scene
+	 * @param controller 
+	 * @param assetManager
+	 * @param engine
+	 * @param vertexBufferObjectManager
+	 */
 	public QuestScene(int id, Controller controller, AssetManager assetManager, Engine engine, VertexBufferObjectManager vertexBufferObjectManager) {
 		super();
 		this.id = id;
@@ -30,22 +43,47 @@ public class QuestScene extends Scene {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * get the tmx map
+	 * @return the tmx map
+	 */
 	public TMXTiledMap getMap() {
 		return tmxMap;
 	}
 	
+	/**
+	 * get the id of the scene
+	 * @return the id
+	 */
 	public int getID() {
 		return id;
 	}
 
+	/**
+	 * get the quest titel
+	 * @param activeQuests all active quests
+	 * @param index the index of the actual quest
+	 * @return the name of the actual quest
+	 */
 	public String getQuestTitel(ArrayList<Quest> activeQuests, int index) {
 		return activeQuests.get(index).getName();
 	}
 	
+	/**
+	 * get the task text of the quest
+	 * @param quest the actual quest 
+	 * @return the task text
+	 */
 	public String getTask(Quest quest) {
 		return quest.getShortText();
 	}
 
+	/**
+	 * get the text for the progress that where made in a quest
+	 * @param quest the actual quest 
+	 * @return the progress text if there is no progress in a quest return an empty string.
+	 */
 	public String getProgress(Quest quest) {
 		if((quest instanceof KillQuest)) {
 			return ((KillQuest)quest).getAlreadyKilled() + " von " + ((KillQuest)quest).getKillCount();
