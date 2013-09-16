@@ -210,7 +210,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 	/** the slot where the game is saved*/
 	private int slot;
-	/** if the game should be load from the slot or a new game should be started */
+	/** if the game should be loaded from the slot or a new game should be started */
 	private boolean newGame;
 	private Text questProgress;
 	private Font fontpercent;
@@ -220,6 +220,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private Text percent3;
 	private Text percent4;
 	private Text percent5;
+	
+//=======================================================================METHODS========================================================================================		
 	
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
@@ -244,10 +246,25 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	}
 
 	/**
-	 * loads ressources like sprites using bitmaptextureatlas
+	 * responsible for loading game ressources like textures and fonts
+	 * inits controller
 	 */
 	@Override
 	public void onCreateResources() {
+		loadTextures();
+		
+		loadFonts();
+		
+		createTexts();			
+		
+		Controller.initInstance(this, expBar);
+		controller = Controller.getInstance();
+	}
+
+	/**
+	 * loads the textures for sprites using bitmaptextureatlas
+	 */
+	private void loadTextures() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
 		this.tiledBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 256, 256);
@@ -278,19 +295,17 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		TextureRegion nextQuestGrayButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "nextQuestGray.png", 462, 229);
 		TextureRegion prevQuestGrayButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "prevQuestGray.png", 516, 229);
 
-		this.bitmapTextureAtlas.load();
-		
-		
-		this.font = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32);
-		this.font.load();
+		this.bitmapTextureAtlas.load();		
 
-		this.fontQuestTitel = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 50);
-		this.fontQuestTitel.load();
-		this.fontQuestHowTo = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 25);
-		this.fontQuestHowTo.load();		
-		this.fontpercent = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 18);
-		this.fontpercent.load();
-		
+		createSprites(textScrollTextureRegion, portraitTextureRegion, portraitEnemyTextureRegion, redBarTextureRegion, inventarButtonTextureRegion, experienceBackgroundTextureRegion, experienceBarTextureRegion, startExperienceBarTextureRegion, 
+				helpButtonTextureRegion, questButtonTextureRegion, backToGameButtonTextureRegion, backToGameButtonBackgroudTextureRegion, nextQuestButtonTextureRegion, prevQuestButtonTextureRegion, nextQuestGrayButtonTextureRegion, prevQuestGrayButtonTextureRegion);
+	}
+
+	/**
+	 * creates sprites using the given textures
+	 * @params the various textures
+	 */
+	private void createSprites(TextureRegion textScrollTextureRegion, TextureRegion portraitTextureRegion, TextureRegion portraitEnemyTextureRegion, TextureRegion redBarTextureRegion, TextureRegion inventarButtonTextureRegion, TextureRegion experienceBackgroundTextureRegion, TextureRegion experienceBarTextureRegion, TextureRegion startExperienceBarTextureRegion, TextureRegion helpButtonTextureRegion, TextureRegion questButtonTextureRegion, TextureRegion backToGameButtonTextureRegion, TextureRegion backToGameButtonBackgroudTextureRegion, TextureRegion nextQuestButtonTextureRegion, TextureRegion prevQuestButtonTextureRegion, TextureRegion nextQuestGrayButtonTextureRegion, TextureRegion prevQuestGrayButtonTextureRegion) {
 		textScroll = new Sprite(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-40, 175, textScrollTextureRegion, this.getVertexBufferObjectManager());
 		
 		portrait = new Sprite(2, 2, portraitTextureRegion, getVertexBufferObjectManager());
@@ -376,7 +391,27 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		expBar = new Sprite(91, 13, 0, 30, experienceBarTextureRegion, getVertexBufferObjectManager());
 		expBackground = new Sprite(70, 12, CAMERA_WIDTH - 140, 32, experienceBackgroundTextureRegion, getVertexBufferObjectManager());
 		startExpBar = new Sprite(71, 13, 20, 30, startExperienceBarTextureRegion, getVertexBufferObjectManager());
-		
+	}
+
+	/**
+	 * loads fonts
+	 */
+	private void loadFonts() {
+		this.font = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32);
+		this.font.load();
+
+		this.fontQuestTitel = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 50);
+		this.fontQuestTitel.load();
+		this.fontQuestHowTo = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 25);
+		this.fontQuestHowTo.load();		
+		this.fontpercent = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 18);
+		this.fontpercent.load();
+	}
+
+	/**
+	 * creates texts using the just loaded fonts
+	 */
+	private void createTexts() {
 		questName = new Text(20, 20, fontQuestTitel, "", 100, getVertexBufferObjectManager());
 		questTask = new Text(20, 90, font, "", 200, getVertexBufferObjectManager());
 		questProgress = new Text(20, 130, font, "", 20, getVertexBufferObjectManager());
@@ -391,172 +426,205 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		percent3 = new Text(405, 40, fontpercent, "60%", getVertexBufferObjectManager());
 		percent4 = new Text(525, 40, fontpercent, "80%", getVertexBufferObjectManager());
 		percent5 = new Text(610, 40, fontpercent, "100%", getVertexBufferObjectManager());
-		
-		Controller.initInstance(this, expBar);
-		controller = Controller.getInstance();
 	}
-
+	
+	
 	/**
 	 * creates a scene and its children and adds them to the scene
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public Scene onCreateScene() {
-		
+		// displays framerate in logcat
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
+		// new game was started
 		if(newGame) {
 			Log.d("projekt", "newGame");
-			int lastLevel = controller.getLastLevel();
-			for(int i=1; i<=lastLevel; i++){
-				TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i, null);
-				OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
-				scene.generateAnimatedSprites(opponentTextureRegion, npcTextureRegion, getVertexBufferObjectManager(), i);
-				controller.addSceneToManager(scene);
-			}
-			int questSceneIndex = lastLevel + 1;
-			questScene = new QuestScene(questSceneIndex, controller,getAssets(), this.mEngine, getVertexBufferObjectManager());
-			questScene.attachChild(questScene.getMap().getTMXLayers().get(0));
 			
-			camera.setBounds(0, 0, 30*32, 30*32);	// TODO: insert constants
-			camera.setBoundsEnabled(true);
-			
-			/* set the scene's on touch listener to the activity itself */
-			pinchZoomDetector = new PinchZoomDetector(this);
-			pinchZoomDetector.setEnabled(true);
-			clickDetector = new ClickDetector(this);
-			clickDetector.setEnabled(true);
-			
-			/* Calculate the coordinates for the player sprite, so it's spawned in the center of the camera. */
-			OurScene scene = controller.getCurrentScene();
-			Log.d("RPG", "Scene: "+scene.getID());
-			Log.d("RPG", "Hashmap: "+scene.getSpawns());
-			float[] coords = scene.getSpawn("SPAWN");
-			Log.d("RPG", "Koords: "+coords[0]+","+coords[1]);
-			TMXLayer layer = controller.getTMXLayer();
-			final TMXTile spawnTile = layer.getTMXTileAt(coords[0], coords[1]);
-			final float spawnX = spawnTile.getTileX() + 4;
-			final float spawnY = spawnTile.getTileY();
-	
-			/* Create the sprite and add it to the scene. */
-			player = new Player(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), 1);
-			player.setZIndex(1);
-			int column = spawnTile.getTileColumn();
-			int row = spawnTile.getTileRow();
-			Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
-			if(column==0) player.setCurrentTileIndex(5);
-			else if(row==0) player.setCurrentTileIndex(1);
-			else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(9);
-			else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(13);
-			
-			controller.getCurrentScene().attachChild(player);
-			controller.setPlayer(player);
-			
-			/* let the camera chase the player */
-			camera.setChaseEntity(player);
-			camera.setCenterDirect(spawnX, spawnY);
-			
-
-		} else {
+			startNewGame();
+		} 
+		// previous game was loaded
+		else {
 			Log.d("projekt", "loadGame");
 
-			LoadSavedGame gameLoader = new LoadSavedGame(this);
-			//load game
-			gameLoader.loadGame(slot);
-			
-			Log.d("projekt", "loaded");
-
-			int lastLevel = gameLoader.getLastLevel();
-			for(int i=1; i<=lastLevel; i++) {
-				String filename = gameLoader.getLevelLoader(i).getMapName();
-				InputStream fin = null;
-				try {
-					fin = this.openFileInput(filename);
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
-
-				TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i, fin);
-
-				OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
-				scene.loadAnimatedSprites(opponentTextureRegion, npcTextureRegion, getVertexBufferObjectManager(), i, gameLoader);
-				controller.addSceneToManager(scene);
-				int level = gameLoader.getPlayerData().getlevel();
-				controller.setLevel(level);
-				LevelActivity.this.mEngine.setScene(scene);
-				Log.d("projekt", "scenes set");
-
-			}
-			int questSceneIndex = lastLevel + 1;
-			questScene = new QuestScene(questSceneIndex, controller,getAssets(), this.mEngine, getVertexBufferObjectManager());
-			questScene.attachChild(questScene.getMap().getTMXLayers().get(0));
-			
-			camera.setBounds(0, 0, 30*32, 30*32);	// TODO: insert constants
-			camera.setBoundsEnabled(true);
-
-			questcount = gameLoader.getQuestCount();
-			
-			/* set the scene's on touch listener to the activity itself */
-			pinchZoomDetector = new PinchZoomDetector(this);
-			pinchZoomDetector.setEnabled(true);
-			clickDetector = new ClickDetector(this);
-			clickDetector.setEnabled(true);
-
-			float positionX = gameLoader.getPlayerData().getPositionX();
-			float positionY = gameLoader.getPlayerData().getPositionY();
-			int playerLevel = gameLoader.getPlayerData().getPlayerLevel();
-			player = new Player(positionX, positionY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), playerLevel);
-			player.setZIndex(1);
-			player.setCurrentTileIndex(gameLoader.getPlayerData().getDirection());
-
-			controller.getCurrentScene().attachChild(player);
-			controller.setPlayer(player);
-			
-
-			/* let the camera chase the player */
-			camera.setChaseEntity(player);
-			Log.d("projekt", "player set");
-			
-			player.changeHealth(-(player.getHealth() - gameLoader.getPlayerData().getHealth()));
-			controller.changeGold(player.getGold());
-			controller.addExp(gameLoader.getPlayerData().getSavedExp());
-			redBarPlayer.setWidth((float)(100-player.getHealth())/3);
-			redBarPlayer.setX(44-redBarPlayer.getWidth());
-			
-			ArrayList<Item> inventory = new ArrayList<Item>();
-			
-			for(int i = 0; i < gameLoader.getPlayerData().getInventory().size(); i++) {
-				inventory.add(controller.getItemByName(gameLoader.getPlayerData().getInventory().get(i)));
-			}
-			
-			player.setInventory(inventory);
-			
-			String[] armor = gameLoader.getPlayerData().getArmor();
-			for(int i = 0; i < armor.length; i++) {
-				if(!armor[i].equals("")) {
-					Log.d("projekt", "armor" + i);
-					Log.d("projekt", "armor: '" + armor[i] + "'");
-					
-					player.addArmor((Armor)controller.getItemByName(armor[i]));					
-				}
-			}
-			if(!gameLoader.getPlayerData().getWeapon().equals("")) {
-				player.setWeapon((Weapon)controller.getItemByName(gameLoader.getPlayerData().getWeapon()));
-			}
-			
-			for(int i = 0; i < gameLoader.getClosedQuestList().size();i++) {
-				Log.d("projekt", "quest npcId: " + gameLoader.getClosedQuestList().get(i).getNpcID());
-				controller.endQuest(gameLoader.getClosedQuestList().get(i).getNpcID());
-			}
-			
-			for(int i = 0; i < gameLoader.getOpenQuestList().size();i++) {
-				Log.d("projekt", "quest npcId: " + gameLoader.getOpenQuestList().get(i).getNpcID());
-				controller.startQuest(gameLoader.getOpenQuestList().get(i).getNpcID(), gameLoader.getOpenQuestList().get(i).getProgress());
-			}
-			
-			controller.changeGold(-(controller.getGold() - gameLoader.getPlayerData().getGold()));
+			loadPreviousSave();			
 		}
 
+		initHUD();		
+		
+		if(newGame) {
+			interActionText = (ArrayList<String>) controller.getInteractionText(null).clone();
+			startInteraction();
+		} else {
+			levelTextPlayer.setText("lvl " + player.getLevel());
+		}
+		
+		return controller.getCurrentScene();
+	}
+
+	/**
+	 * starts a complete new game
+	 */
+	private void startNewGame() {
+		int lastLevel = controller.getLastLevel();
+		// creates a certain amount of scenes
+		for(int i=1; i<=lastLevel; i++){
+			TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i, null);
+			OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
+			scene.generateAnimatedSprites(opponentTextureRegion, npcTextureRegion, getVertexBufferObjectManager(), i);
+			controller.addSceneToManager(scene);
+		}
+		int questSceneIndex = lastLevel + 1;
+		questScene = new QuestScene(questSceneIndex, controller,getAssets(), this.mEngine, getVertexBufferObjectManager());
+		questScene.attachChild(questScene.getMap().getTMXLayers().get(0));
+		
+		camera.setBounds(0, 0, 30*32, 30*32);	// TODO: insert constants
+		camera.setBoundsEnabled(true);
+		
+		/* set the scene's on touch listener to the activity itself */
+		pinchZoomDetector = new PinchZoomDetector(this);
+		pinchZoomDetector.setEnabled(true);
+		clickDetector = new ClickDetector(this);
+		clickDetector.setEnabled(true);
+		
+		/* Calculate the coordinates for the player sprite, so it's spawned in the center of the camera. */
+		OurScene scene = controller.getCurrentScene();
+		Log.d("RPG", "Scene: "+scene.getID());
+		Log.d("RPG", "Hashmap: "+scene.getSpawns());
+		float[] coords = scene.getSpawn("SPAWN");
+		Log.d("RPG", "Koords: "+coords[0]+","+coords[1]);
+		TMXLayer layer = controller.getTMXLayer();
+		final TMXTile spawnTile = layer.getTMXTileAt(coords[0], coords[1]);
+		final float spawnX = spawnTile.getTileX() + 4;
+		final float spawnY = spawnTile.getTileY();
+
+		/* Create the sprite and add it to the scene. */
+		player = new Player(spawnX, spawnY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), 1);
+		player.setZIndex(1);
+		int column = spawnTile.getTileColumn();
+		int row = spawnTile.getTileRow();
+		Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
+		if(column==0) player.setCurrentTileIndex(5);
+		else if(row==0) player.setCurrentTileIndex(1);
+		else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(9);
+		else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(13);
+		
+		controller.getCurrentScene().attachChild(player);
+		controller.setPlayer(player);
+		
+		/* let the camera chase the player */
+		camera.setChaseEntity(player);
+		camera.setCenterDirect(spawnX, spawnY);
+	}
+
+	/**
+	 * loads a previous Savegame
+	 */
+	private void loadPreviousSave() {
+		LoadSavedGame gameLoader = new LoadSavedGame(this);
+		//load game
+		gameLoader.loadGame(slot);
+		
+		Log.d("projekt", "loaded");
+
+		int lastLevel = gameLoader.getLastLevel();
+		// creates a certain amount of scenes
+		for(int i=1; i<=lastLevel; i++) {
+			String filename = gameLoader.getLevelLoader(i).getMapName();
+			InputStream fin = null;
+			try {
+				fin = this.openFileInput(filename);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+
+			TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i, fin);
+
+			OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
+			scene.loadAnimatedSprites(opponentTextureRegion, npcTextureRegion, getVertexBufferObjectManager(), i, gameLoader);
+			controller.addSceneToManager(scene);
+			int level = gameLoader.getPlayerData().getlevel();
+			controller.setLevel(level);
+			LevelActivity.this.mEngine.setScene(scene);
+			Log.d("projekt", "scenes set");
+
+		}
+		int questSceneIndex = lastLevel + 1;
+		questScene = new QuestScene(questSceneIndex, controller,getAssets(), this.mEngine, getVertexBufferObjectManager());
+		questScene.attachChild(questScene.getMap().getTMXLayers().get(0));
+		
+		camera.setBounds(0, 0, 30*32, 30*32);	// TODO: insert constants
+		camera.setBoundsEnabled(true);
+
+		questcount = gameLoader.getQuestCount();
+		
+		/* set the scene's on touch listener to the activity itself */
+		pinchZoomDetector = new PinchZoomDetector(this);
+		pinchZoomDetector.setEnabled(true);
+		clickDetector = new ClickDetector(this);
+		clickDetector.setEnabled(true);
+
+		float positionX = gameLoader.getPlayerData().getPositionX();
+		float positionY = gameLoader.getPlayerData().getPositionY();
+		int playerLevel = gameLoader.getPlayerData().getPlayerLevel();
+		player = new Player(positionX, positionY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), playerLevel);
+		player.setZIndex(1);
+		player.setCurrentTileIndex(gameLoader.getPlayerData().getDirection());
+
+		controller.getCurrentScene().attachChild(player);
+		controller.setPlayer(player);
+		
+
+		/* let the camera chase the player */
+		camera.setChaseEntity(player);
+		Log.d("projekt", "player set");
+		
+		player.changeHealth(-(player.getHealth() - gameLoader.getPlayerData().getHealth()));
+		controller.changeGold(player.getGold());
+		controller.addExp(gameLoader.getPlayerData().getSavedExp());
+		redBarPlayer.setWidth((float)(100-player.getHealth())/3);
+		redBarPlayer.setX(44-redBarPlayer.getWidth());
+		
+		ArrayList<Item> inventory = new ArrayList<Item>();
+		
+		for(int i = 0; i < gameLoader.getPlayerData().getInventory().size(); i++) {
+			inventory.add(controller.getItemByName(gameLoader.getPlayerData().getInventory().get(i)));
+		}
+		
+		player.setInventory(inventory);
+		
+		String[] armor = gameLoader.getPlayerData().getArmor();
+		for(int i = 0; i < armor.length; i++) {
+			if(!armor[i].equals("")) {
+				Log.d("projekt", "armor" + i);
+				Log.d("projekt", "armor: '" + armor[i] + "'");
+				
+				player.addArmor((Armor)controller.getItemByName(armor[i]));					
+			}
+		}
+		if(!gameLoader.getPlayerData().getWeapon().equals("")) {
+			player.setWeapon((Weapon)controller.getItemByName(gameLoader.getPlayerData().getWeapon()));
+		}
+		
+		for(int i = 0; i < gameLoader.getClosedQuestList().size();i++) {
+			Log.d("projekt", "quest npcId: " + gameLoader.getClosedQuestList().get(i).getNpcID());
+			controller.endQuest(gameLoader.getClosedQuestList().get(i).getNpcID());
+		}
+		
+		for(int i = 0; i < gameLoader.getOpenQuestList().size();i++) {
+			Log.d("projekt", "quest npcId: " + gameLoader.getOpenQuestList().get(i).getNpcID());
+			controller.startQuest(gameLoader.getOpenQuestList().get(i).getNpcID(), gameLoader.getOpenQuestList().get(i).getProgress());
+		}
+		
+		controller.changeGold(-(controller.getGold() - gameLoader.getPlayerData().getGold()));
+	}
+	
+	/**
+	 * initialises the HUD which is always shown regardless of the camera position or movement
+	 * also initialises the HUD of the questscene
+	 */
+	private void initHUD(){
 		hud = new HUD();
 		questHud = new HUD();
 		
@@ -598,18 +666,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		questHud.registerTouchArea(backToGameButton);
 		questHud.registerTouchArea(nextQuestButton);
 		questHud.registerTouchArea(prevQuestButton);
-		
-		if(newGame) {
-			interActionText = (ArrayList<String>) controller.getInteractionText(null).clone();
-			startInteraction();
-		} else {
-			levelTextPlayer.setText("lvl " + player.getLevel());
-		}
-		
-		return controller.getCurrentScene();
 	}
 
-
+	/**
+	 * starts the questScene giving information about the active quests
+	 */
 	private void startQuestScene() {
 		
 		camera.setHUD(questHud);
@@ -688,6 +749,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		nextString();
 	}
 	
+	/**
+	 * Shows the next String of the active text on the scroll
+	 */
 	private void nextString(){
 		if(!interActionText.isEmpty()){
 			if(inventarButton.hasParent()) {
@@ -834,11 +898,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 											player.addItemToInventory(loot);
 											controller.checkQuests(loot);
 									}
-//									if(player.getEquippedWeapon()!=null) Log.d("RPG", "Equipped Weapon: "+player.getEquippedWeapon().getName());
-//									Armor[] equippedArmor = player.getArmor();
-//									for(int j=0; j<equippedArmor.length; j++){
-//										if(equippedArmor[j]!=null) Log.d("RPG", "EquippedArmorSlot "+j+": "+equippedArmor[j].getName());
-//									}
 									Log.d("RPG", player.getInventory().toString());
 									if(loot!=null){
 										runOnUiThread(new Runnable() {	
@@ -861,10 +920,17 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		player.registerEntityModifier(pathModifier);
 	}
 	
-	private void turnToTile(AnimatedSprite sprite, TMXTile destinationTile, TMXTile playerTile, TMXTiledMap map) {
-		if(destinationTile!=playerTile){
-			int divColumns = destinationTile.getTileColumn() - playerTile.getTileColumn();
-			int divRows = destinationTile.getTileRow() - playerTile.getTileRow();
+	/**
+	 * turns a sprite to a given direction
+	 * @param sprite the sprite which is to be turned around
+	 * @param destinationTile the tile the sprite shall turn to
+	 * @param spriteTile the tile the sprite is standing on
+	 * @param map the TMXTiledMap containing above tiles
+	 */
+	private void turnToTile(AnimatedSprite sprite, TMXTile destinationTile, TMXTile spriteTile, TMXTiledMap map) {
+		if(destinationTile!=spriteTile){
+			int divColumns = destinationTile.getTileColumn() - spriteTile.getTileColumn();
+			int divRows = destinationTile.getTileRow() - spriteTile.getTileRow();
 			if(divColumns==0){
 				if(divRows<0) sprite.setCurrentTileIndex(9);
 				else sprite.setCurrentTileIndex(1);
@@ -877,7 +943,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 	/**
 	 * notifies the controller to start a new level and recreate the scene
-	 * @param id 
+	 * @param id the id of the level to start
 	 */
 	private void startNewLevel(final String nextIdString) {
 		
@@ -957,12 +1023,16 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 	}
 
+	/**
+	 * called once for each tap on the touchscreen
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onClick(ClickDetector clickDetector, int pointerID,
 			float sceneX, float sceneY) {
 		if(!controller.isMoving()){
 			if(isInteracting){
+				// action=continue with interaction
 				nextString();
 			} else{
 				OurScene scene = controller.getCurrentScene();
@@ -970,6 +1040,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				final TMXTile startTile = layer.getTMXTileAt(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
 				final TMXTile destinationTile = layer.getTMXTileAt(sceneX, sceneY);
 				switch(controller.doAction(startTile, destinationTile, scene.getMap(), scene)){
+					// action=walk
 					case 1:					
 						Path path = controller.getPath(startTile, destinationTile, scene.getMap());
 						if(path!=null){
@@ -980,6 +1051,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 						}
 						else Log.d("RPG", "path=null");
 						break;
+					// action=talk
 					case 2:
 						NPC npc = (NPC) scene.getChildByMatcher(new IEntityMatcher() {							
 							@Override
@@ -994,6 +1066,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 						turnToTile(player, destinationTile, startTile, scene.getMap());
 						startInteraction();
 						break;
+					// action=fight
 					case 3:
 						Opponent opponent = (Opponent) scene.getChildByMatcher(new IEntityMatcher() {							
 							@Override
@@ -1019,6 +1092,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 						turnToTile(player, destinationTile, startTile, scene.getMap());
 						turnToTile(opponent, startTile, destinationTile, scene.getMap());
 						switch(controller.fight(player, opponent, redBarPlayer, redBarEnemy)){
+							// player defeated enemy
 							case 1:
 								fightWon(opponent, destinationTile);
 								controller.checkQuests("enemy");
@@ -1026,6 +1100,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 								hud.detachChild(redBarEnemy);
 								hud.detachChild(levelTextOpponent);
 								break;
+							// enemy defeated player
 							case 2:
 								flee();
 								break;
@@ -1033,9 +1108,15 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 						break;
 				}	
 			}
-		} else	if(!fleeing) stopPath();
+		} 
+		// action=stop walking
+		else	if(!fleeing) stopPath();
 	}
 
+	/**
+	 * called when player loses a fight
+	 * starts a path to the level exit
+	 */
 	private void flee() {
 		float[] coords;
 		if(controller.getLevel()==1) coords = controller.getCurrentScene().getSpawn("SPAWN");
@@ -1053,6 +1134,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	}
 	
 
+	/**
+	 * called when the player wins a fight
+	 * @param opponent the defeated opponent
+	 * @param destinationTile the tile the opponent is standing on
+	 */
 	private void fightWon(Opponent opponent, TMXTile destinationTile) {
 		OurScene scene = controller.getCurrentScene();
 		scene.detachChild(opponent);
@@ -1063,6 +1149,9 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		levelTextPlayer.setText("lvl " + player.getLevel());
 	}
 
+	/**
+	 * called when the activity is brought to the front, especially after exiting inventory or help activity
+	 */
 	@Override
 	protected synchronized void onResume() {
 		super.onResume();
@@ -1075,14 +1164,25 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 	}
 	
+	/**
+	 * called when user presses the back button
+	 * shows a dialog instead of exiting directly
+	 */
 	@Override
 	public void onBackPressed() {
 		this.showDialog(1);
 	}
 	
+	/**
+	 * called when a dialog is shown
+	 */
 	@Override
 	protected Dialog onCreateDialog(final int id) {
 		switch(id) {
+			/*
+			 *  created after the back button is pressed
+			 *  prompts the user if he wants to save, quit or cancel
+			 */
 			case 1:
 				return new AlertDialog.Builder(this).setMessage("Zurück zum Hauptmenü?")
 						.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
