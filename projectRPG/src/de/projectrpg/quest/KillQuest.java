@@ -24,7 +24,9 @@ public class KillQuest extends Quest{
 	}
 	
 	public boolean gotOne(){
-		alreadyKilled++;
+		if(alreadyKilled < killCount) {
+			alreadyKilled++;			
+		}
 		if(alreadyKilled==killCount) return true;
 		else return false;
 	}
@@ -38,7 +40,11 @@ public class KillQuest extends Quest{
 	}
 	
 	public void setAlreadyKilled(int alreadyKilled) {
-		this.alreadyKilled = alreadyKilled;
+		if(alreadyKilled < killCount) {
+			this.alreadyKilled = alreadyKilled;			
+		} else {
+			this.alreadyKilled = killCount;
+		}
 	}
 	
 	public String getType() {

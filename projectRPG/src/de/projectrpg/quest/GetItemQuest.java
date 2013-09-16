@@ -23,7 +23,9 @@ public class GetItemQuest extends Quest{
 	}
 
 	public boolean gotOne(){
-		alreadyFound++;
+		if(alreadyFound < count) {
+			alreadyFound++;
+		}
 		if(alreadyFound==count) return true;
 		else return false;
 	}
@@ -33,7 +35,11 @@ public class GetItemQuest extends Quest{
 	}
 	
 	public void setAlreadyFound(int alreadyFound) {
-		this.alreadyFound = alreadyFound;
+		if(alreadyFound < count) {
+			this.alreadyFound = alreadyFound;			
+		} else {
+			this.alreadyFound = count;
+		}
 	}
 	
 	public int getItemCount(){
