@@ -451,7 +451,7 @@ public class LoadSavedGame {
 		 * get the level in which the player stands
 		 * @return the level
 		 */
-		public int getlevel() {
+		public int getSavedLevel() {
 			return level;
 		}
 		

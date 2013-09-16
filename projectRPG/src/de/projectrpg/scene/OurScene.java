@@ -68,7 +68,7 @@ public class OurScene extends Scene {
 				if(tileIsntBlockingSpawn(tile)){
 					for(int j=0; j<getChildCount(); j++){
 						IEntity entity = getChildByIndex(j);
-						if(entity instanceof Sprite && entity.getX()==tile.getTileX() && entity.getY()==tile.getTileY()){
+						if(entity instanceof Sprite && (Math.abs(entity.getX() - tile.getTileX()) < .0000001) && (Math.abs(entity.getY() - tile.getTileY()) < .0000001)){
 							alreadySet = true;
 							break;
 						}

@@ -448,7 +448,104 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		else {
 			Log.d("projekt", "loadGame");
 
+
 			loadPreviousSave();			
+
+			LoadSavedGame gameLoader = new LoadSavedGame(this);
+			//load game
+			gameLoader.loadGame(slot);
+			
+			Log.d("projekt", "loaded");
+
+			int lastLevel = gameLoader.getLastLevel();
+			for(int i=1; i<=lastLevel; i++) {
+				String filename = gameLoader.getLevelLoader(i).getMapName();
+				InputStream fin = null;
+				try {
+					fin = this.openFileInput(filename);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+
+				TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i, fin);
+
+				OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
+				scene.loadAnimatedSprites(opponentTextureRegion, npcTextureRegion, getVertexBufferObjectManager(), i, gameLoader);
+				controller.addSceneToManager(scene);
+				int level = gameLoader.getPlayerData().getSavedLevel();
+				controller.setLevel(level);
+				LevelActivity.this.mEngine.setScene(scene);
+				Log.d("projekt", "scenes set");
+
+			}
+			int questSceneIndex = lastLevel + 1;
+			questScene = new QuestScene(questSceneIndex, controller,getAssets(), this.mEngine, getVertexBufferObjectManager());
+			questScene.attachChild(questScene.getMap().getTMXLayers().get(0));
+			
+			camera.setBounds(0, 0, 30*32, 30*32);	// TODO: insert constants
+			camera.setBoundsEnabled(true);
+
+			questcount = gameLoader.getQuestCount();
+			
+			/* set the scene's on touch listener to the activity itself */
+			pinchZoomDetector = new PinchZoomDetector(this);
+			pinchZoomDetector.setEnabled(true);
+			clickDetector = new ClickDetector(this);
+			clickDetector.setEnabled(true);
+
+			float positionX = gameLoader.getPlayerData().getPositionX();
+			float positionY = gameLoader.getPlayerData().getPositionY();
+			int playerLevel = gameLoader.getPlayerData().getPlayerLevel();
+			player = new Player(positionX, positionY, 24, 32, this.playerTextureRegion, this.getVertexBufferObjectManager(), playerLevel);
+			player.setZIndex(1);
+			player.setCurrentTileIndex(gameLoader.getPlayerData().getDirection());
+
+			controller.getCurrentScene().attachChild(player);
+			controller.setPlayer(player);
+			
+
+			/* let the camera chase the player */
+			camera.setChaseEntity(player);
+			Log.d("projekt", "player set");
+			
+			player.changeHealth(-(player.getHealth() - gameLoader.getPlayerData().getHealth()));
+			controller.changeGold(player.getGold());
+			controller.addExp(gameLoader.getPlayerData().getSavedExp());
+			redBarPlayer.setWidth((float)(100-player.getHealth())/3);
+			redBarPlayer.setX(44-redBarPlayer.getWidth());
+			
+			ArrayList<Item> inventory = new ArrayList<Item>();
+			
+			for(int i = 0; i < gameLoader.getPlayerData().getInventory().size(); i++) {
+				inventory.add(controller.getItemByName(gameLoader.getPlayerData().getInventory().get(i)));
+			}
+			
+			player.setInventory(inventory);
+			
+			String[] armor = gameLoader.getPlayerData().getArmor();
+			for(int i = 0; i < armor.length; i++) {
+				if(!armor[i].equals("")) {
+					Log.d("projekt", "armor" + i);
+					Log.d("projekt", "armor: '" + armor[i] + "'");
+					
+					player.addArmor((Armor)controller.getItemByName(armor[i]));					
+				}
+			}
+			if(!gameLoader.getPlayerData().getWeapon().equals("")) {
+				player.setWeapon((Weapon)controller.getItemByName(gameLoader.getPlayerData().getWeapon()));
+			}
+			
+			for(int i = 0; i < gameLoader.getClosedQuestList().size();i++) {
+				Log.d("projekt", "quest npcId: " + gameLoader.getClosedQuestList().get(i).getNpcID());
+				controller.endQuest(gameLoader.getClosedQuestList().get(i).getNpcID());
+			}
+			
+			for(int i = 0; i < gameLoader.getOpenQuestList().size();i++) {
+				Log.d("projekt", "quest npcId: " + gameLoader.getOpenQuestList().get(i).getNpcID());
+				controller.startQuest(gameLoader.getOpenQuestList().get(i).getNpcID(), gameLoader.getOpenQuestList().get(i).getProgress());
+			}
+			
+			controller.changeGold(-(controller.getGold() - gameLoader.getPlayerData().getGold()));
 		}
 
 		initHUD();		
@@ -544,7 +641,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
 			scene.loadAnimatedSprites(opponentTextureRegion, npcTextureRegion, getVertexBufferObjectManager(), i, gameLoader);
 			controller.addSceneToManager(scene);
-			int level = gameLoader.getPlayerData().getlevel();
+			int level = gameLoader.getPlayerData().getSavedLevel();
 			controller.setLevel(level);
 			LevelActivity.this.mEngine.setScene(scene);
 			Log.d("projekt", "scenes set");

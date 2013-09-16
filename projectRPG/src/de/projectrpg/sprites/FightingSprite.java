@@ -20,7 +20,7 @@ public class FightingSprite extends AnimatedSprite {
 		maxHealth = health;
 		agility = level;
 		luck = level;
-		concentration = 0.5 + level/10;
+		concentration = 0.5 + ((double)level)/10;
 	}
 	
 	public int getLevel(){

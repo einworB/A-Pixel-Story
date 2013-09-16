@@ -110,6 +110,8 @@ public class RandomMapArrayGenerator {
 				mapArray[spawntile][29] = 23;
 				mapArray[spawntile][28] = 1;
 				break;
+			default:
+				break;
 			}
 			spawnSet = true;
 		}
@@ -149,6 +151,8 @@ public class RandomMapArrayGenerator {
 					case BOTTOM_SIDE:
 						mapArray[transitionTile][29] = 33;
 						mapArray[transitionTile][28] = 1;
+						break;
+					default:
 						break;
 					}
 					spawnExitSide = sideTransition;
@@ -193,6 +197,8 @@ public class RandomMapArrayGenerator {
 						mapArray[transitionTile][29] = 33;
 						mapArray[transitionTile][28] = 1;
 						break;
+					default:
+						break;
 					}
 					spawnExitSide = sideTransition;
 					break;
@@ -222,6 +228,8 @@ public class RandomMapArrayGenerator {
 					case BOTTOM_SIDE:
 						mapArray[transitionTile][29] = 13;
 						mapArray[transitionTile][28] = 1;
+						break;
+					default:
 						break;
 					}
 					spawnExitSide = sideTransition;
