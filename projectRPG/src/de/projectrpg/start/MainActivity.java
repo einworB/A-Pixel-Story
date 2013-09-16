@@ -136,6 +136,19 @@ public class MainActivity extends Activity {
 		}
 	}
 	
+	@Override
+	public void onResume() {
+		super.onResume();
+		if(isBackButton){
+			table.setVisibility(View.VISIBLE);
+			newGame.setVisibility(View.VISIBLE);
+			newGameImageView.setVisibility(View.VISIBLE);
+			savedGameSlot1.setVisibility(View.INVISIBLE);
+			savedGameSlot2.setVisibility(View.INVISIBLE);
+			isBackButton = false;
+		}
+	}
+	
 	private void setOnClickListenerNewGame(View view){
 		view.setOnClickListener(new OnClickListener() {
 
