@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 
-import com.example.projectrpg.R;
+import de.projectrpg.R;
 
 /**
  * The activity to help the user to play the game.

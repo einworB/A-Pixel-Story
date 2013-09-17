@@ -24,8 +24,7 @@ import de.projectrpg.util.OurRandomGenerator;
 public class OurDatabase {
 
 	/** the path to the database in the project's file directory */
-    private static final String DB_PATH = "/data/data/com.example.projectrpg/databases/";
- // TODO: change package name!!!!!!!!!!!
+    private static final String DB_PATH = "/data/data/de.projectrpg/databases/";
  
     /** the name of the database */
     private static final String DB_NAME = "androidprojectdatabase";

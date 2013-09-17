@@ -17,7 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.projectrpg.R;
+import de.projectrpg.R;
 
 import de.projectrpg.database.Armor;
 import de.projectrpg.database.HealItem;

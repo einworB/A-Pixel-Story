@@ -18,7 +18,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.projectrpg.R;
+import de.projectrpg.R;
 
 import de.projectrpg.game.LevelActivity;
 
