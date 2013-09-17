@@ -83,7 +83,7 @@ public class Controller {
 	}
 	
 	public Controller(Context context, Sprite expBar){
-		mapLoader = new TMXMapLoader(this);
+		mapLoader = new TMXMapLoader();
 		sceneManager = new SceneManager();
 		isMoving = false;
 		level = 1;
@@ -91,13 +91,6 @@ public class Controller {
 		db = new OurDatabase(context);
 		questManager = new QuestManager(this);
 		this.expBar = expBar;
-	}
-
-	public void testDatabase() {
-		db.open();
-		Armor weapon = (Armor) db.getItem("Dreckiger Regenmantel");
-		Log.d("DBTEST", weapon.getName());
-		db.close();
 	}
 	
 	public Item getItemByName(String itemName) {

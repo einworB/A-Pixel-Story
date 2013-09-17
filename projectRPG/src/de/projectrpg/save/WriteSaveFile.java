@@ -64,7 +64,7 @@ public class WriteSaveFile {
 	public void createFile(int slot, int levelcount, int questcount, OurScene[] scene, Player player, Controller controller){
 		this.levelcount = levelcount;
 		this.questcount = questcount;
-		this.sceneArray = scene;
+		this.sceneArray = scene.clone();
 		this.player = player;
 		this.controller = controller;
 		this.slot = slot;

@@ -157,30 +157,33 @@ public class Algorithm {
 	 */
 	public Path updatePath() {
 		// Sets the A* path from the player location to the touched location.
-		if(pathFinderMap.isBlocked(endPosition.getTileColumn(), endPosition.getTileRow(), layer)) {
-			if(isReachable(endPosition)) {
-				endPosition = getNextTile(startPosition, endPosition);
-			} else {
+		if(pathFinderMap != null && aStarPathFinder != null) {
+			if(pathFinderMap.isBlocked(endPosition.getTileColumn(), endPosition.getTileRow(), layer)) {
+				if(isReachable(endPosition)) {
+					endPosition = getNextTile(startPosition, endPosition);
+				} else {
+					return null;
+				}
+			}
+			if(startPosition.equals(endPosition)) {
 				return null;
 			}
+	        // Determine the tile locations
+	        int FromCol = startPosition.getTileColumn();
+	        int FromRow = startPosition.getTileRow();
+	        int ToCol = endPosition.getTileColumn();
+	        int ToRow = endPosition.getTileRow();
+	        // Find the path. This needs to be refreshed
+	        try {
+	            path = aStarPathFinder.findPath(pathFinderMap, 0, 0, tiledMap.getTileColumns()-1, tiledMap.getTileRows()-1, layer, 
+	            		FromCol, FromRow, ToCol, ToRow, false, heuristic, costCallback);        	
+	        } catch(Throwable ex) {
+	        	return null;
+	        }
+	        //Moves the sprite along the path
+	    	return loadPathFound();
 		}
-		if(startPosition.equals(endPosition)) {
-			return null;
-		}
-        // Determine the tile locations
-        int FromCol = startPosition.getTileColumn();
-        int FromRow = startPosition.getTileRow();
-        int ToCol = endPosition.getTileColumn();
-        int ToRow = endPosition.getTileRow();
-        // Find the path. This needs to be refreshed
-        try {
-            path = aStarPathFinder.findPath(pathFinderMap, 0, 0, tiledMap.getTileColumns()-1, tiledMap.getTileRows()-1, layer, 
-            		FromCol, FromRow, ToCol, ToRow, false, heuristic, costCallback);        	
-        } catch(Throwable ex) {
-        	return null;
-        }
-        //Moves the sprite along the path
-    	return loadPathFound();
+		return null;
 	}
 
 	/**
@@ -190,26 +193,28 @@ public class Algorithm {
 	 * @return true if it is reachable. False if not.
 	 */
 	private boolean isReachable(TMXTile tile) {
-		TMXTile[] testTiles = new TMXTile[4];
-		if(tile.getTileColumn() > 0 ) {
-			testTiles[0] = layer.getTMXTile((tile.getTileColumn() - 1), (tile.getTileRow()));			
-		}
-		if(tile.getTileRow() > 0 ) {
-			testTiles[1] = layer.getTMXTile((tile.getTileColumn()), (tile.getTileRow() - 1));
-		}
-		if(tile.getTileRow() < (layer.getTileRows() - 1) ) {
-			testTiles[2] = layer.getTMXTile((tile.getTileColumn()), (tile.getTileRow() + 1));
-		}
-		if(tile.getTileColumn() < (layer.getTileColumns() - 1) ) {
-			testTiles[3] = layer.getTMXTile((tile.getTileColumn() + 1), (tile.getTileRow()));			
-		}
-		
-		for(int i = 0; i < testTiles.length; i++) {
-			if(testTiles[i] != null) {
-				if(!pathFinderMap.isBlocked(testTiles[i].getTileColumn(), testTiles[i].getTileRow(), layer)) {
-					return true;
+		if(pathFinderMap != null) {
+			TMXTile[] testTiles = new TMXTile[4];
+			if(tile.getTileColumn() > 0 ) {
+				testTiles[0] = layer.getTMXTile((tile.getTileColumn() - 1), (tile.getTileRow()));			
+			}
+			if(tile.getTileRow() > 0 ) {
+				testTiles[1] = layer.getTMXTile((tile.getTileColumn()), (tile.getTileRow() - 1));
+			}
+			if(tile.getTileRow() < (layer.getTileRows() - 1) ) {
+				testTiles[2] = layer.getTMXTile((tile.getTileColumn()), (tile.getTileRow() + 1));
+			}
+			if(tile.getTileColumn() < (layer.getTileColumns() - 1) ) {
+				testTiles[3] = layer.getTMXTile((tile.getTileColumn() + 1), (tile.getTileRow()));			
+			}
+			
+			for(int i = 0; i < testTiles.length; i++) {
+				if(testTiles[i] != null) {
+					if(!pathFinderMap.isBlocked(testTiles[i].getTileColumn(), testTiles[i].getTileRow(), layer)) {
+						return true;
+					}
+					
 				}
-				
 			}
 		}
 		
@@ -265,15 +270,17 @@ public class Algorithm {
 			if(finalPosition.getTileRow() + i < TMXMapLayer.getTileRows())
 				playerTiles.add(TMXMapLayer.getTMXTile(finalPosition.getTileColumn(), finalPosition.getTileRow() + i));
 
-			for (TMXTile tmxTile : playerTiles) {
-				//If tile is over a blocked tile or out of bounds then remove
-				if (pathFinderMap.isBlocked(tmxTile.getTileColumn(), tmxTile.getTileRow(), TMXMapLayer) 
-						|| tmxTile.getTileX() >= TMXMapLayer.getWidth()
-						|| tmxTile.getTileY() >= TMXMapLayer.getHeight() 
-						|| tmxTile.getTileX() < 0
-						|| tmxTile.getTileY() < 0 ) {	
-					removeTiles.add(tmxTile);
-				}									
+			if(pathFinderMap != null) {
+				for (TMXTile tmxTile : playerTiles) {
+					//If tile is over a blocked tile or out of bounds then remove
+					if (pathFinderMap.isBlocked(tmxTile.getTileColumn(), tmxTile.getTileRow(), TMXMapLayer) 
+							|| tmxTile.getTileX() >= TMXMapLayer.getWidth()
+							|| tmxTile.getTileY() >= TMXMapLayer.getHeight() 
+							|| tmxTile.getTileX() < 0
+							|| tmxTile.getTileY() < 0 ) {	
+						removeTiles.add(tmxTile);
+					}									
+				}
 			}
 			//If any of the above tiles went outside of the blocked tile then stop looping
 			if(playerTiles.size() >= 1){

@@ -36,7 +36,9 @@ public class OurScene extends Scene {
 		super();
 		this.tmxTiledMap = tmxTiledMap;
 		attachChild(tmxTiledMap.getTMXLayers().get(0));
-		setOnSceneTouchListener((LevelActivity)context);
+		if(context instanceof LevelActivity) {
+			setOnSceneTouchListener((LevelActivity)context);
+		}
 		this.spawns = spawns;
 		this.id = id;
 	}

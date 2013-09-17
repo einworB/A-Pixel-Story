@@ -78,7 +78,7 @@ public class OurDatabase {
 	 * @return the new created item with the values from the database(or null if not exists)
 	 */
 	public Item getItem(String name){
-		String sql = new String("SELECT * FROM item WHERE name='"+name+"'");
+		String sql = String.format("SELECT * FROM item WHERE name='%s'", name);
 		Cursor cursor = db.rawQuery(sql, null);
 		
 		if (cursor.moveToFirst()) {

@@ -43,7 +43,7 @@ public class Player extends FightingSprite {
 	}
 	
 	public Armor[] getArmor(){
-		return equippedArmor;
+		return equippedArmor.clone();
 	}
 
 	@Override

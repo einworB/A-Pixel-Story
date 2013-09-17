@@ -6,17 +6,15 @@ import java.util.HashMap;
 import org.andengine.engine.Engine;
 import org.andengine.extension.tmx.TMXLayer;
 import org.andengine.extension.tmx.TMXLoader;
+import org.andengine.extension.tmx.TMXLoader.ITMXTilePropertiesListener;
 import org.andengine.extension.tmx.TMXProperties;
 import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTileProperty;
 import org.andengine.extension.tmx.TMXTiledMap;
-import org.andengine.extension.tmx.TMXLoader.ITMXTilePropertiesListener;
 import org.andengine.extension.tmx.util.exception.TMXLoadException;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
-
-import de.projectrpg.game.Controller;
 
 import android.content.res.AssetManager;
 import android.util.Log;
@@ -25,12 +23,6 @@ public class TMXMapLoader {
 	
 	private TMXTiledMap tmxMap;
 	private HashMap<String, float[]> spawns;
-	private Controller controller;
-	
-	public TMXMapLoader(Controller controller){
-		this.controller = controller;
-		
-	}
 
 	public TMXTiledMap loadTMXMap(AssetManager assetManager, Engine mEngine, VertexBufferObjectManager vertexBufferObjectManager, InputStream inputStream){
 		spawns = new HashMap<String, float[]>();

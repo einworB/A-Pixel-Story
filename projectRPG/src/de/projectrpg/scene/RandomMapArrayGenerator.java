@@ -1,6 +1,5 @@
 package de.projectrpg.scene;
 
-import android.util.Log;
 import de.projectrpg.util.OurRandomGenerator;
 
 
@@ -75,7 +74,7 @@ public class RandomMapArrayGenerator {
 		
 		checkForUnreachableTiles();
 		
-		return mapArray;
+		return mapArray.clone();
 	}
 
 	/**
