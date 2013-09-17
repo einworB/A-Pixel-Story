@@ -83,152 +83,21 @@ public class LoadSavedGame {
                 		levelLoaders = new LevelLoader[lastLevel];
                 	} else if(startTagName.contains("level")) {
             			
-                		LevelLoader levelLoader = new LevelLoader(level);
-                		parser.next();
-                		parser.next();
-                		String startTagName2 = null;
-                		Log.d("projekt", "level" + level);
-                		Log.d("projekt", parser.getName());
-                		
-                		// if the same tag as the actual starttag appears it is the endtag of this block
-                		while(!parser.getName().contentEquals(startTagName)){
-                			
-                			startTagName2 = parser.getName();
-                			if(startTagName2.equalsIgnoreCase("mapname")) {
-                				
-                        		levelLoader.setMapName(parser.getAttributeValue(0));
-                			
-                			} else if(startTagName2.equalsIgnoreCase("opponents")) {
-                    			Log.d("projekt", "opponents");
-                				parser.next();
-                				parser.next();
-                        		String startTagName3 = null;
-                        		// if the same tag as the actual starttag appears it is the endtag of this block
-                        		while(!parser.getName().contentEquals(startTagName2)){
-                        			startTagName3 = parser.getName();
-                        			if(startTagName3.contains("opponent")) {
-
-                        				float positionX = Float.parseFloat(parser.getAttributeValue(null, "positionX"));
-                        				float positionY = Float.parseFloat(parser.getAttributeValue(null, "positionY"));
-                        				int opponentLevel = Integer.parseInt(parser.getAttributeValue(null, "level"));
-                        				boolean isEpic = Boolean.parseBoolean(parser.getAttributeValue(null, "isEpic"));
-                        				int direction = Integer.parseInt(parser.getAttributeValue(null, "direction"));
-                        				float health = Float.parseFloat(parser.getAttributeValue(null, "health"));
-                        				
-                        				levelLoader.addOpponent(positionX, positionY, opponentLevel, isEpic, direction, health);
-                        			}
-                        			parser.next();
-                        			parser.next();
-                        			
-                        		}
-                			} else if(startTagName2.equalsIgnoreCase("npcs")) {
-                    			Log.d("projekt", "npcs");
-
-                    			parser.next();
-                    			parser.next();
-                        		String startTagName3 = null;
-                        		// if the same tag as the actual starttag appears it is the endtag of this block
-                        		while(!parser.getName().contentEquals(startTagName2)){
-                        			startTagName3 = parser.getName();
-                        			if(startTagName3.contains("npc")) {
-                        				
-                        				float positionX = Float.parseFloat(parser.getAttributeValue(null, "positionX"));
-                        				float positionY = Float.parseFloat(parser.getAttributeValue(null, "positionY"));
-                        				int id = Integer.parseInt(parser.getAttributeValue(null, "ID"));
-                        				int direction = Integer.parseInt(parser.getAttributeValue(null, "direction"));
-                        				
-                        				levelLoader.addNpc(positionX, positionY, id, level, direction);
-                        			}
-                        			parser.next();
-                        			parser.next();
-                        			
-                        		}
-                			}
-                			parser.next();
-                			parser.next();
-                		}
-                		levelLoaders[level - 1] = levelLoader;
-                		level++;
+                		levelData(level, startTagName);
+            			level++;
+            			
                 	} else if(startTagName.equalsIgnoreCase("openquests")) {
-            			Log.d("projekt", "openquests");
-
-                		parser.next();
-                		parser.next();
-                		String startTagName2 = null;
+            			
+                		loadOpenQuests(startTagName);
                 		
-                		// if the same tag as the actual starttag appears it is the endtag of this block
-                		while(!parser.getName().contentEquals(startTagName)){
-                			startTagName2 = parser.getName();
-                			if(startTagName2.contains("quest")) {
-                				
-                				String type = parser.getAttributeValue(null, "type");
-                    			int npcID = Integer.parseInt(parser.getAttributeValue(null, "npcID"));
-                    			int progress = 0;
-                    			if(!parser.getAttributeValue(null, "type").equals("TalkToQuest")) {
-                    				progress = Integer.parseInt(parser.getAttributeValue(null, "progress"));                    				
-                            	}
-                				
-                    			addOpenQuest(npcID, type, progress);
-                			}
-                			parser.next();
-                			parser.next();
-                		}
                 	} else if(startTagName.equalsIgnoreCase("closedquests")) {
-            			Log.d("projekt", "closedquests");
-
-            			parser.next();
-                		parser.next();
-                		String startTagName2 = null;
+            			
+                		loadClosedQuests(startTagName);
                 		
-                		// if the same tag as the actual starttag appears it is the endtag of this block
-                		while(!parser.getName().contentEquals(startTagName)){
-                			startTagName2 = parser.getName();
-                			if(startTagName2.contains("quest")) {
-                    			
-                				int npcID = Integer.parseInt(parser.getAttributeValue(null, "npcID"));
-                				
-                				addClosedQuest(npcID);
-                			}
-                			parser.next();
-                			parser.next();
-                		}
                 	} else if(startTagName.equalsIgnoreCase("player")) {
-            			Log.d("projekt", "player");
-
-                		int inLevel = Integer.parseInt(parser.getAttributeValue(null, "level"));
-                		float positionX = Float.parseFloat(parser.getAttributeValue(null, "positionX"));
-                		float positionY = Float.parseFloat(parser.getAttributeValue(null, "positionY"));
-                		int playerLevel = Integer.parseInt(parser.getAttributeValue(null, "playerlevel"));
-                		float health = Float.parseFloat(parser.getAttributeValue(null, "health"));
-                		int exp = Integer.parseInt(parser.getAttributeValue(null, "exp"));
-        				int direction = Integer.parseInt(parser.getAttributeValue(null, "direction"));
-        				int gold = Integer.parseInt(parser.getAttributeValue(null, "gold"));
                 		
-        				player = new PlayerObject(inLevel, positionX, positionY, playerLevel, health, exp, direction, gold);
-                		parser.next();
-                		parser.next();
-                		String startTagName2 = null;
+                		loadPlayer(startTagName);
                 		
-                		// if the same tag as the actual starttag appears it is the endtag of this block
-                		while(!parser.getName().contentEquals(startTagName)){
-                			startTagName2 = parser.getName();
-                			if(startTagName2.equalsIgnoreCase("equipped")) {
-                				String weapon = parser.getAttributeValue(null, "weapon");
-                				String armor0 = parser.getAttributeValue(null, "armor0");
-                				String armor1 = parser.getAttributeValue(null, "armor1");
-                				String armor2 = parser.getAttributeValue(null, "armor2");
-                				String armor3 = parser.getAttributeValue(null, "armor3");
-                				String armor4 = parser.getAttributeValue(null, "armor4");
-                				player.setWeapon(weapon);
-                				player.setArmor(armor0, armor1, armor2, armor3, armor4);
-                			} else if(startTagName2.equalsIgnoreCase("inventory")) {
-                				for (int i = 0; i < parser.getAttributeCount(); i++) {
-                					player.setInventory(parser.getAttributeValue(null, "inventory" + i));
-                				}
-                			}
-                			parser.next();
-                			parser.next();
-                		}
                 	}
                 	break;
                 case XmlPullParser.END_DOCUMENT:
@@ -243,6 +112,187 @@ public class LoadSavedGame {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Load all open quests from xml file
+	 * @param startTagName the name of the actual start tag
+	 * @throws XmlPullParserException
+	 * @throws IOException
+	 */
+	private void loadOpenQuests(String startTagName) throws XmlPullParserException, IOException {
+		Log.d("projekt", "openquests");
+
+		parser.next();
+		parser.next();
+		String startTagName2 = null;
+		
+		// if the same tag as the actual starttag appears it is the endtag of this block
+		while(!parser.getName().contentEquals(startTagName)){
+			startTagName2 = parser.getName();
+			if(startTagName2.contains("quest")) {
+				
+				String type = parser.getAttributeValue(null, "type");
+    			int npcID = Integer.parseInt(parser.getAttributeValue(null, "npcID"));
+    			int progress = 0;
+    			if(!parser.getAttributeValue(null, "type").equals("TalkToQuest")) {
+    				progress = Integer.parseInt(parser.getAttributeValue(null, "progress"));                    				
+            	}
+				
+    			addOpenQuest(npcID, type, progress);
+			}
+			parser.next();
+			parser.next();
+		}
+	}
+
+	/**
+	 * Load all closed quests from xml file
+	 * @param startTagName the name of the actual start tag
+	 * @throws XmlPullParserException
+	 * @throws IOException
+	 */
+	private void loadClosedQuests(String startTagName) throws XmlPullParserException, IOException {
+		Log.d("projekt", "closedquests");
+
+		parser.next();
+		parser.next();
+		String startTagName2 = null;
+		
+		// if the same tag as the actual starttag appears it is the endtag of this block
+		while(!parser.getName().contentEquals(startTagName)){
+			startTagName2 = parser.getName();
+			if(startTagName2.contains("quest")) {
+    			
+				int npcID = Integer.parseInt(parser.getAttributeValue(null, "npcID"));
+				
+				addClosedQuest(npcID);
+			}
+			parser.next();
+			parser.next();
+		}
+	}
+
+	/**
+	 * Load all player data from xml file. 
+	 * Get the inventory and the equipped armor and weapon.
+	 * @param startTagName the name of the actual start tag
+	 * @throws XmlPullParserException
+	 * @throws IOException
+	 */
+	private void loadPlayer(String startTagName) throws XmlPullParserException, IOException {
+		Log.d("projekt", "player");
+
+		int inLevel = Integer.parseInt(parser.getAttributeValue(null, "level"));
+		float positionX = Float.parseFloat(parser.getAttributeValue(null, "positionX"));
+		float positionY = Float.parseFloat(parser.getAttributeValue(null, "positionY"));
+		int playerLevel = Integer.parseInt(parser.getAttributeValue(null, "playerlevel"));
+		float health = Float.parseFloat(parser.getAttributeValue(null, "health"));
+		int exp = Integer.parseInt(parser.getAttributeValue(null, "exp"));
+		int direction = Integer.parseInt(parser.getAttributeValue(null, "direction"));
+		int gold = Integer.parseInt(parser.getAttributeValue(null, "gold"));
+		
+		player = new PlayerObject(inLevel, positionX, positionY, playerLevel, health, exp, direction, gold);
+		parser.next();
+		parser.next();
+		String startTagName2 = null;
+		
+		// if the same tag as the actual starttag appears it is the endtag of this block
+		while(!parser.getName().contentEquals(startTagName)){
+			startTagName2 = parser.getName();
+			if(startTagName2.equalsIgnoreCase("equipped")) {
+				String weapon = parser.getAttributeValue(null, "weapon");
+				String armor0 = parser.getAttributeValue(null, "armor0");
+				String armor1 = parser.getAttributeValue(null, "armor1");
+				String armor2 = parser.getAttributeValue(null, "armor2");
+				String armor3 = parser.getAttributeValue(null, "armor3");
+				String armor4 = parser.getAttributeValue(null, "armor4");
+				player.setWeapon(weapon);
+				player.setArmor(armor0, armor1, armor2, armor3, armor4);
+			} else if(startTagName2.equalsIgnoreCase("inventory")) {
+				for (int i = 0; i < parser.getAttributeCount(); i++) {
+					player.setInventory(parser.getAttributeValue(null, "inventory" + i));
+				}
+			}
+			parser.next();
+			parser.next();
+		}
+	}
+
+	/**
+	 * Load all level data. Load all opponents and npcs that are in a level
+	 * @param level the level to load
+	 * @param startTagName the name of the actual start tag 
+	 * @throws XmlPullParserException
+	 * @throws IOException
+	 */
+	private void levelData(int level, String startTagName) throws XmlPullParserException, IOException {
+		LevelLoader levelLoader = new LevelLoader(level);
+		parser.next();
+		parser.next();
+		String startTagName2 = null;
+		Log.d("projekt", "level" + level);
+		Log.d("projekt", parser.getName());
+		
+		// if the same tag as the actual starttag appears it is the endtag of this block
+		while(!parser.getName().contentEquals(startTagName)){
+			
+			startTagName2 = parser.getName();
+			if(startTagName2.equalsIgnoreCase("mapname")) {
+				
+        		levelLoader.setMapName(parser.getAttributeValue(0));
+			
+			} else if(startTagName2.equalsIgnoreCase("opponents")) {
+    			Log.d("projekt", "opponents");
+    			
+				parser.next();
+				parser.next();
+        		String startTagName3 = null;
+        		// if the same tag as the actual starttag appears it is the endtag of this block
+        		while(!parser.getName().contentEquals(startTagName2)){
+        			startTagName3 = parser.getName();
+        			if(startTagName3.contains("opponent")) {
+
+        				float positionX = Float.parseFloat(parser.getAttributeValue(null, "positionX"));
+        				float positionY = Float.parseFloat(parser.getAttributeValue(null, "positionY"));
+        				int opponentLevel = Integer.parseInt(parser.getAttributeValue(null, "level"));
+        				boolean isEpic = Boolean.parseBoolean(parser.getAttributeValue(null, "isEpic"));
+        				int direction = Integer.parseInt(parser.getAttributeValue(null, "direction"));
+        				float health = Float.parseFloat(parser.getAttributeValue(null, "health"));
+        				
+        				levelLoader.addOpponent(positionX, positionY, opponentLevel, isEpic, direction, health);
+        			}
+        			parser.next();
+        			parser.next();
+        			
+        		}
+			} else if(startTagName2.equalsIgnoreCase("npcs")) {
+    			Log.d("projekt", "npcs");
+
+    			parser.next();
+    			parser.next();
+        		String startTagName3 = null;
+        		// if the same tag as the actual starttag appears it is the endtag of this block
+        		while(!parser.getName().contentEquals(startTagName2)){
+        			startTagName3 = parser.getName();
+        			if(startTagName3.contains("npc")) {
+        				
+        				float positionX = Float.parseFloat(parser.getAttributeValue(null, "positionX"));
+        				float positionY = Float.parseFloat(parser.getAttributeValue(null, "positionY"));
+        				int id = Integer.parseInt(parser.getAttributeValue(null, "ID"));
+        				int direction = Integer.parseInt(parser.getAttributeValue(null, "direction"));
+        				
+        				levelLoader.addNpc(positionX, positionY, id, level, direction);
+        			}
+        			parser.next();
+        			parser.next();
+        			
+        		}
+			}
+			parser.next();
+			parser.next();
+		}
+		levelLoaders[level - 1] = levelLoader;
 	}
 
 	/**
@@ -476,7 +526,7 @@ public class LoadSavedGame {
 		 * @return the armor
 		 */
 		public String[] getArmor() {
-			return armor;
+			return armor.clone();
 		}
 		
 		/**

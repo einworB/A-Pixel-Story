@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import de.projectrpg.database.Item;
 
-
+/**
+ * A Killquest is a quest where the task is to kill a amount of opponents
+ */
 public class KillQuest extends Quest{
 	
 	private String enemyName;
