@@ -68,6 +68,7 @@ import de.projectrpg.sprites.NPC;
 import de.projectrpg.sprites.Opponent;
 import de.projectrpg.sprites.Player;
 import de.projectrpg.start.HelpActivity;
+import de.projectrpg.util.OurMusicManager;
 
 /**
  * This is the Activity the Player spends most of the playtime in 
@@ -79,6 +80,7 @@ import de.projectrpg.start.HelpActivity;
 public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTouchListener, IPinchZoomDetectorListener, IClickDetectorListener{
 
 //=======================================================================CONSTANTS========================================================================================	
+
 
 	/** constant for the camera width */
 	private static final int CAMERA_WIDTH = 720;
@@ -1157,6 +1159,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	@Override
 	protected synchronized void onResume() {
 		super.onResume();
+		OurMusicManager.start(this);
 		inventarStarted = false;
 		helpStarted = false;
 		if(redBarPlayer!=null){
@@ -1164,6 +1167,15 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			redBarPlayer.setX(44-redBarPlayer.getWidth());
 		}
 		
+	}
+	
+	/**
+	 * called when the activity is paused
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		OurMusicManager.pause();
 	}
 	
 	/**

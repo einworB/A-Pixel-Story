@@ -21,6 +21,7 @@ import android.widget.Toast;
 import de.projectrpg.R;
 
 import de.projectrpg.game.LevelActivity;
+import de.projectrpg.util.OurMusicManager;
 
 public class MainActivity extends Activity {
 	
@@ -136,6 +137,9 @@ public class MainActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * called when the activity is brought to the front e.g. on startup or exiting LevelActivity
+	 */
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -147,6 +151,16 @@ public class MainActivity extends Activity {
 			savedGameSlot2.setVisibility(View.INVISIBLE);
 			isBackButton = false;
 		}
+		OurMusicManager.start(this);		
+	}
+	
+	/**
+	 * called when the activity is paused
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		OurMusicManager.pause();
 	}
 	
 	private void setOnClickListenerNewGame(View view){
@@ -298,5 +312,7 @@ public class MainActivity extends Activity {
 		}
 
 	}
+	
+	
 }
 

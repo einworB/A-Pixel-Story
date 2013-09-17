@@ -24,6 +24,7 @@ import de.projectrpg.database.HealItem;
 import de.projectrpg.database.Item;
 import de.projectrpg.database.Weapon;
 import de.projectrpg.game.Controller;
+import de.projectrpg.util.OurMusicManager;
 
 public class InventarActivity extends Activity {
 
@@ -2199,5 +2200,23 @@ public class InventarActivity extends Activity {
 
 	public boolean inventoryIsFull() {
 		return slotsFull;
+	}
+	
+	/**
+	 * called when the activity is brought to the front
+	 */
+	@Override
+	protected synchronized void onResume() {
+		super.onResume();
+		OurMusicManager.start(this);		
+	}
+	
+	/**
+	 * called when the activity is paused
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		OurMusicManager.pause();
 	}
 }
