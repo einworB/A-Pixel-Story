@@ -12,6 +12,7 @@ import de.projectrpg.sprites.NPC;
 
 public class QuestManager {
 	
+	
 	private ArrayList<Quest> activeQuests;
 	private ArrayList<Quest> closedQuests;
 	private Controller controller;
