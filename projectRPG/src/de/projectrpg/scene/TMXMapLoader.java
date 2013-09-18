@@ -19,11 +19,24 @@ import org.andengine.util.debug.Debug;
 import android.content.res.AssetManager;
 import android.util.Log;
 
+/**
+ * This class loads the map form an input stream
+ */
 public class TMXMapLoader {
 	
+	/** The tmx map*/ 
 	private TMXTiledMap tmxMap;
+	/** A hashmap with all spawns in the game*/
 	private HashMap<String, float[]> spawns;
 
+	/**
+	 * Load the tmx map. If there is a tile with property transition add it to the spawn hashmap.
+	 * @param assetManager
+	 * @param mEngine
+	 * @param vertexBufferObjectManager
+	 * @param inputStream the input stream where the map should be loaded from
+	 * @return the tmx map
+	 */
 	public TMXTiledMap loadTMXMap(AssetManager assetManager, Engine mEngine, VertexBufferObjectManager vertexBufferObjectManager, InputStream inputStream){
 		spawns = new HashMap<String, float[]>();
 		/* load the tmx tiled map */
@@ -40,8 +53,7 @@ public class TMXMapLoader {
 							spawns.put(tmxTileProperties.get(i).getValue(), spawn);
 						}
 					}
-					
-				}				
+				}
 			});
 			Log.d("RPG", "InputStream: "+inputStream.toString());
 			this.tmxMap = tmxLoader.load(inputStream);
@@ -51,6 +63,10 @@ public class TMXMapLoader {
 		return tmxMap;
 	}
 	
+	/**
+	 * get all spawns of the game
+	 * @return all spawns of the game
+	 */
 	public HashMap<String, float[]> getSpawn(){
 		Log.d("RPG", "spawns: "+spawns);
 		return spawns;

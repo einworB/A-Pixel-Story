@@ -14,17 +14,33 @@ import de.projectrpg.util.OurRandomGenerator;
 import android.content.Context;
 import android.util.Xml;
 
+/**
+ * This class generates a random tmx map for a level. 
+ */
 public class RandomMapGenerator {
-
+	
+	/** the calling activity*/
 	private Context context;
+	/** the random map in an array*/
 	private RandomMapArrayGenerator rMapArray;
 	
+	/** the xml serializer*/
 	private XmlSerializer serializer;
+	/** the actual level*/
 	private int level;
+	/** the side of the map the transition tile was in the last level*/
 	private int lastTransitionExitSide = -1;
+	/** the index of the last level*/
 	private int lastLevel;
+	/** the slot in which the map should be saved*/
 	private int slot;
 	
+	/**
+	 * the constructor
+	 * @param context the calling activity
+	 * @param lastLevel the index of the last level
+	 * @param slot the slot in which the map should be saved
+	 */
 	public RandomMapGenerator(Context context, int lastLevel, int slot){
 		this.context = context;
 		this.lastLevel = lastLevel;
@@ -32,6 +48,12 @@ public class RandomMapGenerator {
 		this.slot = slot;
 	}
 	
+	/**
+	 * create the map. Therefore open a file output stream and write the xml statements into it.
+	 * @param index the index of the actual level
+	 * @param lastTransitionExitSide the side of the map the transition tile was in the last level
+	 * @return an input stream to load the map
+	 */
 	public InputStream createMap(int index, int lastTransitionExitSide){
 		this.level = index;
 		if(index != 1) {
@@ -59,6 +81,10 @@ public class RandomMapGenerator {
 		
 	}
 
+	/**
+	 * write the xml statements.
+	 * @return a string with the xmlstatements into it
+	 */
 	private String writeXml(){
 	    serializer = Xml.newSerializer();
 	    StringWriter writer = new StringWriter();
@@ -83,6 +109,13 @@ public class RandomMapGenerator {
 	     
 	}
 
+	/**
+	 * setup the document. 
+	 * Define which tileset should be used and the common information of the tmx map.
+	 * @throws IllegalArgumentException
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
 	private void setupDoc() throws IllegalArgumentException, IllegalStateException, IOException {
 		OurRandomGenerator rGen = new OurRandomGenerator();
 		boolean desert = rGen.getBoolean(0.5);
@@ -132,6 +165,14 @@ public class RandomMapGenerator {
         serializer.endTag("", "map");
 	}
 
+	/**
+	 * Define all properties of special tiles like the spawn and collision tiles.
+	 * A tile with the property collision a sprite cannot walk on. 
+	 * A tile with propertiy transition is to get from one level into another.
+	 * @throws IllegalArgumentException
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
 	private void setupProperties() throws IllegalArgumentException, IllegalStateException, IOException {
 		for(int i = 1; i < 22; i++) {
 	        if(i == 12) continue;
@@ -206,9 +247,14 @@ public class RandomMapGenerator {
     	serializer.endTag("", "property");
     	serializer.endTag("", "properties");
     	serializer.endTag("", "tile");
-        
 	}
 	
+	/**
+	 * set all Tiles into the map. The values of the tiles are determined in the class RandomMapArrayyGenerator.
+	 * @throws IllegalArgumentException
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
 	private void setTiles() throws IllegalArgumentException, IllegalStateException, IOException {
 		int[][] mapArray = rMapArray.generateMapArray(level, lastTransitionExitSide);
 		
@@ -222,6 +268,10 @@ public class RandomMapGenerator {
 		}
 	}
 	
+	/**
+	 * get the side of the spawn in the previous level.
+	 * @return the side of the spawn
+	 */
 	public int getLastSpawnSide() {
 		return rMapArray.getLastSpawnSide();
 	}

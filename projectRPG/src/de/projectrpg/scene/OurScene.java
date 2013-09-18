@@ -24,14 +24,31 @@ import de.projectrpg.sprites.NPC;
 import de.projectrpg.sprites.Opponent;
 import de.projectrpg.util.OurRandomGenerator;
 
+/**
+ * This Class is to set all Opponents and npcs on a scene 
+ * and set the map in each level of the game.
+ * Each level has a scene.
+ */
 public class OurScene extends Scene {
 	
+	/** all spawn fields in the game*/
 	private HashMap<String, float[]> spawns;	
+	/** the map*/
 	private TMXTiledMap tmxTiledMap;
+	/** the id of the scene*/
 	private int id;
+	/** the random generator*/
 	private OurRandomGenerator rgen = new OurRandomGenerator();
+	/** all npc in this scene*/
 	private ArrayList<NPC> npcInScene = new ArrayList<NPC>();
 	
+	/**
+	 * the constructor
+	 * @param id the id of the scene
+	 * @param context the calling activity
+	 * @param tmxTiledMap the map
+	 * @param spawns all spawns in this game
+	 */
 	public OurScene(int id, Context context, TMXTiledMap tmxTiledMap, HashMap<String, float[]> spawns){
 		super();
 		this.tmxTiledMap = tmxTiledMap;
@@ -43,23 +60,51 @@ public class OurScene extends Scene {
 		this.id = id;
 	}
 	
+	/**
+	 * get a special spawn by the previous id. 
+	 * If the previous id is null it is the first level so the spawn should be the first spawn tile in game. 
+	 * If it is not null it is a arbitrary level. Here it is the spawn tile to the previous level
+	 * @param previousID This is a string that contains "LEVEL" and the id of the scene.
+	 * @return
+	 */
 	public float[] getSpawn(String previousID){
 		if(previousID==null) return spawns.get("SPAWN");
 		else return spawns.get(previousID);
 	}
 	
+	/**
+	 * get all spawns in a hashmap
+	 * @return all spawns in a hashmap
+	 */
 	public HashMap<String, float[]> getSpawns(){
 		return spawns;
 	}
 	
+	/**
+	 * get the tmx map of this scene
+	 * @return the tmx map
+	 */
 	public TMXTiledMap getMap(){
 		return tmxTiledMap;
 	}
 	
+	/**
+	 * get the id of this scene
+	 * @return the id
+	 */
 	public int getID(){
 		return id;
 	}
 	
+	/**
+	 * Generate all sprites which should stand in this scene/level. 
+	 * First get a random number between 10 and 19. This is the sprite count for this level.
+	 * Check if a tile is blocked with an already set Sprite.
+	 * @param opponentTextureRegion
+	 * @param npcTextureRegion
+	 * @param vertextBufferObjectManager
+	 * @param level the actual level 
+	 */
 	public void generateAnimatedSprites(TiledTextureRegion opponentTextureRegion, TiledTextureRegion npcTextureRegion, VertexBufferObjectManager vertextBufferObjectManager, int level){
 		int spriteCount = rgen.nextInt(10) + 10;
 		for(int i=0; i<=spriteCount; i++){
@@ -70,7 +115,7 @@ public class OurScene extends Scene {
 				if(tileIsntBlockingSpawn(tile)){
 					for(int j=0; j<getChildCount(); j++){
 						IEntity entity = getChildByIndex(j);
-						if(entity instanceof Sprite && (Math.abs(entity.getX() - tile.getTileX()) < .0000001) && (Math.abs(entity.getY() - tile.getTileY()) < .0000001)){
+						if(entity instanceof Sprite && (Math.abs(entity.getX() - tile.getTileX() - 4) < .0000001) && (Math.abs(entity.getY() - tile.getTileY()) < .0000001)){
 							alreadySet = true;
 							break;
 						}
@@ -96,6 +141,15 @@ public class OurScene extends Scene {
 		}
 	}
 	
+	/**
+	 * If the game is loaded set the sprites again. 
+	 * The position and direction of the sprites is saved.
+	 * @param opponentTextureRegion
+	 * @param npcTextureRegion
+	 * @param vertextBufferObjectManager
+	 * @param level the actual level
+	 * @param loadSavedGame the game loader
+	 */
 	public void loadAnimatedSprites(TiledTextureRegion opponentTextureRegion, TiledTextureRegion npcTextureRegion, VertexBufferObjectManager vertextBufferObjectManager, int level, LoadSavedGame loadSavedGame) {
 		LevelLoader loader = loadSavedGame.getLevelLoader(level);
 		ArrayList<OpponentObjects> opponents = loader.getOpponentList();
@@ -120,6 +174,11 @@ public class OurScene extends Scene {
 		}
 	}
 	
+	/**
+	 * check if a given tile is in front of a the spawn tile
+	 * @param tile the tile to check
+	 * @return true if the tile is in front of a spawn tile
+	 */
 	private boolean tileIsntBlockingSpawn(TMXTile tile) {
 		int tileColumn = tile.getTileColumn();
 		int tileRow = tile.getTileRow();
@@ -143,6 +202,11 @@ public class OurScene extends Scene {
 		return true;
 	}
 
+	/**
+	 * Check if the given tile is the spawn tile.
+	 * @param tile the tile to check
+	 * @return true if it is the spawn tile
+	 */
 	private boolean isSpawnTile(TMXTile tile) {
 		if(tile!=null){
 			if(tile.getTMXTileProperties(tmxTiledMap)!=null){
@@ -156,6 +220,10 @@ public class OurScene extends Scene {
 		return false;
 	}
 
+	/**
+	 * get all npcs in this scene
+	 * @return all npcs in this scene
+	 */
 	public ArrayList<NPC> getNPCsInScene() {
 		return npcInScene;
 	}
