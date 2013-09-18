@@ -1,7 +1,6 @@
 package de.projectrpg.inventory;
 
 import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -16,9 +15,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import de.projectrpg.R;
-
 import de.projectrpg.database.Armor;
 import de.projectrpg.database.HealItem;
 import de.projectrpg.database.Item;
@@ -26,21 +23,45 @@ import de.projectrpg.database.Weapon;
 import de.projectrpg.game.Controller;
 import de.projectrpg.util.OurMusicManager;
 
+/**
+ * This is the Activity where the player can manage his whole 
+ * inventory, including buy/sell items or add/remove/use items 
+ * 
+ * @author Nedim
+ */
+
 public class InventarActivity extends Activity {
 
-	private Controller controller;
+	
+	//=======================================================================CONSTANTS========================================================================================	
 
+	/** constants for the different body parts */
 	private static final String EQUIP_HEAD = "0";
 	private static final String EQUIP_UPPER_BODY = "1";
 	private static final String EQUIP_HANDS = "2";
 	private static final String EQUIP_LOWER_BODY = "3";
 	private static final String EQUIP_FEET = "4";
 	
+	//=======================================================================FIELDS========================================================================================	
+	
+	/** the controller responsible for communication between 
+	 *  this Activity and the other Activities and for getting 
+	 *  and setting of other technical information */
+	private Controller controller;
+	
+	/** shows the clicked Item */
 	private TextView itemName;
+	
+	/** shows the title of the used interface ("Ausrüstung" or "Händler") */
 	private TextView titleSellEquip;
+	
+	/** shows the amount of gold, the player has */
 	private TextView moneyTextView;
+	
+	/** shows stats from clicked Item, like defenseValue/attackValue/healValue */
 	private TextView itemDetails;
-
+	
+	/** shows the type of the equip slots (head, upper body, etc.) */
 	private TextView equipSlotTypeText1;
 	private TextView equipSlotTypeText2;
 	private TextView equipSlotTypeText3;
@@ -48,10 +69,16 @@ public class InventarActivity extends Activity {
 	private TextView equipSlotTypeText5;
 	private TextView weaponSlotTypeText;
 
+	/** removes the clicked Item (irreversible) */
 	private Button removeItemButton;
+	
+	/** interacts with the clicked Item (use/sell/add/etc. Item) */
 	private Button interactionButton;
+	
+	/**  background of the removeItemButton*/
 	private ImageView removeItemBackground;
 
+	/** background images of inventory slots */
 	private ImageButton slot1Background;
 	private ImageButton slot2Background;
 	private ImageButton slot3Background;
@@ -62,6 +89,7 @@ public class InventarActivity extends Activity {
 	private ImageButton slot8Background;
 	private ImageButton slot9Background;
 
+	/** Item images of inventory slots */
 	private ImageButton slot1ItemImage;
 	private ImageButton slot2ItemImage;
 	private ImageButton slot3ItemImage;
@@ -71,7 +99,8 @@ public class InventarActivity extends Activity {
 	private ImageButton slot7ItemImage;
 	private ImageButton slot8ItemImage;
 	private ImageButton slot9ItemImage;
-
+	
+	/** background images of merchant slots */
 	private ImageButton slot1BackgroundSell;
 	private ImageButton slot2BackgroundSell;
 	private ImageButton slot3BackgroundSell;
@@ -82,6 +111,7 @@ public class InventarActivity extends Activity {
 	private ImageButton slot8BackgroundSell;
 	private ImageButton slot9BackgroundSell;
 
+	/** Item images of merchant slots */
 	private ImageButton slot1ItemImageSell;
 	private ImageButton slot2ItemImageSell;
 	private ImageButton slot3ItemImageSell;
@@ -91,58 +121,122 @@ public class InventarActivity extends Activity {
 	private ImageButton slot7ItemImageSell;
 	private ImageButton slot8ItemImageSell;
 	private ImageButton slot9ItemImageSell;
-
+	
+	/** background images of equip slots */
 	private ImageButton slot1BackgroundEquip;
 	private ImageButton slot2BackgroundEquip;
 	private ImageButton slot3BackgroundEquip;
 	private ImageButton slot4BackgroundEquip;
 	private ImageButton slot5BackgroundEquip;
 
+	/** Item images of equip slots */
 	private ImageButton slot1ItemImageEquip;
 	private ImageButton slot2ItemImageEquip;
 	private ImageButton slot3ItemImageEquip;
 	private ImageButton slot4ItemImageEquip;
 	private ImageButton slot5ItemImageEquip;
 
+	/** background image of weapon slot */
 	private ImageButton weaponSlotBackground;
+	
+	/** Item image of weapon slot */
 	private ImageButton weaponSlotItemImage;
-
+	
+	/** shows picture of the player */
 	private ImageButton playerEquip;
 
+	/** alphabetical sorted list of all Item names */
 	private ArrayList<String> sortedItemNames = null;
+	
+	/** alphabetical sorted list of all Item images */
 	private ArrayList<Drawable> sortedItemImages = null;
+	
+	/** list of all inventory slots */
 	private ArrayList<Slot> slotList = null;
+	
+	/** list of all merchant slots */
 	private ArrayList<Slot> slotListSell = null;
+	
+	/** list of all equip slots */
 	private ArrayList<Slot> slotListEquip = null;
+	
+	/** list of all background images of inventory slots */
 	private ArrayList<ImageButton> slotBackgroundList = null;
+	
+	/** list of all Item images of inventory slots */
 	private ArrayList<ImageButton> slotItemImageList = null;
+	
+	/** list of all background images of merchant slots */
 	private ArrayList<ImageButton> slotBackgroundListSell = null;
+	
+	/** list of all Item images of merchant slots */
 	private ArrayList<ImageButton> slotItemImageListSell = null;
+	
+	/** list of all background images of equip slots */
 	private ArrayList<ImageButton> slotBackgroundListEquip = null;
+	
+	/** list of all Item images of equip slots */
 	private ArrayList<ImageButton> slotItemImageListEquip = null;
 
+	/** slot for used weapon */
 	private Slot weaponSlot = null;
+	
+	/** saves the name of last clicked Item */
 	private String clickedItem = "leer";
+	
+	/** saves if the last clicked Item is in inventory or not */
 	private boolean isInInventory;
+	
+	/** saves the healValue of last clicked Item */
 	private int healValue = 0;
+	
+	/** saves if the needed Interface is merchant interface or not.
+	 * This information is put as extra on the intent in the LevelActivity */
 	private boolean isSellInterface;
 
+	/** saves the list of all Items in the inventory (unsorted),
+	 *  which you can get from the controller */
 	private ArrayList<Item> inventoryList = null;
+	
+	/** saves the list of all Items from a merchant (unsorted) */
 	private ArrayList<Item> inventoryListMerchant = null;
+	
+	/** list of Items, which is used to store temporarily Items in it */
 	private ArrayList<Item> tempInventoryList = null;
+	
+	/** Array of all equipped Armor */
 	private Armor[] equipedArmorList = null;
+	
+	/** Weapon Item, which saves the equipped Weapon */
 	private Weapon equippedWeapon;
 
+	/** saves, if the Item, which is used/sold/etc., 
+	 * is removed from the list, it was in before, or not */
 	private boolean removedItem;
+	
+	/** saves, if the Item, which is equipped/removed/etc.,
+	 * is put in the new list, in which it was moved, or not */
 	private boolean putItemInSlot;
 
+	/** saves temporarily slots */
 	private Slot tempSlot;
+	
+	/** saves temporarily Armor Item */
 	private Armor tempArmor;
+	
+	/** saves temporarily Item */
 	private Item tempItem;
+	
+	/** saves temporarily Weapon Item */
 	private Weapon tempWeapon;
+	
+	/** saves temporarily HealItem Item */
 	private HealItem tempHealItem;
 
+	/** counts used slots in inventory */
 	private int inventoryUsedSlotCounter = 0;
+	
+	/** saves, if all inventory slots are full or not */
 	private boolean slotsFull = false;
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -1900,15 +1994,33 @@ public class InventarActivity extends Activity {
 		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.diamantstulpen));
 		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.eisernehellebarde));
+		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.eisernerdolch));
+		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.eisernermorgenstern));
+		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.eisernerschlagring));
+		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.eivoneinemgluecklichenhuhn));
 		sortedItemImages.add(getResources().getDrawable(
 				R.drawable.etwaszuschwerereisenhammer));
 		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.fastfrischerschinken));
 		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.fastreifetomate));
+		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.faulerapfel));
 		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.frischerkopfsalat));
+		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.ganzeskaeserad));
+		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.gebratenehaehnchenkeule));
+		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.geraeuchertewuerstchen));
+		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.geschaerfterglasdolch));
 		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.goldenebeinkleider));
 		sortedItemImages
@@ -1945,6 +2057,10 @@ public class InventarActivity extends Activity {
 		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.nochwarmeschweinerippchen));
 		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.raeucherlachs));
+		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.rohekartoffel));
+		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.rostigeeisenstiefel));
 		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.rostigeeisenstulpen));
@@ -1956,6 +2072,10 @@ public class InventarActivity extends Activity {
 				R.drawable.rostigeseisenschwert));
 		sortedItemImages.add(getResources().getDrawable(
 				R.drawable.schmiedeeisernerstreitkolben));
+		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.schmiedeeiserneslangschwert));
+		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.steinhartehaferkekse));
 		sortedItemImages.add(getResources().getDrawable(
 				R.drawable.stoffhandschuhe));
 		sortedItemImages.add(getResources().getDrawable(R.drawable.stoffhose));
@@ -1966,7 +2086,11 @@ public class InventarActivity extends Activity {
 		sortedItemImages.add(getResources().getDrawable(
 				R.drawable.stumpfekupferaxt));
 		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.stumpferkupferdolch));
+		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.ueberauskoestlicherapfelkuchen));
+		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.versalzenerstockfisch));
 		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.verstaerktelederhandschuhe));
 		sortedItemImages
@@ -1997,11 +2121,20 @@ public class InventarActivity extends Activity {
 		sortedItemNames.add("Diamanthelm");
 		sortedItemNames.add("Diamantstiefel");
 		sortedItemNames.add("Diamantstulpen");
+		sortedItemNames.add("Eiserne Hellebarde");
+		sortedItemNames.add("Eiserner Dolch");
+		sortedItemNames.add("Eiserner Morgenstern");
+		sortedItemNames.add("Eiserner Schlagring");
 		sortedItemNames.add("Ei von einem glücklichen Huhn");
 		sortedItemNames.add("Etwas zu schwerer Eisenhammer");
 		sortedItemNames.add("fast frischer Schinken");
+		sortedItemNames.add("Fast reife Tomate");
 		sortedItemNames.add("Fauler Apfel");
+		sortedItemNames.add("Frischer Kopfsalat");
+		sortedItemNames.add("Ganzes Käserad");
 		sortedItemNames.add("Gebratene Hähnchenkeule");
+		sortedItemNames.add("Geräucherte Würstchen");
+		sortedItemNames.add("Geschärfter Glasdolch");
 		sortedItemNames.add("Goldener Beinkleider");
 		sortedItemNames.add("Goldener Brustpanzer");
 		sortedItemNames.add("Goldener Helm");
@@ -2020,18 +2153,24 @@ public class InventarActivity extends Activity {
 		sortedItemNames.add("Nagelneuer eiserner Brustpanzer");
 		sortedItemNames.add("Nagelneues Eisenschwert");
 		sortedItemNames.add("noch warme Schweinerippchen");
+		sortedItemNames.add("Räucherlachs");
+		sortedItemNames.add("Rohe Kartoffel");
 		sortedItemNames.add("Rostige Eisenstiefel");
 		sortedItemNames.add("Rostige Eisenstulpen");
 		sortedItemNames.add("Rostiger Eisenbrustpanzer");
 		sortedItemNames.add("Rostiger Eisenhelm");
 		sortedItemNames.add("Rostiges Eisenschwert");
 		sortedItemNames.add("Schmiedeeiserner Streitkolben");
+		sortedItemNames.add("Schmiedeeisernes Langschwert");
+		sortedItemNames.add("Steinharte Haferkekse");
 		sortedItemNames.add("Stoffhandschuhe");
 		sortedItemNames.add("Stoffhose");
 		sortedItemNames.add("Stoffschuhe");
 		sortedItemNames.add("Stoffstirnband");
 		sortedItemNames.add("stumpfe Kupferaxt");
+		sortedItemNames.add("stumpfer Kupferdolch");
 		sortedItemNames.add("überaus köstlicher Apfelkuchen");
+		sortedItemNames.add("Versalzener Stockfisch");
 		sortedItemNames.add("Verstärkte Lederhandschuhe");
 		sortedItemNames.add("Verstärkte Lederhose");
 		sortedItemNames.add("Verstärkte Lederschuhe");
