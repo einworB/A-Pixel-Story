@@ -46,7 +46,6 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -812,7 +811,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private void startPath(final Path path, final TMXTile destinationTile) {
 		Log.d("RPG", "Run to: "+path.getCoordinatesX()[path.getSize()-1]+", "+path.getCoordinatesY()[path.getSize()-1]);
 		int velocity;
-		if(fleeing) velocity = 100;
+		if(fleeing) velocity = 75;
 		else velocity = 50;
 		pathModifier = new LoopEntityModifier(new OurPathModifier(velocity, path, null, new IPathModifierListener() {
 
@@ -1163,12 +1162,12 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		TMXTile startTile = layer.getTMXTileAt(player.getX(), player.getY());
 		TMXTile endTile = layer.getTMXTileAt(coords[0], coords[1]);
 		Path path = controller.getPath(startTile, endTile, controller.getCurrentScene().getMap());
+		fleeing = true;
 		if(path!=null) startPath(path, endTile);
 		else Log.d("RPG", "path=null");
 		hud.detachChild(portraitEnemy);
 		hud.detachChild(levelTextOpponent);
 		hud.detachChild(redBarEnemy);
-		fleeing = true;
 	}
 	
 
@@ -1218,47 +1217,28 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 */
 	@Override
 	public void onBackPressed() {
-		this.showDialog(1);
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+		dialogBuilder.setMessage("Zurück zum Hauptmenü?").setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				finish();
+			}
+		}).setNeutralButton("Ja & Speichern", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				WriteSaveFile writer = new WriteSaveFile(LevelActivity.this);
+				OurScene[] scene = new OurScene[controller.getLastLevel()];
+				for(int i = 1; i <= controller.getLastLevel(); i++) {
+					scene[i - 1] = controller.getScene(i);
+				}
+				
+				writer.createFile(1, controller.getLastLevel(), questcount, scene, player, controller);
+				finish();
+			}
+		}).setNegativeButton("Nein", null);
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();
 	}
-	
-	/**
-	 * called when a dialog is shown
-	 */
-	@Override
-	protected Dialog onCreateDialog(final int id) {
-		switch(id) {
-			/*
-			 *  created after the back button is pressed
-			 *  prompts the user if he wants to save, quit or cancel
-			 */
-			case 1:
-				return new AlertDialog.Builder(this).setMessage("Zurück zum Hauptmenü?")
-						.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-							
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								finish();
-							}
-						})
-						.setNeutralButton("Ja & Speichern", new DialogInterface.OnClickListener() {
-							
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								WriteSaveFile writer = new WriteSaveFile(LevelActivity.this);
-								OurScene[] scene = new OurScene[controller.getLastLevel()];
-								for(int i = 1; i <= controller.getLastLevel(); i++) {
-									scene[i - 1] = controller.getScene(i);
-								}
-								
-								writer.createFile(1, controller.getLastLevel(), questcount, scene, player, controller);
-								finish();
-							}
-						})
-						.setNegativeButton("Nein", null)
-						.create();
-			default:
-				return null;
-		}
-	}
-
 }

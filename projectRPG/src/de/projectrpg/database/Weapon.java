@@ -16,7 +16,7 @@ public class Weapon extends Item{
 	 * @param name the name of the weapon
 	 * @param levelNeeded the level the player needs to use this weapon
 	 * @param attackValue the attack value of this weapon
-	 * @param weaponType the typ of the item
+	 * @param weaponType the type of the item
 	 */
 	public Weapon(String name, int levelNeeded, int attackValue, int weaponType){
 		super(name, levelNeeded, "weapon");

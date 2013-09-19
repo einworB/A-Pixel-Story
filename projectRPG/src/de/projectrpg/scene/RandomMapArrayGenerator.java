@@ -6,9 +6,6 @@ import de.projectrpg.util.OurRandomGenerator;
 /**
  * make a random array with values of explicit tiles 
  * so a random tmxMap can build out of it.
- * 
- * @author Lena
- *
  */
 public class RandomMapArrayGenerator {
 	/** The array with values of the tileset tiles.*/
