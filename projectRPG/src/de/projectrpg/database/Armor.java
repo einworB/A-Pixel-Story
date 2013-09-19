@@ -1,5 +1,11 @@
 package de.projectrpg.database;
 
+/**
+ * Class for armor items
+ * contains defense value
+ * and type of armor: Index 0 = Head, 1 = Body, 2 = Hands, 3 = Legs, 4 = Feet
+ * (and standard item values)
+ */
 public class Armor extends Item{
 	
 	/** type of armor*/

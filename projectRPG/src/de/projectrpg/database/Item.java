@@ -1,5 +1,9 @@
 package de.projectrpg.database;
 
+/**
+ * parent class for all item types
+ * holds values like type(heal/armor/weapon), the needed level and the name of the item
+ */
 public class Item {
 	
 	/** the type of the item*/

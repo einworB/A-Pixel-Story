@@ -896,22 +896,56 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 							for(int i=0; i<scene.getChildCount(); i++){
 								IEntity child = scene.getChildByIndex(i);
 								if(layer.getTMXTileAt(child.getX(), child.getY())==endTile && child instanceof LootBag){
-									scene.detachChild(child);
 									final Item loot = controller.getLoot(((LootBag) child).getLoot());
 									if(loot!=null){
+										ArrayList<Item> inventoryList = player.getInventory();
+										ArrayList<Item> slotList = new ArrayList<Item>();
+										int[] slotCount = new int [9];
+										for(int j=0; j<inventoryList.size()+1; j++){
+											String name;
+											if(j==inventoryList.size()) name = loot.getName();
+											else name = inventoryList.get(j).getName();
+											boolean set = false;
+											for(int k=0; k<slotList.size(); k++){
+												if(name.contentEquals(slotList.get(k).getName())){
+													if(k<9){
+														if(slotCount[k]<5){
+															slotCount[k]++;
+															set = true;
+															break;
+														}	
+													}		
+												}
+											}
+											if(!set && j!=inventoryList.size()) slotList.add(inventoryList.get(j));
+										}
+										if(slotList.size()<9){
+											scene.detachChild(child);
 											player.addItemToInventory(loot);
 											controller.checkQuests(loot);
+											if(loot!=null){
+												runOnUiThread(new Runnable() {	
+													@Override
+													public void run() {
+														Toast.makeText(getApplicationContext(), loot.getName()+" aufgehoben.", Toast.LENGTH_LONG).show();
+													}
+												});
+												break;									
+											}
+										} else{
+											if(loot!=null){
+												runOnUiThread(new Runnable() {	
+													@Override
+													public void run() {
+														Toast.makeText(getApplicationContext(), "Achtung! Ihr Inventar ist voll!", Toast.LENGTH_LONG).show();
+													}
+												});
+											}
+											
+										}
 									}
 									Log.d("RPG", player.getInventory().toString());
-									if(loot!=null){
-										runOnUiThread(new Runnable() {	
-											@Override
-											public void run() {
-												Toast.makeText(getApplicationContext(), loot.getName()+" aufgehoben.", Toast.LENGTH_LONG).show();
-											}
-										});
-										break;									
-									}
+									
 								}
 							}
 						}

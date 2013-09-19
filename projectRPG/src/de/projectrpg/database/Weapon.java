@@ -1,5 +1,9 @@
 package de.projectrpg.database;
 
+/**
+ * Class for weapon items
+ * contains attackValue (and standard item) values
+ */
 public class Weapon extends Item{
 	
 	/** the attack value of this weapon*/

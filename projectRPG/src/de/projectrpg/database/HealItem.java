@@ -1,5 +1,9 @@
 package de.projectrpg.database;
 
+/**
+ * class for heal items
+ * holds healValue(and standard item values)
+ */
 public class HealItem extends Item {
 	
 	/** the heal value of this item*/

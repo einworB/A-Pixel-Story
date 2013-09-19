@@ -21,6 +21,11 @@ import de.projectrpg.quest.TalkToQuest;
 import de.projectrpg.sprites.NPC;
 import de.projectrpg.util.OurRandomGenerator;
 
+/**
+ * Database class
+ * sets up and connects to a database(using an OurDatabaseHelper)
+ * containing text, quests(kill/talkto/getitem), npc and item(heal/armor/weapon) tables
+ */
 public class OurDatabase {
 
 	/** the path to the database in the project's file directory */

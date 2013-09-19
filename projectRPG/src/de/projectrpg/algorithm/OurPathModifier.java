@@ -4,6 +4,7 @@ import org.andengine.entity.modifier.PathModifier;
 
 /**
  * extends the path modifier of the engine
+ * extension needed because standard path modifier does not have a constant velocity
  */
 public class OurPathModifier extends PathModifier {
 
