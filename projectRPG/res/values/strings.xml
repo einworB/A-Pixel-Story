@@ -28,6 +28,7 @@
     <string name="help_opponent_text">So sehen deine Gegner aus</string>
     <string name="help_tipToWalk_text">In dem du irgendwo auf die Karte klickst kannst du an diese Stelle gehn.</string>
     <string name="help_stop_text">Indem du nochmal klickst brichst du die Bewegung ab.</string>
+    <string name="help_zoom_text">Du kannst in die Karte rein- und rauszoomen.</string>
     <string name="help_quests_text">Hier findest du eine Übersicht über alle aktiven Quests.</string>
     <string name="help_inventory_text">Hier findest du dein Inventar. Du kannst hier deine gesammelten und angelegten Gegenstände verwalten.</string>
     <string name="help_longclick_text">Mit einem langen Klick auf einen Gegenstand in deinem Inventar kannst du es an- oder ablegen.</string>

@@ -1170,6 +1170,14 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 								break;
 						}
 						break;
+					case 4:
+						runOnUiThread(new Runnable() {	
+							@Override
+							public void run() {
+								Toast.makeText(getApplicationContext(), "Die Tür ist verschlossen!", Toast.LENGTH_LONG).show();
+							}
+						});
+						break;
 				}	
 			}
 		} 
