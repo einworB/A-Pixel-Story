@@ -872,6 +872,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			 *  called when the path is finished 
 			 *  stops the animation  
 			 *  and sets the isMoving boolean in the controller false
+			 *  if the boolean fleeing is true and the player stands in front of a npc start the inventar and set the boolean to false, 
+			 *  if the player don't stand in front of a npc the player should flee to the npc in the next lower level.
 			 */
 			public void onPathFinished(final PathModifier pathModifier, final IEntity entity) {
 				player.stopAnimation();
@@ -887,7 +889,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 						TMXTileProperty property = properties.get(i);
 						if(property.getName().contentEquals("TRANSITION") && !property.getValue().contentEquals("SPAWN")) startNewLevel(property.getValue());
 					}
-				} else{
+				} else {
 					final OurScene scene = controller.getCurrentScene();
 					runOnUpdateThread(new Runnable() {						
 						@Override
@@ -950,7 +952,18 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 						}
 					});
 				}
-				if(fleeing) fleeing = false;
+				if(fleeing) {
+					NPC npc = controller.getCurrentScene().getNPCsInScene().get(0);
+					if(player.getX() - 32 == npc.getX() && player.getY() == npc.getY() 
+							|| player.getX() + 32 == npc.getX() && player.getY() == npc.getY() 
+							|| player.getX() == npc.getX() && player.getY() - 32== npc.getY() 
+							|| player.getX() == npc.getX() && player.getY() + 32 == npc.getY()) {
+						fleeing = false;
+						Intent intent = new Intent(LevelActivity.this, InventarActivity.class);
+						intent.putExtra("isMerchant", true);
+						startActivity(intent);						
+					}
+				}
 			}
 		}), 0);
 		pathModifier.setAutoUnregisterWhenFinished(false);
@@ -979,7 +992,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	}
 
 	/**
-	 * notifies the controller to start a new level and recreate the scene
+	 * notifies the controller to start a new level and recreate the scene.
+	 * If the player is still fleeing start a new path to the next npc in this scene.
 	 * @param id the id of the level to start
 	 */
 	private void startNewLevel(final String nextIdString) {
@@ -993,12 +1007,13 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				int currentId = scene.getID();
 				controller.getCurrentScene().detachChild(player);
 				if(nextId>currentId) controller.nextLevel();
-				else controller.previousLevel();
+				else {
+					controller.previousLevel();
+				}
 				
 				scene = controller.getCurrentScene();
 				controller.getCurrentScene().attachChild(player);
 				
-		
 		
 				/* Calculate the coordinates for the player sprite to spawn */
 				final float[] coords = scene.getSpawn("LEVEL"+currentId);
@@ -1018,6 +1033,18 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				else if(column==layer.getTileColumns()-1) player.setCurrentTileIndex(13);
 				
 				LevelActivity.this.mEngine.setScene(scene);
+				
+				if(fleeing) {
+					TMXTile startTile = layer.getTMXTileAt(player.getX(), player.getY());
+					TMXTile endTile = layer.getTMXTileAt(coords[0], coords[1]);
+					
+					if(controller.getCurrentScene().getNPCsInScene().size() > 0) {
+						ArrayList<NPC> npcs = controller.getCurrentScene().getNPCsInScene();
+						endTile = layer.getTMXTileAt(npcs.get(0).getX(), npcs.get(0).getY());
+					}
+					Path path = controller.getPath(startTile, endTile, controller.getCurrentScene().getMap());
+					startPath(path, endTile);
+				}
 			}
 		});	
 	}
@@ -1161,6 +1188,14 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		TMXLayer layer = controller.getTMXLayer();
 		TMXTile startTile = layer.getTMXTileAt(player.getX(), player.getY());
 		TMXTile endTile = layer.getTMXTileAt(coords[0], coords[1]);
+		
+		if(controller.getCurrentScene().getID() == 1) {
+			if(controller.getCurrentScene().getNPCsInScene().size() > 0) {
+				ArrayList<NPC> npcs = controller.getCurrentScene().getNPCsInScene();
+				endTile = layer.getTMXTileAt(npcs.get(0).getX(), npcs.get(0).getY());
+			}			
+		}
+		
 		Path path = controller.getPath(startTile, endTile, controller.getCurrentScene().getMap());
 		fleeing = true;
 		if(path!=null) startPath(path, endTile);
