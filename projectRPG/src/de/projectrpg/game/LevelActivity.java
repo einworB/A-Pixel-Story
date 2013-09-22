@@ -756,6 +756,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * Shows the next String of the active text on the scroll
 	 */
 	private void nextString(){
+		
 		if(!interActionText.isEmpty()){
 			if(inventarButton.hasParent()) {
 				hud.detachChild(inventarButton);
@@ -769,7 +770,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			if(text!=null) if(text.hasParent()) hud.detachChild(text);
 			text = new TickerText(textScroll.getX()+40, textScroll.getY()+15, font, interActionText.remove(0), new TickerTextOptions(AutoWrap.WORDS, textScroll.getWidth()-80, HorizontalAlign.LEFT, 15), this.getVertexBufferObjectManager());
 			text.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-			
 			hud.attachChild(text);
 		}
 		else stopInteraction();
@@ -1097,7 +1097,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		if(!controller.isMoving()){
 			if(isInteracting){
 				// action=continue with interaction
-				nextString();
+				if(text.getCharactersVisible()<text.getCharactersToDraw()){
+					// autocomplete the TickerText
+					text.setCharactersPerSecond(100.0f);
+				}
+				else nextString();
 			} else{
 				OurScene scene = controller.getCurrentScene();
 				final TMXLayer layer = (TMXLayer) scene.getChildByIndex(0);

@@ -177,6 +177,10 @@ public class Text extends RectangularShape {
 	public CharSequence getText() {
 		return this.mText;
 	}
+	
+	public int getCharactersToDraw(){
+		return this.mCharactersToDraw;
+	}
 
 	/**
 	 * @param pText
