@@ -1,9 +1,12 @@
 package de.projectrpg.start;
 
+import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -28,6 +31,7 @@ public class MainActivity extends Activity {
 	//neuer Upload... Kommentare folgen noch
 
 	private Typeface inhishan;
+	private File file2;
 
 	private TextView title;
 	private TextView newGame;
@@ -116,8 +120,29 @@ public class MainActivity extends Activity {
 				newGameImageView.setVisibility(View.INVISIBLE);
 				savedGameSlot1.setVisibility(View.VISIBLE);
 				savedGameSlot2.setVisibility(View.VISIBLE);
-				setOnClickListenerNewGame(savedGameSlot1);
-				setOnClickListenerLoadGame(savedGameSlot2);
+				
+				// TODO hier ist der Fehler
+				File file = new File("/data/data/projectrpg/slot1.xml");
+				
+				if(file.exists()){
+					setOnClickListenerLoadGame(savedGameSlot1, 1);
+					savedGameSlot1.setText("\nSlot 1\n\nzuletzt gespeichert\nam " + file.lastModified());
+				}
+				else {
+					setOnClickListenerNewGame(savedGameSlot1, 1);
+					savedGameSlot1.setText("\nSlot 1\n\nneues Spiel\nbeginnen");
+				}
+				
+				// TODO hier ist nochmal der Fehler, nur analog mit slot2
+				file2 = new File(getFilesDir().getAbsolutePath(), "slot2.xml");
+				if(file2.exists()){
+					setOnClickListenerLoadGame(savedGameSlot2, 2);
+					savedGameSlot2.setText("\nSlot 2\n\nzuletzt gespeichert\nam " + file2.lastModified());
+				}
+				else {
+					setOnClickListenerNewGame(savedGameSlot2, 2);
+					savedGameSlot2.setText("\nSlot 2\n\nneues Spiel\nbeginnen");
+				}
 				isBackButton = true;
 			}
 		});
@@ -163,26 +188,26 @@ public class MainActivity extends Activity {
 		OurMusicManager.pause();
 	}
 	
-	private void setOnClickListenerNewGame(View view){
+	private void setOnClickListenerNewGame(View view, final int slotNumber){
 		view.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(MainActivity.this, LevelActivity.class);
-				i.putExtra("slot", 1);
+				i.putExtra("slot", slotNumber);
 				i.putExtra("newGame", true);
 				startActivity(i);
 			}
 		});
 	}
 	
-	private void setOnClickListenerLoadGame(View view){
+	private void setOnClickListenerLoadGame(View view, final int slotnumber){
 		view.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(MainActivity.this, LevelActivity.class);
-				i.putExtra("slot", 1);
+				i.putExtra("slot", slotnumber);
 				i.putExtra("newGame", false);
 				startActivity(i);
 			}
