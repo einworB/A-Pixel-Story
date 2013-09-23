@@ -1,6 +1,10 @@
 package de.projectrpg.start;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -121,20 +125,30 @@ public class MainActivity extends Activity {
 				savedGameSlot1.setVisibility(View.VISIBLE);
 				savedGameSlot2.setVisibility(View.VISIBLE);
 				
-				// TODO hier ist der Fehler
-				File file = new File("/data/data/projectrpg/slot1.xml");
+				File file = new File("/data/data/de.projectrpg/files/slot1.xml");
 				
 				if(file.exists()){
+					// Create an instance of SimpleDateFormat used for formatting 
+					// the string representation of date (month/day/year)
+					DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+					// Get the date today using Calendar object.
+					long today = file.lastModified();      
+					// Using DateFormat format method we can create a string 
+					// representation of a date with the defined format.
+					String reportDate = df.format(today);
+
+					// Print what date is today!
+					System.out.println("Report Date: " + reportDate);
 					setOnClickListenerLoadGame(savedGameSlot1, 1);
-					savedGameSlot1.setText("\nSlot 1\n\nzuletzt gespeichert\nam " + file.lastModified());
+					savedGameSlot1.setText("\nSlot 1\n\nzuletzt gespeichert am\n " + reportDate);
 				}
 				else {
 					setOnClickListenerNewGame(savedGameSlot1, 1);
 					savedGameSlot1.setText("\nSlot 1\n\nneues Spiel\nbeginnen");
 				}
 				
-				// TODO hier ist nochmal der Fehler, nur analog mit slot2
-				file2 = new File(getFilesDir().getAbsolutePath(), "slot2.xml");
+				file2 = new File("/data/data/de.projectrpg/files/slot2.xml");
 				if(file2.exists()){
 					setOnClickListenerLoadGame(savedGameSlot2, 2);
 					savedGameSlot2.setText("\nSlot 2\n\nzuletzt gespeichert\nam " + file2.lastModified());
