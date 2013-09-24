@@ -285,37 +285,93 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" >
+        android:visibility="invisible">
 
         <TableRow android:id="@+id/row" >
             
             <TextView 
                 android:id="@+id/saved_game_slot1"
                 android:layout_width="140dp"
-                android:layout_height="180dp"
+                android:layout_height="100dp"
                 android:gravity="center_horizontal"
                 android:text="\nSlot 1\n\nneues Spiel\nbeginnen"
-                android:background="@drawable/slot_unmarked"
+                android:background="@drawable/mainmenu_red"
                 android:textSize="14sp"
-        		android:textColor="@color/white"
-        		android:visibility="invisible" />
+        		android:textColor="@color/white" />
             
             <View 
                 android:layout_width="50dp"
-                android:layout_height="180dp" />
+                android:layout_height="100dp" />
             
             <TextView 
                 android:id="@+id/saved_game_slot2"
                 android:layout_width="140dp"
-                android:layout_height="180dp"
+                android:layout_height="100dp"
                 android:gravity="center_horizontal"
                 android:text="\nSlot 2\n\ngespeichertes\nSpiel laden"
-                android:background="@drawable/slot_unmarked"
+                android:background="@drawable/mainmenu_red"
                 android:textSize="14sp"
-        		android:textColor="@color/white"
-        		android:visibility="invisible"  />
+        		android:textColor="@color/white" />
+         
             
         </TableRow>
+        <TableRow android:id="@+id/row2" >
+            
+            <TextView 
+                android:id="@+id/new_game_button_slot1"
+                android:layout_width="140dp" 
+                android:layout_height="60dp"
+                android:gravity="center"
+                android:textSize="14sp"
+        		android:textColor="@color/white"
+                android:background="@drawable/mainmenu_button"
+				android:text="neues Spiel" />
+            
+            <View 
+                android:layout_width="50dp"
+                android:layout_height="60dp" />
+            
+            <TextView 
+                android:id="@+id/new_game_button_slot2"
+                android:layout_width="140dp" 
+                android:layout_height="60dp"
+                android:gravity="center"
+                android:textSize="14sp"
+        		android:textColor="@color/white"
+                android:background="@drawable/mainmenu_button"
+				android:text="neues Spiel" />
+
+        </TableRow>
+        <TableRow android:id="@+id/row3" >
+            
+            <TextView 
+                android:id="@+id/load_game_button_slot1"
+                android:layout_width="140dp" 
+                android:layout_height="60dp"
+                android:gravity="center"
+                android:textSize="14sp"
+        		android:textColor="@color/white"
+                android:background="@drawable/mainmenu_button"
+				android:text="Spiel laden" />
+            
+            <View 
+                android:layout_width="50dp"
+                android:layout_height="60dp" />
+            
+            <TextView 
+                android:id="@+id/load_game_button_slot2"
+                android:layout_width="140dp" 
+                android:layout_height="60dp"
+                android:gravity="center"
+                android:textSize="14sp"
+        		android:textColor="@color/white"
+                android:background="@drawable/mainmenu_button"
+				android:text="Spiel laden" />
+
+        </TableRow>
     </TableLayout>
+    
+   
+            
 
 </RelativeLayout>

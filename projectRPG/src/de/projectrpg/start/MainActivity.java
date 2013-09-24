@@ -9,8 +9,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -31,8 +34,6 @@ import de.projectrpg.game.LevelActivity;
 import de.projectrpg.util.OurMusicManager;
 
 public class MainActivity extends Activity {
-	
-	//neuer Upload... Kommentare folgen noch
 
 	private Typeface inhishan;
 	private File file2;
@@ -43,6 +44,10 @@ public class MainActivity extends Activity {
 	private TextView savedGameSlot2;
 	private TextView options;
 	private TextView help;
+	private TextView startNewGameButton1;
+	private TextView startNewGameButton2;
+	private TextView loadNewGameButton1;
+	private TextView loadNewGameButton2;
 
 	private ImageView newGameImageView;
 	private ImageView optionsImageView;
@@ -52,6 +57,7 @@ public class MainActivity extends Activity {
 	private HorizontalScrollView parallaxFrontLayer;
 	
 	private TableLayout table;
+	private TableLayout startGameTable;
 
 	private int scrolled1 = 0;
 	private int scrolled2 = 0;
@@ -92,17 +98,24 @@ public class MainActivity extends Activity {
 
 		savedGameSlot1 = (TextView) findViewById(R.id.saved_game_slot1);
 		savedGameSlot1.setTypeface(inhishan);
-		savedGameSlot1.setVisibility(View.INVISIBLE);
 
 		savedGameSlot2 = (TextView) findViewById(R.id.saved_game_slot2);
 		savedGameSlot2.setTypeface(inhishan);
-		savedGameSlot2.setVisibility(View.INVISIBLE);
 
 		options = (TextView) findViewById(R.id.options_textview);
 		options.setTypeface(inhishan);
 
 		help = (TextView) findViewById(R.id.help_textview);
 		help.setTypeface(inhishan);
+		
+		startNewGameButton1 = (TextView) findViewById(R.id.new_game_button_slot1);
+		startNewGameButton1.setTypeface(inhishan);
+		startNewGameButton2 = (TextView) findViewById(R.id.new_game_button_slot2);
+		startNewGameButton2.setTypeface(inhishan);
+		loadNewGameButton1 = (TextView) findViewById(R.id.load_game_button_slot1);
+		loadNewGameButton1.setTypeface(inhishan);
+		loadNewGameButton2 = (TextView) findViewById(R.id.load_game_button_slot2);	
+		loadNewGameButton2.setTypeface(inhishan);	
 
 		newGameImageView = (ImageView) findViewById(R.id.new_game_imageview);
 		optionsImageView = (ImageView) findViewById(R.id.options_imageview);
@@ -111,6 +124,7 @@ public class MainActivity extends Activity {
 		parallaxFrontLayer = (HorizontalScrollView) findViewById(R.id.scroll2);
 		
 		table = (TableLayout) findViewById(R.id.Tabelle);
+		startGameTable = (TableLayout) findViewById(R.id.saved_games_slots);
 		
 	}
 	
@@ -122,40 +136,43 @@ public class MainActivity extends Activity {
 				table.setVisibility(View.INVISIBLE);
 				newGame.setVisibility(View.INVISIBLE);
 				newGameImageView.setVisibility(View.INVISIBLE);
-				savedGameSlot1.setVisibility(View.VISIBLE);
-				savedGameSlot2.setVisibility(View.VISIBLE);
+				startGameTable.setVisibility(View.VISIBLE);
+
 				
 				File file = new File("/data/data/de.projectrpg/files/slot1.xml");
 				
 				if(file.exists()){
-					// Create an instance of SimpleDateFormat used for formatting 
-					// the string representation of date (month/day/year)
-					DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+					loadNewGameButton1.setTextColor(getResources().getColor(R.color.white));
 
-					// Get the date today using Calendar object.
+					DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
 					long today = file.lastModified();      
-					// Using DateFormat format method we can create a string 
-					// representation of a date with the defined format.
-					String reportDate = df.format(today);
+					String lastModifiedDate = df.format(today);
 
-					// Print what date is today!
-					System.out.println("Report Date: " + reportDate);
-					setOnClickListenerLoadGame(savedGameSlot1, 1);
-					savedGameSlot1.setText("\nSlot 1\n\nzuletzt gespeichert am\n " + reportDate);
+					setOnClickListenerNewGame(startNewGameButton1, 1);
+					setOnClickListenerLoadGame(loadNewGameButton1, 1);
+					savedGameSlot1.setText("Slot 1\n\ngespeichert am\n" + lastModifiedDate);
 				}
 				else {
-					setOnClickListenerNewGame(savedGameSlot1, 1);
-					savedGameSlot1.setText("\nSlot 1\n\nneues Spiel\nbeginnen");
+					loadNewGameButton1.setTextColor(getResources().getColor(R.color.darkgray));
+					
+					setOnClickListenerNewGame(startNewGameButton1, 1);
+					savedGameSlot1.setText("Slot 1\n\nkein Spiel\ngespeichert");
 				}
 				
 				file2 = new File("/data/data/de.projectrpg/files/slot2.xml");
 				if(file2.exists()){
-					setOnClickListenerLoadGame(savedGameSlot2, 2);
-					savedGameSlot2.setText("\nSlot 2\n\nzuletzt gespeichert\nam " + file2.lastModified());
+					loadNewGameButton2.setTextColor(getResources().getColor(R.color.white));
+					
+					setOnClickListenerNewGame(startNewGameButton2, 2);
+					setOnClickListenerLoadGame(loadNewGameButton2, 2);
+					savedGameSlot2.setText("Slot 2\n\ngespeichert am\n" + file2.lastModified());
 				}
 				else {
-					setOnClickListenerNewGame(savedGameSlot2, 2);
-					savedGameSlot2.setText("\nSlot 2\n\nneues Spiel\nbeginnen");
+					loadNewGameButton2.setTextColor(getResources().getColor(R.color.darkgray));
+					
+					setOnClickListenerNewGame(startNewGameButton2, 2);
+					savedGameSlot2.setText("Slot 2\n\nkein Spiel\ngespeichert");
 				}
 				isBackButton = true;
 			}
@@ -168,8 +185,7 @@ public class MainActivity extends Activity {
 			table.setVisibility(View.VISIBLE);
 			newGame.setVisibility(View.VISIBLE);
 			newGameImageView.setVisibility(View.VISIBLE);
-			savedGameSlot1.setVisibility(View.INVISIBLE);
-			savedGameSlot2.setVisibility(View.INVISIBLE);
+			startGameTable.setVisibility(View.INVISIBLE);
 			isBackButton = false;
 		} else {
 			finish();
@@ -186,8 +202,7 @@ public class MainActivity extends Activity {
 			table.setVisibility(View.VISIBLE);
 			newGame.setVisibility(View.VISIBLE);
 			newGameImageView.setVisibility(View.VISIBLE);
-			savedGameSlot1.setVisibility(View.INVISIBLE);
-			savedGameSlot2.setVisibility(View.INVISIBLE);
+			startGameTable.setVisibility(View.INVISIBLE);
 			isBackButton = false;
 		}
 		OurMusicManager.start(this);		
@@ -207,27 +222,72 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				showNewGameNotification(slotNumber);
+				
+			}
+		});
+	}
+	
+	private void showNewGameNotification(final int slotNumber) {
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Willst du wirklich ein neues Spiel beginnen? Zuvor gespeicherte Spielstände auf Slot " + slotNumber + " können überschrieben werden!");
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
 				Intent i = new Intent(MainActivity.this, LevelActivity.class);
 				i.putExtra("slot", slotNumber);
 				i.putExtra("newGame", true);
 				startActivity(i);
 			}
 		});
+		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		});
+
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();
 	}
-	
-	private void setOnClickListenerLoadGame(View view, final int slotnumber){
+
+	private void setOnClickListenerLoadGame(View view, final int slotNumber){
 		view.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+				showLoadGameNotification(slotNumber);
+			}
+		});
+	}
+
+	private void showLoadGameNotification(final int slotNumber) {
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+		dialogBuilder.setTitle("Achtung");
+		dialogBuilder.setMessage("Willst du das Spiel auf Slot " + slotNumber + " wirklich laden?");
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
 				Intent i = new Intent(MainActivity.this, LevelActivity.class);
-				i.putExtra("slot", slotnumber);
+				i.putExtra("slot", slotNumber);
 				i.putExtra("newGame", false);
 				startActivity(i);
 			}
 		});
+		dialogBuilder.setNegativeButton("Nein", new Dialog.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		});
+
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();
 	}
-	
+
 	private void setOnClickListenerOptions(View view){
 		view.setOnClickListener(new OnClickListener() {
 
