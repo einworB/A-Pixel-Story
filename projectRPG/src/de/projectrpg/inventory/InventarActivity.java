@@ -257,6 +257,7 @@ public class InventarActivity extends Activity {
 		setupAllClickListeners();
 	}
 
+	/** checks, if merchant interface or equip interface is needed */
 	private boolean checkNeededInterface() {
 		isSellInterface = getIntent().getExtras().getBoolean("isMerchant");
 		if (isSellInterface) {
@@ -322,6 +323,7 @@ public class InventarActivity extends Activity {
 		return isSellInterface;
 	}
 
+	/** sets all OnClickListenres and OnLongClickListeners up */
 	private void setupAllClickListeners() {
 		for (int i = 0; i < 9; i++) {
 			setupOnClickListener(slotBackgroundList.get(i),
@@ -366,6 +368,7 @@ public class InventarActivity extends Activity {
 		}
 	}
 
+	/** shows Notification and asks if player is sure, he wants to use the clicked Item */
 	private void showUseItemNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
@@ -396,6 +399,7 @@ public class InventarActivity extends Activity {
 		dialog.show();
 	}
 
+	/** shows Notification and asks if player is sure, he wants to remove/erase the clicked Item */
 	private void showRemoveItemNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
@@ -426,6 +430,7 @@ public class InventarActivity extends Activity {
 		dialog.show();
 	}
 
+	/** method, which handles the use of HealItems */
 	private void useItem() {
 		if(controller.getItemByName(clickedItem).getLevelNeeded() > controller.getPlayerLevel()){
 			showLevelTooLowNotification();
@@ -464,6 +469,7 @@ public class InventarActivity extends Activity {
 		setupAllClickListeners();
 	}
 
+	/** resets the interactionButton */
 	private void resetInteractionButtons() {
 		interactionButton.setOnClickListener(new OnClickListener() {
 			
@@ -475,6 +481,7 @@ public class InventarActivity extends Activity {
 		clickedItem = "leer";
 	}
 
+	/** method, which removes the clicked Item from the list, it is in */
 	private void removeItem() {
 		removedItem = false;
 
@@ -546,6 +553,7 @@ public class InventarActivity extends Activity {
 
 	}
 
+	/** gets all saved Items from the controller like inventory, equip, merchant items, etc. */
 	private void getSavedItems() {
 		inventoryUsedSlotCounter = 0;
 
@@ -604,6 +612,7 @@ public class InventarActivity extends Activity {
 			equippedWeapon = controller.getEquippedWeapon();
 		}
 
+		/** fills the inventory items in the inventory slots */
 		for (int i = 0; i < inventoryList.size(); i++) {
 
 			putItemInSlot = false;
@@ -712,6 +721,7 @@ public class InventarActivity extends Activity {
 		}
 
 		if (checkNeededInterface()) {
+			/** fills the merchant items in the merchant slots */
 			for (int i = 0; i < inventoryListMerchant.size(); i++) {
 
 				putItemInSlot = false;
@@ -918,6 +928,7 @@ public class InventarActivity extends Activity {
 					}
 				}
 			}
+			/** fills the weapon slot with equipped weapon */
 			if (equippedWeapon != null) {
 				weaponSlot = new Slot(0, equippedWeapon.getName(), "0", "1");
 				weaponSlot.setAttackValue(equippedWeapon.getAttackValue());
@@ -926,6 +937,7 @@ public class InventarActivity extends Activity {
 		}
 	}
 
+	/** sets up the OnLongClickListener for the inventory slots when merchant interface is used */
 	private void setupOnLongClickListenerSell(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		slotItem.setOnLongClickListener(new OnLongClickListener() {
@@ -938,7 +950,7 @@ public class InventarActivity extends Activity {
 					markThisSlot(slotBackground, slot);
 					clickedItem = slot.getItemName();
 					healValue = slot.getHealValue();
-					checkLongClickedItemSell(slotBackground, slotItem, slot);
+					checkLongClickedItemSell();
 				}
 				return false;
 			}
@@ -946,6 +958,7 @@ public class InventarActivity extends Activity {
 
 	}
 
+	/** sets up the OnLongClickListener for the merchant slots when merchant interface is used */
 	private void setupOnLongClickListenerBuy(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		slotItem.setOnLongClickListener(new OnLongClickListener() {
@@ -974,6 +987,7 @@ public class InventarActivity extends Activity {
 
 	}
 
+	/** shows Notification, that the user has not enough money to buy the clicked item*/
 	private void showNotEnoughMoneyNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
@@ -994,6 +1008,7 @@ public class InventarActivity extends Activity {
 		dialog.show();
 	}
 
+	/** sets up the OnLongClickListener for the inventory slots when equip interface is used */
 	private void setupOnLongClickListenerAddEquip(
 			final ImageButton slotBackground, final ImageButton slotItem,
 			final Slot slot) {
@@ -1021,6 +1036,7 @@ public class InventarActivity extends Activity {
 
 	}
 
+	/** sets up OnLongClickListener for the equip slots when equip interface is used */
 	private void setupOnLongClickListenerRemoveEquip(
 			final ImageButton slotBackground, final ImageButton slotItem,
 			final Slot slot) {
@@ -1033,8 +1049,7 @@ public class InventarActivity extends Activity {
 					markThisSlot(slotBackground, slot);
 					slot.setMarked();
 					clickedItem = slot.getItemName();
-					checkLongClickedItemRemoveEquip(slotBackground, slotItem,
-							slot);
+					checkLongClickedItemRemoveEquip();
 				}
 				return false;
 			}
@@ -1042,6 +1057,7 @@ public class InventarActivity extends Activity {
 
 	}
 
+	/** sets up OnLongClickListener for the weapon slot when equip interface is used */
 	private void setupOnLongClickListenerRemoveWeapon(
 			final ImageButton weaponSlotBackground,
 			final ImageButton weaponSlotItem, final Slot slot) {
@@ -1054,23 +1070,24 @@ public class InventarActivity extends Activity {
 					markThisSlot(weaponSlotBackground, slot);
 					slot.setMarked();
 					clickedItem = slot.getItemName();
-					checkLongClickedItemRemoveWeapon(weaponSlotBackground,
-							weaponSlotItem, slot);
+					checkLongClickedItemRemoveWeapon();
 				}
 				return false;
 			}
 		});
 	}
 
-	private void checkLongClickedItemSell(final ImageButton slotBackground,
-			final ImageButton slotItem, final Slot slot) {
+	/** checks longclicked Item in inventory slots when merchant interface is used */
+	private void checkLongClickedItemSell() {
 		showSellNotification();
 	}
 
+	/** checks longclicked Item in merchant slots when merchant interface is used */
 	private void checkLongClickedItemBuy() {
 		showBuyNotification();
 	}
 
+	/** checks longclicked Item in inventory slots when equip interface is used */
 	private void checkLongClickedItemAddEquip(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		Log.d("addEquip", "drinnen in checkLongClickedItemAddEquip");
@@ -1085,18 +1102,17 @@ public class InventarActivity extends Activity {
 		}
 	}
 
-	private void checkLongClickedItemRemoveEquip(
-			final ImageButton slotBackground, final ImageButton slotItem,
-			final Slot slot) {
+	/** checks longclicked Item in equip slots when equip interface is used */
+	private void checkLongClickedItemRemoveEquip() {
 		showRemoveEquipNotification();
 	}
 
-	private void checkLongClickedItemRemoveWeapon(
-			ImageButton weaponSlotBackground, ImageButton weaponSlotItem,
-			Slot slot) {
+	/** checks longclicked Item in weapon slot when equip interface is used */
+	private void checkLongClickedItemRemoveWeapon() {
 		showRemoveWeaponNotification();
 	}
 
+	/** shows Notification, which checks, if the player really wants to sell the clicked item */
 	private void showSellNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
@@ -1107,8 +1123,6 @@ public class InventarActivity extends Activity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
-				// if this button is clicked, the item will be sold
-
 				sellItem();
 
 			}
@@ -1127,6 +1141,7 @@ public class InventarActivity extends Activity {
 		dialog.show();
 	}
 
+	/** shows Notification, which checks, if the player really wants to add this Item to his equip */
 	private void showAddEquipNotification(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -1163,6 +1178,7 @@ public class InventarActivity extends Activity {
 		dialog.show();
 	}
 	
+	/** shows Notification, which checks, if the player really wants to add this Weapon to his equip */
 	private void showAddWeaponNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
@@ -1190,6 +1206,7 @@ public class InventarActivity extends Activity {
 		dialog.show();
 	}
 	
+	/** shows Notification, which checks, if the player really wants to add this Armor to his equip */
 	private void showAddArmorNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
@@ -1217,7 +1234,7 @@ public class InventarActivity extends Activity {
 		dialog.show();
 	}
 	
-
+	/** shows Notification, which checks, if the player really wants to remove this Item from his equip */
 	private void showRemoveEquipNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
@@ -1247,6 +1264,7 @@ public class InventarActivity extends Activity {
 		dialog.show();
 	}
 
+	/** shows Notification, which checks, if the player really wants to buy the clicked Item */
 	private void showBuyNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
@@ -1278,7 +1296,7 @@ public class InventarActivity extends Activity {
 	}
 	
 
-
+	/** shows Notification, which checks, if the player really wants to remove this Weapon from his equip */
 	private void showRemoveWeaponNotification() {
 
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -1308,7 +1326,8 @@ public class InventarActivity extends Activity {
 		AlertDialog dialog = dialogBuilder.create();
 		dialog.show();
 	}
-
+	
+	/** method, which handles the selling of the clicked Item */
 	private void sellItem() {
 		removedItem = false;
 		tempInventoryList = new ArrayList<Item>();
@@ -1348,14 +1367,17 @@ public class InventarActivity extends Activity {
 		Log.d("remove", "fertig");
 	}
 
+	/** resets the text of the interactionButton */
 	private void resetInteractionButtonText() {
 		interactionButton.setText("");
 	}
 
+	/** adds gold to the players own gold */
 	private void addmoney(int i) {
 		controller.changeGold(5 * i);
 	}
 
+	/** method, which handles the buying of the clicked Item */
 	private void buyItem() {
 		removedItem = false;
 		tempInventoryList = new ArrayList<Item>();
@@ -1397,10 +1419,12 @@ public class InventarActivity extends Activity {
 		Log.d("remove", "fertig");
 	}
 
+	/** removes gold from the players own gold */
 	private void pay(int i) {
 		controller.changeGold(-10 * i);
 	}
 
+	/** method, which handles the adding of the clicked Item to the equip */
 	private void addEquipItem() {
 		if(controller.getItemByName(clickedItem).getLevelNeeded() > controller.getPlayerLevel()){
 			showLevelTooLowNotification();
@@ -1462,7 +1486,7 @@ public class InventarActivity extends Activity {
 		Log.d("testArmor", "" + inventoryList.size());
 	}
 
-	
+	/** shows Notification, the level is too low to use the clicked Item */
 	private void showLevelTooLowNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle(R.string.achtung);
@@ -1481,7 +1505,8 @@ public class InventarActivity extends Activity {
 		AlertDialog dialog = dialogBuilder.create();
 		dialog.show();
 	}
-
+	
+	/** method, which handles the adding of the clicked Weapon to the equip */
 	private void addWeaponItem() {
 		if(controller.getItemByName(clickedItem).getLevelNeeded() > controller.getPlayerLevel()){
 			showLevelTooLowNotification();
@@ -1529,11 +1554,13 @@ public class InventarActivity extends Activity {
 
 	}
 
+	/** resets the itemNameTextView */
 	private void resetItemNameTextView() {
 		itemName.setText("Item:");
 		itemDetails.setText("");
 	}
 
+	/** method, which handles the removing of the clicked Armor from the equip */
 	private void removeEquipItem() {
 		
 		if(controller.getItemByName(clickedItem).getLevelNeeded() > controller.getPlayerLevel()){
@@ -1568,6 +1595,7 @@ public class InventarActivity extends Activity {
 		Log.d("testArmor", "" + inventoryList.size());
 	}
 
+	/** method, which handles the removing of the clicked Weapon from the equip */
 	private void removeWeaponItem() {
 		if(controller.getItemByName(clickedItem).getLevelNeeded() > controller.getPlayerLevel()){
 			showLevelTooLowNotification();
@@ -1599,6 +1627,7 @@ public class InventarActivity extends Activity {
 		setupAllClickListeners();
 	}
 
+	/** shows Notification, that the slot is already used by a Armor of the same type */
 	private void showUsedSlotNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
@@ -1619,6 +1648,7 @@ public class InventarActivity extends Activity {
 		dialog.show();
 	}
 
+	/** shows Notification, that the clicked Item is not allowed to be used as equip */
 	private void showNotEquipableNotification() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
@@ -1638,6 +1668,7 @@ public class InventarActivity extends Activity {
 		dialog.show();
 	}
 
+	/** sets up the OnClickListener for the inventory slots */
 	private void setupOnClickListener(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		slotItem.setOnClickListener(new OnClickListener() {
@@ -1697,6 +1728,7 @@ public class InventarActivity extends Activity {
 		});
 	}
 
+	/** sets interactionButtons function as useItem */
 	private void setInteractionButtonUseItem() {
 		interactionButton.setOnClickListener(new OnClickListener() {
 			
@@ -1707,7 +1739,8 @@ public class InventarActivity extends Activity {
 		});
 		
 	}
-
+	
+	/** sets interactionButtons function as addArmor */
 	private void setInteractionButtonAddArmor() {
 		interactionButton.setOnClickListener(new OnClickListener() {
 			
@@ -1719,6 +1752,7 @@ public class InventarActivity extends Activity {
 		
 	}
 
+	/** sets interactionButtons function as addWeapon */
 	private void setInteractionButtonAddWeapon() {
 		interactionButton.setOnClickListener(new OnClickListener() {
 			
@@ -1729,6 +1763,7 @@ public class InventarActivity extends Activity {
 		});
 	}
 
+	/** sets interactionButtons function as sellItem */
 	private void setInteractionButtonSell() {
 		interactionButton.setOnClickListener(new OnClickListener() {
 			
@@ -1739,6 +1774,7 @@ public class InventarActivity extends Activity {
 		});
 	}
 
+	/** sets up the OnClickListener for the equip slots */
 	private void setupOnClickListenerEquip(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		slotItem.setOnClickListener(new OnClickListener() {
@@ -1772,6 +1808,7 @@ public class InventarActivity extends Activity {
 		});
 	}
 
+	/** sets interactionButtons function as removeArmor */
 	private void setInteractionButtonRemoveArmor() {
 		interactionButton.setOnClickListener(new OnClickListener() {
 			
@@ -1782,7 +1819,8 @@ public class InventarActivity extends Activity {
 			}
 		});
 	}
-
+	
+	/** sets interactionButtons function as removeWeapon */
 	private void setInteractionButtonRemoveWeapon() {
 		interactionButton.setOnClickListener(new OnClickListener() {
 			
@@ -1794,6 +1832,7 @@ public class InventarActivity extends Activity {
 		});
 	}
 
+	/** sets interactionButtons function as buyItem */
 	private void setInteractionButtonBuy() {
 		interactionButton.setOnClickListener(new OnClickListener() {
 			
@@ -1808,6 +1847,7 @@ public class InventarActivity extends Activity {
 		});
 	}
 
+	/** sets up the OnClickListener for the inventory slots when merchant interface is used */
 	private void setupOnClickListenerSell(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
 		slotItem.setOnClickListener(new OnClickListener() {
@@ -1847,12 +1887,14 @@ public class InventarActivity extends Activity {
 		});
 	}
 
+	/** sets text of itemName to the name of the clicked Item */
 	private void showItemName(Slot slot) {
 		itemName.setText("Item: " + slot.getNumberOfItems() + "x "
 				+ slot.getItemName());
 	}
 
 	@SuppressWarnings("deprecation")
+	/** marks clicked slot */
 	private void markThisSlot(ImageButton slotBackground, Slot slot) {
 		setSlotsUnmarked();
 		slotBackground.setBackgroundDrawable(getResources().getDrawable(
@@ -1860,6 +1902,7 @@ public class InventarActivity extends Activity {
 	}
 
 	@SuppressWarnings("deprecation")
+	/** sets all slots unmarked */
 	private void setSlotsUnmarked() {
 
 		for (int i = 0; i < 9; i++) {
@@ -1891,6 +1934,7 @@ public class InventarActivity extends Activity {
 	}
 
 	@SuppressWarnings("deprecation")
+	/** sets item images on inventory slots */
 	private void setItemsOnOwnSlots() {
 
 		for (int i = 0; i < 9; i++) {
@@ -1910,6 +1954,7 @@ public class InventarActivity extends Activity {
 	}
 
 	@SuppressWarnings("deprecation")
+	/** sets item images on merchant slots */
 	private void setItemsOnSellSlots() {
 
 		for (int i = 0; i < 9; i++) {
@@ -1928,6 +1973,7 @@ public class InventarActivity extends Activity {
 	}
 
 	@SuppressWarnings("deprecation")
+	/** sets item images on equip slots */
 	private void setItemsOnEquipSlots() {
 
 		for (int i = 0; i < 5; i++) {
@@ -1954,10 +2000,12 @@ public class InventarActivity extends Activity {
 		}
 	}
 	
+	/** sets the amount of gold in the moneyTextView to the given i */
 	private void setMoneyTextView(int i) {
 		moneyTextView.setText("Gold: " + i);
 	}
 
+	/** sets up the whole user interface */
 	private void setupUI() {
 		setContentView(R.layout.activity_inventar);
 
@@ -1973,6 +2021,8 @@ public class InventarActivity extends Activity {
 		.add(getResources().getDrawable(R.drawable.bronzehelm));
 		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.bronzenebeinkleider));
+		sortedItemImages
+		.add(getResources().getDrawable(R.drawable.bronzenelanze));
 		sortedItemImages
 		.add(getResources().getDrawable(R.drawable.bronzenerbrustpanzer));
 		sortedItemImages
@@ -2111,7 +2161,8 @@ public class InventarActivity extends Activity {
 		sortedItemNames.add("Beinkleider aus rostigem Eisen");
 		sortedItemNames.add("Bronzehelm");
 		sortedItemNames.add("Bronzene Beinkleider");
-		sortedItemNames.add("Bronzener Brustpanzer");
+		sortedItemNames.add("Bronzene Beinkleider");
+		sortedItemNames.add("Bronzener Lanze");
 		sortedItemNames.add("Bronzene Stiefel");
 		sortedItemNames.add("Bronzene Stulpen");
 		sortedItemNames.add("Brustpanzer aus verstärktem Leder");
@@ -2337,6 +2388,7 @@ public class InventarActivity extends Activity {
 		slotItemImageListEquip.add(slot5ItemImageEquip);
 	}
 
+	/** returns the boolean slotsFull, which is true, if the inventory slots all are full */
 	public boolean inventoryIsFull() {
 		return slotsFull;
 	}

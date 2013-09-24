@@ -34,35 +34,85 @@ import de.projectrpg.game.Controller;
 import de.projectrpg.game.LevelActivity;
 import de.projectrpg.util.OurMusicManager;
 
+/**
+ * This is the Activity where the player starts this application. 
+ * From this mainmenu, the player can start the game, go to the
+ * options activity or go to the help activity
+ * 
+ * @author Nedim
+ */
+
 public class MainActivity extends Activity {
 
+	
+	//=======================================================================FIELDS========================================================================================	
+	
+	/** typeface, which is used for the text */
 	private Typeface inhishan;
-	private File file2;
 
+	
+	/** textView for title of the game */
 	private TextView title;
-	private TextView newGame;
+	
+	/** textView for startGame button */
+	private TextView startGame;
+	
+	/** textView for savedGame slot 1 */
 	private TextView savedGameSlot1;
+	
+	/** textView for savedGame slot 2 */
 	private TextView savedGameSlot2;
+	
+	/** textView for options button */
 	private TextView options;
+	
+	/** textView for help button */
 	private TextView help;
+	
+	/** textView for startNewGame button 1 */
 	private TextView startNewGameButton1;
+	
+	/** textView for startNewGame button 2 */
 	private TextView startNewGameButton2;
-	private TextView loadNewGameButton1;
-	private TextView loadNewGameButton2;
+	
+	/** textView for loadGame button 1 */
+	private TextView loadGameButton1;
+	
+	/** textView for loadGame button 2 */
+	private TextView loadGameButton2;
 
-	private ImageView newGameImageView;
+	
+	/** imageView for the startGame button */
+	private ImageView startGameImageView;
+	
+	/** imageView for the options button */
 	private ImageView optionsImageView;
+	
+	/** imageView for the help button */
 	private ImageView helpImageView;
 
+	
+	/** scrollView for the mid layer of the parallax background */
 	private HorizontalScrollView parallaxMidLayer;
+	
+	/** scrollView for the front layer of the parallax background */
 	private HorizontalScrollView parallaxFrontLayer;
 	
+	
+	/** tableLayout for the the buttons startGame, options and help */
 	private TableLayout table;
+	
+	/** tableLayout for the other buttons (newGame & loadGame) */
 	private TableLayout startGameTable;
 
-	private int scrolled1 = 0;
-	private int scrolled2 = 0;
+	/** counts the amount of pixels, the scrollView for the mid layer is scrolling */
+	private int scrolled1;
 	
+	/** counts the amount of pixels, the scrollView for the front layer is scrolling */
+	private int scrolled2;
+	
+	/** boolean, which decides, if the back button leaves the 
+	 * application or just goes one step back in the menu */
 	private boolean isBackButton;
 
 	@Override
@@ -70,16 +120,16 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		Controller.initInstance();
-		
 		setupUI();
 		setupClickListener();
 		new MyAsyncClouds().execute("blub");
 		new MyAsyncGround().execute("blub");
 	}
 
+	/** sets up all OnClickListeners */
 	private void setupClickListener() {
-		setOnClickListenerStartGame(newGameImageView);
-		setOnClickListenerStartGame(newGame);
+		setOnClickListenerStartGame(startGameImageView);
+		setOnClickListenerStartGame(startGame);
 		setOnClickListenerOptions(optionsImageView);
 		setOnClickListenerOptions(options);
 		setOnClickListenerHelp(helpImageView);
@@ -88,6 +138,7 @@ public class MainActivity extends Activity {
 		deactivateScrollingbyUser(parallaxFrontLayer);
 	}
 
+	/** sets up the whole user interface */
 	private void setupUI() {
 		setContentView(R.layout.activity_main);
 
@@ -96,8 +147,8 @@ public class MainActivity extends Activity {
 		title = (TextView) findViewById(R.id.title_textview);
 		title.setTypeface(inhishan);
 
-		newGame = (TextView) findViewById(R.id.new_game_textview);
-		newGame.setTypeface(inhishan);
+		startGame = (TextView) findViewById(R.id.new_game_textview);
+		startGame.setTypeface(inhishan);
 
 		savedGameSlot1 = (TextView) findViewById(R.id.saved_game_slot1);
 		savedGameSlot1.setTypeface(inhishan);
@@ -115,12 +166,12 @@ public class MainActivity extends Activity {
 		startNewGameButton1.setTypeface(inhishan);
 		startNewGameButton2 = (TextView) findViewById(R.id.new_game_button_slot2);
 		startNewGameButton2.setTypeface(inhishan);
-		loadNewGameButton1 = (TextView) findViewById(R.id.load_game_button_slot1);
-		loadNewGameButton1.setTypeface(inhishan);
-		loadNewGameButton2 = (TextView) findViewById(R.id.load_game_button_slot2);	
-		loadNewGameButton2.setTypeface(inhishan);	
+		loadGameButton1 = (TextView) findViewById(R.id.load_game_button_slot1);
+		loadGameButton1.setTypeface(inhishan);
+		loadGameButton2 = (TextView) findViewById(R.id.load_game_button_slot2);	
+		loadGameButton2.setTypeface(inhishan);	
 
-		newGameImageView = (ImageView) findViewById(R.id.new_game_imageview);
+		startGameImageView = (ImageView) findViewById(R.id.new_game_imageview);
 		optionsImageView = (ImageView) findViewById(R.id.options_imageview);
 		helpImageView = (ImageView) findViewById(R.id.help_imageview);
 		parallaxMidLayer = (HorizontalScrollView) findViewById(R.id.scroll);
@@ -131,21 +182,22 @@ public class MainActivity extends Activity {
 		
 	}
 	
+	/** sets OnClickListener to show the slots to start a game*/
 	private void setOnClickListenerStartGame(View view){
 		view.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				table.setVisibility(View.INVISIBLE);
-				newGame.setVisibility(View.INVISIBLE);
-				newGameImageView.setVisibility(View.INVISIBLE);
+				startGame.setVisibility(View.INVISIBLE);
+				startGameImageView.setVisibility(View.INVISIBLE);
 				startGameTable.setVisibility(View.VISIBLE);
 
 				
 				File file = new File("/data/data/de.projectrpg/files/slot1.xml");
 				
 				if(file.exists()){
-					loadNewGameButton1.setTextColor(getResources().getColor(R.color.white));
+					loadGameButton1.setTextColor(getResources().getColor(R.color.white));
 
 					DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
@@ -153,26 +205,26 @@ public class MainActivity extends Activity {
 					String lastModifiedDate = df.format(today);
 
 					setOnClickListenerNewGame(startNewGameButton1, 1);
-					setOnClickListenerLoadGame(loadNewGameButton1, 1);
+					setOnClickListenerLoadGame(loadGameButton1, 1);
 					savedGameSlot1.setText("Slot 1\n\ngespeichert am\n" + lastModifiedDate);
 				}
 				else {
-					loadNewGameButton1.setTextColor(getResources().getColor(R.color.darkgray));
+					loadGameButton1.setTextColor(getResources().getColor(R.color.darkgray));
 					
 					setOnClickListenerNewGame(startNewGameButton1, 1);
 					savedGameSlot1.setText("Slot 1\n\nkein Spiel\ngespeichert");
 				}
 				
-				file2 = new File("/data/data/de.projectrpg/files/slot2.xml");
+				File file2 = new File("/data/data/de.projectrpg/files/slot2.xml");
 				if(file2.exists()){
-					loadNewGameButton2.setTextColor(getResources().getColor(R.color.white));
+					loadGameButton2.setTextColor(getResources().getColor(R.color.white));
 					
 					setOnClickListenerNewGame(startNewGameButton2, 2);
-					setOnClickListenerLoadGame(loadNewGameButton2, 2);
+					setOnClickListenerLoadGame(loadGameButton2, 2);
 					savedGameSlot2.setText("Slot 2\n\ngespeichert am\n" + file2.lastModified());
 				}
 				else {
-					loadNewGameButton2.setTextColor(getResources().getColor(R.color.darkgray));
+					loadGameButton2.setTextColor(getResources().getColor(R.color.darkgray));
 					
 					setOnClickListenerNewGame(startNewGameButton2, 2);
 					savedGameSlot2.setText("Slot 2\n\nkein Spiel\ngespeichert");
@@ -186,8 +238,8 @@ public class MainActivity extends Activity {
 	public void onBackPressed() {
 		if(isBackButton){
 			table.setVisibility(View.VISIBLE);
-			newGame.setVisibility(View.VISIBLE);
-			newGameImageView.setVisibility(View.VISIBLE);
+			startGame.setVisibility(View.VISIBLE);
+			startGameImageView.setVisibility(View.VISIBLE);
 			startGameTable.setVisibility(View.INVISIBLE);
 			isBackButton = false;
 		} else {
@@ -203,8 +255,8 @@ public class MainActivity extends Activity {
 		super.onResume();
 		if(isBackButton){
 			table.setVisibility(View.VISIBLE);
-			newGame.setVisibility(View.VISIBLE);
-			newGameImageView.setVisibility(View.VISIBLE);
+			startGame.setVisibility(View.VISIBLE);
+			startGameImageView.setVisibility(View.VISIBLE);
 			startGameTable.setVisibility(View.INVISIBLE);
 			isBackButton = false;
 		}
@@ -220,6 +272,7 @@ public class MainActivity extends Activity {
 		OurMusicManager.pause();
 	}
 	
+	/** sets up OnClickListener, which starts a new game */
 	private void setOnClickListenerNewGame(View view, final int slotNumber){
 		view.setOnClickListener(new OnClickListener() {
 
@@ -231,10 +284,17 @@ public class MainActivity extends Activity {
 		});
 	}
 	
+	/** shows Notification, which checks, if the player really wants to start a new Game */
 	private void showNewGameNotification(final int slotNumber) {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
-		dialogBuilder.setMessage("Willst du wirklich ein neues Spiel beginnen? Zuvor gespeicherte Spielstände auf Slot " + slotNumber + " können überschrieben werden!");
+		File file = new File("/data/data/de.projectrpg/files/slot" + slotNumber + ".xml");
+		
+		if(file.exists()){
+			dialogBuilder.setMessage("Willst du wirklich ein neues Spiel beginnen? Zuvor gespeicherte Spielstände auf Slot " + slotNumber + " können überschrieben werden!");
+		} else {
+			dialogBuilder.setMessage("Willst du ein neues Spiel beginnen?");
+		}
 		dialogBuilder.setCancelable(false);
 		dialogBuilder.setPositiveButton("Ja", new Dialog.OnClickListener() {
 
@@ -256,6 +316,7 @@ public class MainActivity extends Activity {
 		dialog.show();
 	}
 
+	/** sets up OnClickListener, which loads a previously saved game */
 	private void setOnClickListenerLoadGame(View view, final int slotNumber){
 		view.setOnClickListener(new OnClickListener() {
 
@@ -266,6 +327,7 @@ public class MainActivity extends Activity {
 		});
 	}
 
+	/** shows Notification, which checks, if the player really wants to load a saved game */
 	private void showLoadGameNotification(final int slotNumber) {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
@@ -291,6 +353,7 @@ public class MainActivity extends Activity {
 		dialog.show();
 	}
 
+	/** sets up OnClickListener, which shows the options activity */
 	private void setOnClickListenerOptions(View view){
 		view.setOnClickListener(new OnClickListener() {
 
@@ -302,6 +365,7 @@ public class MainActivity extends Activity {
 		});
 	}
 	
+	/** sets up OnClickListener, which shows the help activity */
 	private void setOnClickListenerHelp(View view){
 		view.setOnClickListener(new OnClickListener() {
 
@@ -313,6 +377,7 @@ public class MainActivity extends Activity {
 		});
 	}
 	
+	/** deactivates scrolling of a View by User */
 	private void deactivateScrollingbyUser(View view){
 		view.setOnTouchListener(new OnTouchListener() {
 			@Override
@@ -322,6 +387,7 @@ public class MainActivity extends Activity {
 		});
 	}
 
+	/** AsyncTask, which scrolls the mid layer of the parallax background */
 	class MyAsyncClouds extends AsyncTask<String, String, String> {
 
 		@Override
@@ -368,6 +434,7 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	/** AsyncTask, which scrolls the front layer of the parallax background */
 	class MyAsyncGround extends AsyncTask<String, String, String> {
 
 		@Override
