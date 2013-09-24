@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import de.projectrpg.R;
 
+import de.projectrpg.game.Controller;
 import de.projectrpg.game.LevelActivity;
 import de.projectrpg.util.OurMusicManager;
 
@@ -68,6 +69,8 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		Controller.initInstance();
+		
 		setupUI();
 		setupClickListener();
 		new MyAsyncClouds().execute("blub");
@@ -293,8 +296,8 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-
+				Intent intent = new Intent(MainActivity.this, OptionsActivity.class);
+				startActivity(intent);
 			}
 		});
 	}

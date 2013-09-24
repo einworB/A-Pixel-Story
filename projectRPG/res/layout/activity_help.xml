@@ -98,7 +98,7 @@
 	        android:layout_marginBottom="5dp"
 	        android:layout_marginRight="5dp"
 	        android:layout_below="@+id/help_stop_image"
-	        android:background="@drawable/tiptowalk"
+	        android:background="@drawable/zoom"
 	        android:contentDescription="@string/hello_world"/>
 	    <TextView
 	        android:id="@+id/help_zoom_text"

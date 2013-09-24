@@ -67,6 +67,7 @@ import de.projectrpg.sprites.NPC;
 import de.projectrpg.sprites.Opponent;
 import de.projectrpg.sprites.Player;
 import de.projectrpg.start.HelpActivity;
+import de.projectrpg.start.OptionsActivity;
 import de.projectrpg.util.OurMusicManager;
 
 /**
@@ -103,15 +104,32 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	/** used for loading button bitmaps, can hold more than one*/
 	private BitmapTextureAtlas bitmapTextureAtlas;
 	
-	/** used for loading bitmaps*/
-	private TiledTextureRegion playerTextureRegion;
-	/** used for loading bitmaps*/
-	private TiledTextureRegion opponentTextureRegion;
-	/** used for loading bitmaps*/
-	private TiledTextureRegion npcTextureRegion;
 
 	/** used for loading bitmaps*/
+	private TextureRegion textScrollTextureRegion;
+	private TextureRegion portraitTextureRegion;
+	private TextureRegion portraitEnemyTextureRegion;
+	private TextureRegion redBarTextureRegion;
+	private TextureRegion inventarButtonTextureRegion;
+	private TextureRegion experienceBackgroundTextureRegion;
+	private TextureRegion startExperienceBarTextureRegion;
+	private TextureRegion experienceBarTextureRegion;
+	private TextureRegion helpButtonTextureRegion;
+	private TextureRegion questButtonTextureRegion;
+	private TextureRegion backToGameButtonTextureRegion;
+	private TextureRegion backToGameButtonBackgroudTextureRegion;
+	private TextureRegion nextQuestButtonTextureRegion;
+	private TextureRegion prevQuestButtonTextureRegion;
+	private TextureRegion nextQuestGrayButtonTextureRegion;
+	private TextureRegion prevQuestGrayButtonTextureRegion;
+	private TextureRegion optionsButtonTextureRegion;
 	private TextureRegion beutelTextureRegion;
+	
+	/** used for loading bitmaps*/
+	private TiledTextureRegion playerTextureRegion;
+	private TiledTextureRegion opponentTextureRegion;
+	private TiledTextureRegion npcTextureRegion;
+
 
 	/** the players sprite */
 	private Player player;
@@ -196,6 +214,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private Sprite questButton;
 	/** the button to start the inventory activity */
 	private Sprite inventarButton;
+	/** the button to start the options activity */
+	private Sprite optionsButton;
 	/** the button to go back to game from quest scene */
 	private Sprite backToGameButton;
 	/** the background of the button to go back to game from quest scene */
@@ -213,6 +233,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private boolean inventarStarted = false;
 	/** boolean if the helpactivity was started already. true if it was started, else false. */
 	private boolean helpStarted = false;
+	/** boolean if the optionsactivity was started already. true if it was started, else false. */
+	private boolean optionsStarted = false;
 	/** boolean if the player is fleeing. True if it is fleeing, else false. */
 	private boolean fleeing;
 	/** necessary as var to be able to stop an already started path */
@@ -266,8 +288,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		createTexts();			
 		
-		Controller.initInstance(this, expBar);
 		controller = Controller.getInstance();
+		controller.setupController(this, expBar);
 	}
 
 	/**
@@ -284,37 +306,38 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		this.bitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 1024, 512);		
 		beutelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "lootBag.png", 0, 175);
-		TextureRegion textScrollTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "dialogHintergrund.png", 0, 0);
-		TextureRegion portraitTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portrait.png", 32, 175);
-		TextureRegion portraitEnemyTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portraitEnemy.png", 82, 175);
-		TextureRegion redBarTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "roterBalken.png", 132, 175);
-		TextureRegion inventarButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "inventarButton.png", 182, 175);
-		TextureRegion experienceBackgroundTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "expBackground.png", 236, 175);
-		TextureRegion experienceBarTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "expBar.png", 236, 205);
-		TextureRegion startExperienceBarTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "startExpBar.png", 738, 175);
+		textScrollTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "dialogHintergrund.png", 0, 0);
+		portraitTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portrait.png", 32, 175);
+		portraitEnemyTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "portraitEnemy.png", 82, 175);
+		redBarTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "roterBalken.png", 132, 175);
+		inventarButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "inventarButton.png", 182, 175);
+		experienceBackgroundTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "expBackground.png", 236, 175);
+		experienceBarTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "expBar.png", 236, 205);
+		startExperienceBarTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "startExpBar.png", 738, 175);
 
-		TextureRegion helpButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "helpButton.png", 758, 175);
-		TextureRegion questButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "questButton.png", 812, 175);
-		TextureRegion backToGameButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "backToGameButton.png", 0, 229);
-		TextureRegion backToGameButtonBackgroudTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "backToGameButtonSchatten.png", 408, 229);
+		helpButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "helpButton.png", 758, 175);
+		questButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "questButton.png", 812, 175);
+		backToGameButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "backToGameButton.png", 0, 229);
+		backToGameButtonBackgroudTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "backToGameButtonSchatten.png", 408, 229);
+		optionsButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "optionsButton.png", 570, 229);
 
-		TextureRegion nextQuestButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "nextQuest.png", 300, 229);
-		TextureRegion prevQuestButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "prevQuest.png", 354, 229);
+		nextQuestButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "nextQuest.png", 300, 229);
+		prevQuestButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "prevQuest.png", 354, 229);
 		
-		TextureRegion nextQuestGrayButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "nextQuestGray.png", 462, 229);
-		TextureRegion prevQuestGrayButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "prevQuestGray.png", 516, 229);
+		nextQuestGrayButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "nextQuestGray.png", 462, 229);
+		prevQuestGrayButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.bitmapTextureAtlas, this, "prevQuestGray.png", 516, 229);
 
+		
 		this.bitmapTextureAtlas.load();		
 
-		createSprites(textScrollTextureRegion, portraitTextureRegion, portraitEnemyTextureRegion, redBarTextureRegion, inventarButtonTextureRegion, experienceBackgroundTextureRegion, experienceBarTextureRegion, startExperienceBarTextureRegion, 
-				helpButtonTextureRegion, questButtonTextureRegion, backToGameButtonTextureRegion, backToGameButtonBackgroudTextureRegion, nextQuestButtonTextureRegion, prevQuestButtonTextureRegion, nextQuestGrayButtonTextureRegion, prevQuestGrayButtonTextureRegion);
+		createSprites();
 	}
 
 	/**
 	 * creates sprites using the given textures
 	 * @params the various textures
 	 */
-	private void createSprites(TextureRegion textScrollTextureRegion, TextureRegion portraitTextureRegion, TextureRegion portraitEnemyTextureRegion, TextureRegion redBarTextureRegion, TextureRegion inventarButtonTextureRegion, TextureRegion experienceBackgroundTextureRegion, TextureRegion experienceBarTextureRegion, TextureRegion startExperienceBarTextureRegion, TextureRegion helpButtonTextureRegion, TextureRegion questButtonTextureRegion, TextureRegion backToGameButtonTextureRegion, TextureRegion backToGameButtonBackgroudTextureRegion, TextureRegion nextQuestButtonTextureRegion, TextureRegion prevQuestButtonTextureRegion, TextureRegion nextQuestGrayButtonTextureRegion, TextureRegion prevQuestGrayButtonTextureRegion) {
+	private void createSprites() {
 		textScroll = new Sprite(10, CAMERA_HEIGHT-110, CAMERA_WIDTH-40, 175, textScrollTextureRegion, this.getVertexBufferObjectManager());
 		
 		portrait = new Sprite(2, 2, portraitTextureRegion, getVertexBufferObjectManager());
@@ -352,6 +375,19 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				if(!helpStarted){
 					helpStarted = true;
 					Intent intent = new Intent(LevelActivity.this, HelpActivity.class);
+					startActivity(intent);
+				}
+				
+				return true;
+			}
+		};
+		
+		optionsButton = new Sprite(10, CAMERA_HEIGHT - 70, 54, 54, optionsButtonTextureRegion, getVertexBufferObjectManager()) {
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if(!optionsStarted){
+					optionsStarted = true;
+					Intent intent = new Intent(LevelActivity.this, OptionsActivity.class);
 					startActivity(intent);
 				}
 				
@@ -646,7 +682,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		hud.attachChild(inventarButton);
 		hud.attachChild(questButton);
 		hud.attachChild(helpButton);
-		
+		hud.attachChild(optionsButton);
 		hud.attachChild(levelTextPlayer);
 
 		hud.attachChild(expBar);
@@ -663,6 +699,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		hud.registerTouchArea(inventarButton);
 		hud.registerTouchArea(questButton);
 		hud.registerTouchArea(helpButton);
+		hud.registerTouchArea(optionsButton);
 		
 		
 		questHud.attachChild(backToGameButtonBackground);
@@ -754,6 +791,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			hud.detachChild(helpButton);
 			hud.unregisterTouchArea(helpButton);
 		}
+		if(optionsButton.hasParent()) {
+			hud.detachChild(optionsButton);
+			hud.unregisterTouchArea(optionsButton);
+		}
 		
 		levelTextPlayer.setText("lvl " + player.getLevel());
 		
@@ -798,6 +839,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			hud.attachChild(helpButton);
 			hud.registerTouchArea(helpButton);
 		}
+		if(!optionsButton.hasParent()) {
+			hud.attachChild(optionsButton);
+			hud.registerTouchArea(optionsButton);
+		}
+
 		hud.detachChild(textScroll);
 		hud.detachChild(text);
 		isInteracting = false;
@@ -1249,6 +1295,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		OurMusicManager.start(this);
 		inventarStarted = false;
 		helpStarted = false;
+		optionsStarted = false;
 		if(redBarPlayer!=null){
 			redBarPlayer.setWidth((float)(100-player.getHealth())/3);
 			redBarPlayer.setX(44-redBarPlayer.getWidth());

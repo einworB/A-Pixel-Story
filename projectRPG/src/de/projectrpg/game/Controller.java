@@ -80,22 +80,23 @@ public class Controller {
 
 	/** the bar showing the experience progress to the next level of the player */
 	private Sprite expBar;
+
+	/** boolean if the musicplayer is muted  */
+	private boolean musicMuted;
 	
 	
 	/**
 	 * initializes the static instance of the controller
 	 * needed in order to have the same controller in each activity
-	 * @param context the context of the calling activity
-	 * @param expBar the expbar of the player
 	 */
-	public static void initInstance(Context context, Sprite expBar){
-		controller = new Controller(context, expBar);
+	public static void initInstance(){
+		controller = new Controller();
 	}
 	
 	/**
 	 * returns the static instance of the controller
 	 * needed in order to have the same controller in each activity
-	 * @return
+	 * @return the controller
 	 */
 	public static Controller getInstance(){
 		return controller;
@@ -103,10 +104,17 @@ public class Controller {
 	
 	/**
 	 * constructor
+	 */
+	public Controller(){
+		musicMuted = false;
+	}
+	
+	/**
+	 * 
 	 * @param context the context of the calling activity
 	 * @param expBar the expbar of the player
 	 */
-	public Controller(Context context, Sprite expBar){
+	public void setupController(Context context, Sprite expBar){
 		mapLoader = new TMXMapLoader();
 		sceneManager = new SceneManager();
 		isMoving = false;
@@ -615,5 +623,13 @@ public class Controller {
 	 */
 	public int getPlayerLevel(){
 		return player.getLevel();
+	}
+
+	public boolean isMusicMuted() {
+		return musicMuted;
+	}
+	
+	public void setMusicMuted(boolean isMuted){
+		musicMuted = isMuted;
 	}
 }

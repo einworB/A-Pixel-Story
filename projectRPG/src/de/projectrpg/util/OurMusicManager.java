@@ -3,6 +3,7 @@ package de.projectrpg.util;
 import android.content.Context;
 import android.media.MediaPlayer;
 import de.projectrpg.R;
+import de.projectrpg.game.Controller;
 
 /**
  * Class responsible for playing Music
@@ -12,7 +13,7 @@ public class OurMusicManager {
 	/** constant for the music title to play */
 	private static final int MUSIC = R.raw.music;
 	
-	/** the MadiaPlayer playing the music */
+	/** the MediaPlayer playing the music */
 	private static MediaPlayer player;
 
 	/**
@@ -20,12 +21,15 @@ public class OurMusicManager {
 	 * @param context the context of the calling activity
 	 */
 	public static void start(Context context){
-		if(player!=null){
-			if(!player.isPlaying()) player.start();
-		} else{
-			player = MediaPlayer.create(context, MUSIC);
-			player.setLooping(true);
-			player.start();
+		Controller controller = Controller.getInstance();
+		if(!controller.isMusicMuted()){
+			if(player!=null){
+				if(!player.isPlaying()) player.start();
+			} else{
+				player = MediaPlayer.create(context, MUSIC);
+				player.setLooping(true);
+				player.start();
+			}
 		}
 	}
 	

@@ -21,12 +21,10 @@
     <string name="title_activity_help">HelpActivity</string>
     <string name="achtung">Achtung</string>
     <string name="title_activity_help">HelpActivity</string>
-    
-
     <string name="help_player_text">Das bist du!</string>
     <string name="help_merchant_text">So sehen alle aus mit denen du reden kannst. Von ihnen kannst du Quests bekommen oder auch Dinge kaufen.</string>
     <string name="help_opponent_text">So sehen deine Gegner aus</string>
-    <string name="help_tipToWalk_text">In dem du irgendwo auf die Karte klickst kannst du an diese Stelle gehn.</string>
+    <string name="help_tipToWalk_text">In dem du irgendwo auf die Karte klickst kannst du an diese Stelle gehen.</string>
     <string name="help_stop_text">Indem du nochmal klickst brichst du die Bewegung ab.</string>
     <string name="help_zoom_text">Du kannst in die Karte rein- und rauszoomen.</string>
     <string name="help_quests_text">Hier findest du eine Übersicht über alle aktiven Quests.</string>
@@ -34,5 +32,8 @@
     <string name="help_longclick_text">Mit einem langen Klick auf einen Gegenstand in deinem Inventar kannst du es an- oder ablegen.</string>
     <string name="help_levelup_text">Hier kommst du ins nächste Gebiet.</string>
     <string name="help_leveldown_text">Und hier ins vorherige Gebiet.</string>
+    <string name="title_activity_options">OptionsActivity</string>
+
+    <string name="musicOnOff">Musik an/aus</string>
     
 </resources>
