@@ -241,8 +241,8 @@ public class Controller {
 	/** 
 	 * @returns the path to the tmx file according to the current level
 	 */
-	public InputStream getLevelPath(int index) {
-		RandomMapGenerator gen = new RandomMapGenerator(context, lastLevel, 1);
+	public InputStream getLevelPath(int index, int slot) {
+		RandomMapGenerator gen = new RandomMapGenerator(context, lastLevel, slot);
 		if(index < 1 || index > lastLevel) return null;
 		else  {
 			InputStream input = gen.createMap(index, lastTransitionExitSide);
@@ -286,10 +286,10 @@ public class Controller {
 	 * @return the loaded TMXMap
 	 */
 	public TMXTiledMap loadTMXMap(AssetManager assets, Engine engine,
-			VertexBufferObjectManager vertexBufferObjectManager, int index, InputStream input) {
+			VertexBufferObjectManager vertexBufferObjectManager, int index, InputStream input, int slot) {
 		Log.d("projekt", "input: " + input);
 		if(input == null) {
-			input = getLevelPath(index);
+			input = getLevelPath(index, slot);
 		}
 		return mapLoader.loadTMXMap(assets, engine, vertexBufferObjectManager, input);
 	}

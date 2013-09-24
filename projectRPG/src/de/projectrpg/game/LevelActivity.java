@@ -482,7 +482,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		int lastLevel = controller.getLastLevel();
 		// creates a certain amount of scenes
 		for(int i=1; i<=lastLevel; i++){
-			TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i, null);
+			TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i, null, slot);
 			OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
 			scene.generateAnimatedSprites(opponentTextureRegion, npcTextureRegion, getVertexBufferObjectManager(), i);
 			controller.addSceneToManager(scene);
@@ -550,7 +550,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				e.printStackTrace();
 			}
 
-			TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i, fin);
+			TMXTiledMap tmxTiledMap = controller.loadTMXMap(getAssets(), this.mEngine, getVertexBufferObjectManager(), i, fin, slot);
 
 			OurScene scene = new OurScene(i, this, tmxTiledMap, controller.getSpawn());
 			scene.loadAnimatedSprites(opponentTextureRegion, npcTextureRegion, getVertexBufferObjectManager(), i, gameLoader);
@@ -1104,7 +1104,11 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		if(!controller.isMoving()){
 			if(isInteracting){
 				// action=continue with interaction
-				nextString();
+				if(text.getCharactersVisible()<text.getCharactersToDraw()){
+					// autocomplete the TickerText
+					text.setCharactersPerSecond(100.0f);
+				}
+				else nextString(); 
 			} else{
 				OurScene scene = controller.getCurrentScene();
 				final TMXLayer layer = (TMXLayer) scene.getChildByIndex(0);
