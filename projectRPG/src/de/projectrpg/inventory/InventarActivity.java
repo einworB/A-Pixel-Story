@@ -26,8 +26,6 @@ import de.projectrpg.util.OurMusicManager;
 /**
  * This is the Activity where the player can manage his whole 
  * inventory, including buy/sell items or add/remove/use items 
- * 
- * @author Nedim
  */
 
 public class InventarActivity extends Activity {

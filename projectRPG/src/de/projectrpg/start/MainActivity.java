@@ -38,8 +38,6 @@ import de.projectrpg.util.OurMusicManager;
  * This is the Activity where the player starts this application. 
  * From this mainmenu, the player can start the game, go to the
  * options activity or go to the help activity
- * 
- * @author Nedim
  */
 
 public class MainActivity extends Activity {
