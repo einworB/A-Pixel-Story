@@ -135,6 +135,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private Font fontQuestTitel;
 	/** the font for the "how to close quest" text */
 	private Font fontQuestHowTo;
+	/** the font for the percent text below the exp bar*/
+	private Font fontpercent;
 
 	/** tickertext for the dialog window */
 	private TickerText text;
@@ -148,6 +150,20 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private Text levelTextOpponent;
 	/** text to inform the user how to close a quest */
 	private Text howToCloseQuest;
+	/** the count for the quest progress*/
+	private Text questProgress;
+	/** 0% text*/
+	private Text percent0;
+	/** 20% text*/
+	private Text percent1;
+	/** 40% text*/
+	private Text percent2;
+	/** 60% text*/
+	private Text percent3;
+	/** 80% text*/
+	private Text percent4;
+	/** 100% text*/
+	private Text percent5;
 
 	/** the list of Strings */
 	private ArrayList<String> interActionText;
@@ -213,14 +229,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	private int slot;
 	/** if the game should be loaded from the slot or a new game should be started */
 	private boolean newGame;
-	private Text questProgress;
-	private Font fontpercent;
-	private Text percent0;
-	private Text percent1;
-	private Text percent2;
-	private Text percent3;
-	private Text percent4;
-	private Text percent5;
 	
 //=======================================================================METHODS========================================================================================		
 	
@@ -756,7 +764,6 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * Shows the next String of the active text on the scroll
 	 */
 	private void nextString(){
-		
 		if(!interActionText.isEmpty()){
 			if(inventarButton.hasParent()) {
 				hud.detachChild(inventarButton);
@@ -766,10 +773,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				hud.detachChild(questButton);
 				hud.unregisterTouchArea(questButton);
 			}
-			
 			if(text!=null) if(text.hasParent()) hud.detachChild(text);
 			text = new TickerText(textScroll.getX()+40, textScroll.getY()+15, font, interActionText.remove(0), new TickerTextOptions(AutoWrap.WORDS, textScroll.getWidth()-80, HorizontalAlign.LEFT, 15), this.getVertexBufferObjectManager());
 			text.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+			
 			hud.attachChild(text);
 		}
 		else stopInteraction();
@@ -1097,11 +1104,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		if(!controller.isMoving()){
 			if(isInteracting){
 				// action=continue with interaction
-				if(text.getCharactersVisible()<text.getCharactersToDraw()){
-					// autocomplete the TickerText
-					text.setCharactersPerSecond(100.0f);
-				}
-				else nextString();
+				nextString();
 			} else{
 				OurScene scene = controller.getCurrentScene();
 				final TMXLayer layer = (TMXLayer) scene.getChildByIndex(0);
@@ -1281,7 +1284,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 					scene[i - 1] = controller.getScene(i);
 				}
 				
-				writer.createFile(1, controller.getLastLevel(), questcount, scene, player, controller);
+				writer.createFile(slot, controller.getLastLevel(), questcount, scene, player, controller);
 				finish();
 			}
 		}).setNegativeButton("Nein", null);
