@@ -73,9 +73,6 @@ import de.projectrpg.util.OurMusicManager;
 /**
  * This is the Activity the Player spends most of the playtime in 
  * The player moves through the different levels in this activity 
- * 
- * @author Philip
- *
  */
 public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTouchListener, IPinchZoomDetectorListener, IClickDetectorListener{
 
