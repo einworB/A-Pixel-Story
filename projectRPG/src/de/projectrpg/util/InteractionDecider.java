@@ -10,9 +10,6 @@ import de.projectrpg.sprites.Opponent;
 
 /**
  * Created to get a decision if the player shall interact with a tile or not
- * 
- * @author Philip
- *
  */
 public class InteractionDecider {
 	

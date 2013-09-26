@@ -2,7 +2,6 @@ package de.projectrpg.start;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -10,10 +9,18 @@ import de.projectrpg.R;
 import de.projectrpg.game.Controller;
 import de.projectrpg.util.OurMusicManager;
 
+/**
+ * Option Activity to switch the music on and off.
+ */
 public class OptionsActivity extends Activity {
+	/** checkbox to switch the music on and off*/
 	CheckBox checkBox;
+	/** the controller*/
 	private Controller controller;
 	
+	/**
+	 * setup the UI and the get an instance of the controller.
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -25,6 +32,10 @@ public class OptionsActivity extends Activity {
 		checkBox.setChecked(!controller.isMusicMuted());
 	}
 
+	/**
+	 * setup the UI. If the checkbox is clicked check whether the box is checked or not.
+	 * If it is checked start the music else pause it.
+	 */
 	private void setupUI() {
 		checkBox = (CheckBox) findViewById(R.id.checkbox_options);
 		checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -42,13 +53,6 @@ public class OptionsActivity extends Activity {
 				
 			}
 		});
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.options, menu);
-		return true;
 	}
 
 	/**

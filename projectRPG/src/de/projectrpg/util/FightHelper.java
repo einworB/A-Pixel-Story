@@ -7,8 +7,20 @@ import de.projectrpg.sprites.Player;
 
 import android.util.Log;
 
+/**
+ * Class to manage the fight between the player and an opponent
+ */
 public class FightHelper {
 	
+	/**
+	 * Decide whether the player or the opponent have a critical hit or miss.
+	 * Then decide if the player or the opponent should hit first.
+	 * @param player the player
+	 * @param opponent the actual opponent
+	 * @param redBar the live bar of the player
+	 * @param redBarEnemy the live bar of the opponent
+	 * @return 1 if the opponent dies, 2 if the player dies and 0 if noone dies
+	 */
 	public static int fight(Player player, Opponent opponent, Sprite redBar, Sprite redBarEnemy){
 		OurRandomGenerator rand = new OurRandomGenerator();
 		double playerAgility = player.getAgility();

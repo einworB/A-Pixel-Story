@@ -4,6 +4,10 @@ import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
+/**
+ * Parent class for the player and all opponents.
+ * Holds all values that are used generally for Sprites that are able to fight
+ */
 public class FightingSprite extends AnimatedSprite {
 	
 	/** the level of the sprite*/

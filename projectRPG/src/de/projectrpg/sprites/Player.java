@@ -9,6 +9,10 @@ import de.projectrpg.database.Armor;
 import de.projectrpg.database.Item;
 import de.projectrpg.database.Weapon;
 
+/**
+ * Class to manage the player. 
+ * Holds the values for inventory, armor, gold and exp.
+ */
 public class Player extends FightingSprite {
 
 	/** the equipped weapon*/

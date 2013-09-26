@@ -3,16 +3,12 @@ package de.projectrpg.start;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -26,10 +22,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import de.projectrpg.R;
-
 import de.projectrpg.game.Controller;
 import de.projectrpg.game.LevelActivity;
 import de.projectrpg.util.OurMusicManager;
@@ -39,7 +32,6 @@ import de.projectrpg.util.OurMusicManager;
  * From this mainmenu, the player can start the game, go to the
  * options activity or go to the help activity
  */
-
 public class MainActivity extends Activity {
 
 	
@@ -479,7 +471,5 @@ public class MainActivity extends Activity {
 		}
 
 	}
-	
-	
 }
 
