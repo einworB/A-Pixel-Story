@@ -283,7 +283,7 @@ public class MainActivity extends Activity {
 	private void showNewGameNotification(final int slotNumber) {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
-		File file = new File("/data/data/de.projectrpg/files/slot" + slotNumber + ".xml");
+		final File file = new File("/data/data/de.projectrpg/files/slot" + slotNumber + ".xml");
 		
 		if(file.exists()){
 			dialogBuilder.setMessage("Willst du wirklich ein neues Spiel beginnen? Zuvor gespeicherte Spielstände auf Slot " + slotNumber + " können überschrieben werden!");
@@ -295,6 +295,7 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
+				file.delete();
 				Intent i = new Intent(MainActivity.this, LevelActivity.class);
 				i.putExtra("slot", slotNumber);
 				i.putExtra("newGame", true);
