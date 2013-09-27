@@ -208,10 +208,15 @@ public class MainActivity extends Activity {
 				File file2 = new File("/data/data/de.projectrpg/files/slot2.xml");
 				if(file2.exists()){
 					loadGameButton2.setTextColor(getResources().getColor(R.color.white));
-					
+
+					DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+					long today = file2.lastModified();      
+					String lastModifiedDate = df.format(today);
+
 					setOnClickListenerNewGame(startNewGameButton2, 2);
 					setOnClickListenerLoadGame(loadGameButton2, 2);
-					savedGameSlot2.setText("Slot 2\n\ngespeichert am\n" + file2.lastModified());
+					savedGameSlot2.setText("Slot 2\n\ngespeichert am\n" + lastModifiedDate);
 				}
 				else {
 					loadGameButton2.setTextColor(getResources().getColor(R.color.darkgray));

@@ -2159,8 +2159,8 @@ public class InventarActivity extends Activity {
 		sortedItemNames.add("Beinkleider aus rostigem Eisen");
 		sortedItemNames.add("Bronzehelm");
 		sortedItemNames.add("Bronzene Beinkleider");
-		sortedItemNames.add("Bronzene Beinkleider");
-		sortedItemNames.add("Bronzener Lanze");
+		sortedItemNames.add("Bronzene Lanze");
+		sortedItemNames.add("Bronzener Brustpanzer");
 		sortedItemNames.add("Bronzene Stiefel");
 		sortedItemNames.add("Bronzene Stulpen");
 		sortedItemNames.add("Brustpanzer aus verstärktem Leder");
