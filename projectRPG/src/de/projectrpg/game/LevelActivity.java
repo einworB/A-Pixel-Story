@@ -1149,7 +1149,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				// action=continue with interaction
 				if(text.getCharactersVisible()<text.getCharactersToDraw()){
 					// autocomplete the TickerText
-					text.setCharactersPerSecond(100.0f);
+					text.setCharactersPerSecond(40.0f);
 				}
 				else nextString(); 
 			} else{
