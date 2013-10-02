@@ -112,7 +112,7 @@ public class Algorithm {
             			if(entity instanceof Opponent || entity instanceof NPC) {
             				float entityX = entity.getX();
             				float entityY = entity.getY();
-            				TMXTile tile = tiledMap.getTMXLayers().get(0).getTMXTileAt(entityX+12, entityY+16); // TODO: 16 evtl durch PLAYER_WIDTH/HEIGHT ersetzen
+            				TMXTile tile = tiledMap.getTMXLayers().get(0).getTMXTileAt(entityX+12, entityY+16); 
             				if(endTile.equals(tile)) {
             					collide = true;
             					break;
@@ -323,7 +323,7 @@ public class Algorithm {
 			if(entity instanceof Opponent || entity instanceof NPC) {
 				float entityX = entity.getX();
 				float entityY = entity.getY();
-				TMXTile tile = tiledMap.getTMXLayers().get(0).getTMXTileAt(entityX+12, entityY+16); // TODO: 16 evtl durch PLAYER_WIDTH/HEIGHT ersetzen
+				TMXTile tile = tiledMap.getTMXLayers().get(0).getTMXTileAt(entityX+12, entityY+16);
 				collideTiles.add(tile);
 			}
 		}

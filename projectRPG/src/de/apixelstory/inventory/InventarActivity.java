@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -259,22 +258,22 @@ public class InventarActivity extends Activity {
 	private boolean checkNeededInterface() {
 		isSellInterface = getIntent().getExtras().getBoolean("isMerchant");
 		if (isSellInterface) {
-			Log.d("sell", "in if-abfrage");
+//			Log.d("sell", "in if-abfrage");
 			for (int i = 0; i < 9; i++) {
 				slotBackgroundListSell.get(i).setVisibility(View.VISIBLE);
 				slotItemImageListSell.get(i).setVisibility(View.VISIBLE);
-				Log.d("sell", "sell visible gemacht beendet");
+//				Log.d("sell", "sell visible gemacht beendet");
 				if (i < 5) {
 					slotBackgroundListEquip.get(i)
 							.setVisibility(View.INVISIBLE);
 					slotItemImageListEquip.get(i).setVisibility(View.INVISIBLE);
-					Log.d("sell", "slot invisible gemacht beendet");
+//					Log.d("sell", "slot invisible gemacht beendet");
 				}
 			}
 			weaponSlotBackground.setVisibility(View.INVISIBLE);
 			weaponSlotItemImage.setVisibility(View.INVISIBLE);
 			playerEquip.setVisibility(View.INVISIBLE);
-			Log.d("sell", "slot invisible2 gemacht beendet");
+//			Log.d("sell", "slot invisible2 gemacht beendet");
 
 			removeItemButton.setVisibility(View.INVISIBLE);
 			removeItemBackground.setVisibility(View.INVISIBLE);
@@ -317,7 +316,7 @@ public class InventarActivity extends Activity {
 			titleSellEquip.setText(R.string.title_equip);
 
 		}
-		Log.d("sell", "checkNeededInterface beendet");
+//		Log.d("sell", "checkNeededInterface beendet");
 		return isSellInterface;
 	}
 
@@ -349,7 +348,7 @@ public class InventarActivity extends Activity {
 						weaponSlotItemImage, weaponSlot);
 				setupOnClickListenerEquip(weaponSlotBackground,
 						weaponSlotItemImage, weaponSlot);
-				Log.d("remove", "clickListener ausgelöst");
+//				Log.d("remove", "clickListener ausgelöst");
 				removeItemButton.setOnClickListener(new OnClickListener() {
 
 					@Override
@@ -358,7 +357,7 @@ public class InventarActivity extends Activity {
 
 						} else {
 							showRemoveItemNotification();
-							Log.d("remove", clickedItem);
+//							Log.d("remove", clickedItem);
 						}
 					}
 				});
@@ -502,26 +501,26 @@ public class InventarActivity extends Activity {
 				slotList.add(new Slot(0, "leer", "leer", "0"));
 			}
 		} else {
-			Log.d("remove", "In else drinnen");
+//			Log.d("remove", "In else drinnen");
 
 			for (int i = 0; i < 5; i++) {
-				Log.d("remove", "In for-schleife drinnen"
-						+ equipedArmorList.length + clickedItem);
+//				Log.d("remove", "In for-schleife drinnen"
+//						+ equipedArmorList.length + clickedItem);
 				if (slotListEquip.get(i).getItemName()
 						.equalsIgnoreCase(clickedItem)) {
-					Log.d("remove", "In if-schleife drinnen");
+//					Log.d("remove", "In if-schleife drinnen");
 					controller.removeEquippedArmor(i);
-					Log.d("remove", "In if2 drinnen");
+//					Log.d("remove", "In if2 drinnen");
 					removedItem = true;
 				}
 			}
-			Log.d("remove", "item gelöscht");
+//			Log.d("remove", "item gelöscht");
 
 			if (removedItem == false) {
 				controller.removeEquippedWeapon(equippedWeapon);
-				Log.d("remove", "weapon if-abfrage drinnen");
+//				Log.d("remove", "weapon if-abfrage drinnen");
 			}
-			Log.d("remove", "weapon if-abfrage übersprungen");
+//			Log.d("remove", "weapon if-abfrage übersprungen");
 
 			weaponSlot = new Slot(0, "leer", "leer", "0");
 
@@ -533,7 +532,7 @@ public class InventarActivity extends Activity {
 			slotListEquip.clear();
 			for (int i = 0; i < 5; i++) {
 				slotListEquip.add(new Slot(0, "leer", "leer", "0"));
-				Log.d("remove", "slots geklärt");
+//				Log.d("remove", "slots geklärt");
 
 			}
 			setSlotsUnmarked();
@@ -547,7 +546,7 @@ public class InventarActivity extends Activity {
 		setItemsOnOwnSlots();
 		setItemsOnEquipSlots();
 		setupAllClickListeners();
-		Log.d("remove", "fertig");
+//		Log.d("remove", "fertig");
 
 	}
 
@@ -561,7 +560,7 @@ public class InventarActivity extends Activity {
 		inventoryList = new ArrayList<Item>();
 
 		inventoryList = controller.getInventory();
-		Log.d("testArmor", "" + inventoryList.size());
+//		Log.d("testArmor", "" + inventoryList.size());
 
 		if (checkNeededInterface()) {
 			inventoryListMerchant = new ArrayList<Item>();
@@ -599,9 +598,9 @@ public class InventarActivity extends Activity {
 						.getItemByName("überaus köstlicher Apfelkuchen"));
 			}
 
-			Log.d("kauf", inventoryListMerchant.get(0).getName());
-			Log.d("kauf", inventoryListMerchant.get(1).getName());
-			Log.d("kauf", inventoryListMerchant.get(2).getName());
+//			Log.d("kauf", inventoryListMerchant.get(0).getName());
+//			Log.d("kauf", inventoryListMerchant.get(1).getName());
+//			Log.d("kauf", inventoryListMerchant.get(2).getName());
 
 		} else {
 			equipedArmorList = new Armor[5];
@@ -1020,7 +1019,7 @@ public class InventarActivity extends Activity {
 					slot.setMarked();
 					clickedItem = slot.getItemName();
 					healValue = slot.getHealValue();
-					Log.d("heil","" + healValue);
+//					Log.d("heil","" + healValue);
 					if (healValue != 0) {
 						showUseItemNotification();
 					} else {
@@ -1088,7 +1087,7 @@ public class InventarActivity extends Activity {
 	/** checks longclicked Item in inventory slots when equip interface is used */
 	private void checkLongClickedItemAddEquip(final ImageButton slotBackground,
 			final ImageButton slotItem, final Slot slot) {
-		Log.d("addEquip", "drinnen in checkLongClickedItemAddEquip");
+//		Log.d("addEquip", "drinnen in checkLongClickedItemAddEquip");
 		if (slot.getItemType().equalsIgnoreCase(EQUIP_HEAD)
 				|| slot.getItemType().equalsIgnoreCase(EQUIP_UPPER_BODY)
 				|| slot.getItemType().equalsIgnoreCase(EQUIP_HANDS)
@@ -1330,11 +1329,11 @@ public class InventarActivity extends Activity {
 		removedItem = false;
 		tempInventoryList = new ArrayList<Item>();
 		for (int i = 0; i < inventoryList.size(); i++) {
-			Log.d("remove", "clickedItem ist " + clickedItem);
+//			Log.d("remove", "clickedItem ist " + clickedItem);
 			if (inventoryList.get(i).getName().equalsIgnoreCase(clickedItem)
 					&& removedItem == false) {
 				removedItem = true;
-				Log.d("remove", "item gelöscht");
+//				Log.d("remove", "item gelöscht");
 			} else {
 				tempInventoryList.add(inventoryList.get(i));
 			}
@@ -1362,7 +1361,7 @@ public class InventarActivity extends Activity {
 		setItemsOnSellSlots();
 		resetInteractionButtons();
 		setupAllClickListeners();
-		Log.d("remove", "fertig");
+//		Log.d("remove", "fertig");
 	}
 
 	/** resets the text of the interactionButton */
@@ -1380,13 +1379,13 @@ public class InventarActivity extends Activity {
 		removedItem = false;
 		tempInventoryList = new ArrayList<Item>();
 		for (int i = 0; i < inventoryListMerchant.size(); i++) {
-			Log.d("remove", "clickedItem ist " + clickedItem);
+//			Log.d("remove", "clickedItem ist " + clickedItem);
 			if (inventoryListMerchant.get(i).getName()
 					.equalsIgnoreCase(clickedItem)
 					&& removedItem == false) {
 				removedItem = true;
 				controller.addItemToInventory(inventoryListMerchant.get(i));
-				Log.d("remove", "item geaddet");
+//				Log.d("remove", "item geaddet");
 			} else {
 				tempInventoryList.add(inventoryListMerchant.get(i));
 			}
@@ -1414,7 +1413,7 @@ public class InventarActivity extends Activity {
 		setItemsOnSellSlots();
 		resetInteractionButtons();
 		setupAllClickListeners();
-		Log.d("remove", "fertig");
+//		Log.d("remove", "fertig");
 	}
 
 	/** removes gold from the players own gold */
@@ -1430,21 +1429,21 @@ public class InventarActivity extends Activity {
 
 			removedItem = false;
 			tempArmor = (Armor) controller.getItemByName(clickedItem);
-			Log.d("neu",
-					"" + tempArmor.getName() + tempArmor.getLevelNeeded()
-							+ tempArmor.getDefenseValue() + tempArmor.getType());
+//			Log.d("neu",
+//					"" + tempArmor.getName() + tempArmor.getLevelNeeded()
+//							+ tempArmor.getDefenseValue() + tempArmor.getType());
 			tempItem = (Item) tempArmor;
-			Log.d("neu",
-					"" + tempItem.getName() + tempItem.getLevelNeeded()
-							+ ((Armor) tempItem).getDefenseValue()
-							+ ((Armor) tempItem).getType());
+//			Log.d("neu",
+//					"" + tempItem.getName() + tempItem.getLevelNeeded()
+//							+ ((Armor) tempItem).getDefenseValue()
+//							+ ((Armor) tempItem).getType());
 	
 			tempItem.setItemType("armor");
 			tempArmor = (Armor) tempItem;
-			Log.d("neu",
-					"" + tempArmor.getName() + tempArmor.getLevelNeeded()
-							+ tempArmor.getDefenseValue() + tempArmor.getType()
-							+ tempArmor.getItemType());
+//			Log.d("neu",
+//					"" + tempArmor.getName() + tempArmor.getLevelNeeded()
+//							+ tempArmor.getDefenseValue() + tempArmor.getType()
+//							+ tempArmor.getItemType());
 	
 			if (slotListEquip.get(tempArmor.getType()).getNumberOfItems()
 					.equalsIgnoreCase("0")) {
@@ -1481,7 +1480,7 @@ public class InventarActivity extends Activity {
 		setItemsOnEquipSlots();
 		resetInteractionButtons();
 		setupAllClickListeners();
-		Log.d("testArmor", "" + inventoryList.size());
+//		Log.d("testArmor", "" + inventoryList.size());
 	}
 
 	/** shows Notification, the level is too low to use the clicked Item */
@@ -1590,7 +1589,7 @@ public class InventarActivity extends Activity {
 		setItemsOnEquipSlots();
 		resetInteractionButtons();
 		setupAllClickListeners();
-		Log.d("testArmor", "" + inventoryList.size());
+//		Log.d("testArmor", "" + inventoryList.size());
 	}
 
 	/** method, which handles the removing of the clicked Weapon from the equip */

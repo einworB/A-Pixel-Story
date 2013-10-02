@@ -2,7 +2,6 @@ package de.apixelstory.quest;
 
 import java.util.ArrayList;
 
-import android.util.Log;
 
 
 import de.apixelstory.database.Item;
@@ -77,14 +76,14 @@ public class QuestManager {
 	 * @param item the item that was collected
 	 */
 	public void checkQuests(Item item) {
-		Log.d("checkQuests", "checking Getitemquests; Active Quests: "+activeQuests.toString());
+//		Log.d("checkQuests", "checking Getitemquests; Active Quests: "+activeQuests.toString());
 		if(!activeQuests.isEmpty()){
 			for(int i=0; i<activeQuests.size(); i++){
 				Quest quest = activeQuests.get(i);
 				if(quest instanceof GetItemQuest){
 					if(((GetItemQuest) quest).getItemName().contentEquals(item.getName())){
 						if(((GetItemQuest) quest).gotOne()){
-							Log.d("checkQuests", "Quest fulfilled!");
+//							Log.d("checkQuests", "Quest fulfilled!");
 							quest.setFulfilled();
 							break;
 						}
@@ -99,13 +98,13 @@ public class QuestManager {
 	 * @param npc the npc that the user talks to
 	 */
 	public void checkQuests(NPC npc) {
-		Log.d("checkQuests", "checking Talktoquests; Active Quests: "+activeQuests.toString());
+//		Log.d("checkQuests", "checking Talktoquests; Active Quests: "+activeQuests.toString());
 		if(!activeQuests.isEmpty()){
 			for(int i=0; i<activeQuests.size(); i++){
 				Quest quest = activeQuests.get(i);
 				if(quest instanceof TalkToQuest){
 					if(((TalkToQuest) quest).getTargetID()==npc.getID()){
-						Log.d("checkQuests", "Quest fulfilled!");
+//						Log.d("checkQuests", "Quest fulfilled!");
 						quest.setFulfilled();					
 						break;
 					}
@@ -119,14 +118,14 @@ public class QuestManager {
 	 * @param enemyName the name of the enemy that was killed
 	 */
 	public void checkQuests(String enemyName) {
-		Log.d("checkQuests", "checking Killquests; Active Quests: "+activeQuests.toString());
+//		Log.d("checkQuests", "checking Killquests; Active Quests: "+activeQuests.toString());
 		if(!activeQuests.isEmpty()){
 			for(int i=0; i<activeQuests.size(); i++){
 				Quest quest = activeQuests.get(i);
 				if(quest instanceof KillQuest){
 					if(((KillQuest) quest).getEnemyName().contentEquals(enemyName)){
 						if(((KillQuest) quest).gotOne()){
-							Log.d("checkQuests", "Quest fulfilled!");
+//							Log.d("checkQuests", "Quest fulfilled!");
 							quest.setFulfilled();
 							break;
 						}

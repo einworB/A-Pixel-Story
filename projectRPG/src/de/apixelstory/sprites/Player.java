@@ -147,7 +147,7 @@ public class Player extends FightingSprite {
 	 * remove the equipped weapon.
 	 */
 	public void removeEquippedWeapon(Weapon weapon) {
-		equippedWeapon = null; //TODO muss keine waffe übergeben werden. muss aber auch im inventar geändert werden.
+		equippedWeapon = null;
 	}
 
 	/**

@@ -51,7 +51,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 import de.apixelstory.algorithm.OurPathModifier;
 import de.apixelstory.database.Armor;
@@ -349,7 +348,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if(!inventarStarted){
-					Log.d("RPG", "Inventar touched");
+//					Log.d("RPG", "Inventar touched");
 					inventarStarted = true;
 					Intent intent = new Intent(LevelActivity.this, InventarActivity.class);
 					intent.putExtra("isMerchant", false);
@@ -460,7 +459,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		howToCloseQuest = new Text(20, CAMERA_HEIGHT - 230, fontQuestHowTo, "Gehe zurück zu der Person die dir den Quest gegeben hat um ihn abzuschließen", new TextOptions(AutoWrap.WORDS, CAMERA_WIDTH-30, HorizontalAlign.LEFT, 5), getVertexBufferObjectManager());
 		levelTextPlayer = new Text(3, 50, fontQuestHowTo, "lvl 1", 5, getVertexBufferObjectManager());
-		levelTextOpponent = new Text(CAMERA_WIDTH - 51, 50, fontQuestHowTo, "lvl 1", 5, getVertexBufferObjectManager()); //TODO gegner maximal level 9 .. sonst verschieben
+		levelTextOpponent = new Text(CAMERA_WIDTH - 51, 50, fontQuestHowTo, "lvl 1", 5, getVertexBufferObjectManager());
 
 		percent0 = new Text(70, 40, fontpercent, "0%", getVertexBufferObjectManager());
 		percent1 = new Text(175, 40, fontpercent, "20%", getVertexBufferObjectManager());
@@ -482,13 +481,13 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 		// new game was started
 		if(newGame) {
-			Log.d("projekt", "newGame");
+//			Log.d("projekt", "newGame");
 			
 			startNewGame();
 		} 
 		// previous game was loaded
 		else {
-			Log.d("projekt", "loadGame");
+//			Log.d("projekt", "loadGame");
 
 
 			loadPreviousSave();			
@@ -524,7 +523,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		questScene = new QuestScene(questSceneIndex, controller,getAssets(), this.mEngine, getVertexBufferObjectManager());
 		questScene.attachChild(questScene.getMap().getTMXLayers().get(0));
 		
-		camera.setBounds(0, 0, 30*32, 30*32);	// TODO: insert constants
+		camera.setBounds(0, 0, 30*32, 30*32);
 		camera.setBoundsEnabled(true);
 		
 		/* set the scene's on touch listener to the activity itself */
@@ -535,10 +534,10 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		
 		/* Calculate the coordinates for the player sprite, so it's spawned in the center of the camera. */
 		OurScene scene = controller.getCurrentScene();
-		Log.d("RPG", "Scene: "+scene.getID());
-		Log.d("RPG", "Hashmap: "+scene.getSpawns());
+//		Log.d("RPG", "Scene: "+scene.getID());
+//		Log.d("RPG", "Hashmap: "+scene.getSpawns());
 		float[] coords = scene.getSpawn("SPAWN");
-		Log.d("RPG", "Koords: "+coords[0]+","+coords[1]);
+//		Log.d("RPG", "Koords: "+coords[0]+","+coords[1]);
 		TMXLayer layer = controller.getTMXLayer();
 		final TMXTile spawnTile = layer.getTMXTileAt(coords[0], coords[1]);
 		final float spawnX = spawnTile.getTileX() + 4;
@@ -549,7 +548,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		player.setZIndex(1);
 		int column = spawnTile.getTileColumn();
 		int row = spawnTile.getTileRow();
-		Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
+//		Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
 		if(column==0) player.setCurrentTileIndex(5);
 		else if(row==0) player.setCurrentTileIndex(1);
 		else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(9);
@@ -571,7 +570,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		//load game
 		gameLoader.loadGame(slot);
 		
-		Log.d("projekt", "loaded");
+//		Log.d("projekt", "loaded");
 
 		int lastLevel = gameLoader.getLastLevel();
 		for(int i=1; i<=lastLevel; i++) {
@@ -591,14 +590,14 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 			int level = gameLoader.getPlayerData().getSavedLevel();
 			controller.setLevel(level);
 			LevelActivity.this.mEngine.setScene(scene);
-			Log.d("projekt", "scenes set");
+//			Log.d("projekt", "scenes set");
 
 		}
 		int questSceneIndex = lastLevel + 1;
 		questScene = new QuestScene(questSceneIndex, controller,getAssets(), this.mEngine, getVertexBufferObjectManager());
 		questScene.attachChild(questScene.getMap().getTMXLayers().get(0));
 		
-		camera.setBounds(0, 0, 30*32, 30*32);	// TODO: insert constants
+		camera.setBounds(0, 0, 30*32, 30*32);
 		camera.setBoundsEnabled(true);
 
 		questcount = gameLoader.getQuestCount();
@@ -622,7 +621,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 
 		/* let the camera chase the player */
 		camera.setChaseEntity(player);
-		Log.d("projekt", "player set");
+//		Log.d("projekt", "player set");
 		
 		player.changeHealth(-(player.getHealth() - gameLoader.getPlayerData().getHealth()));
 		controller.changeGold(player.getGold());
@@ -641,8 +640,8 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		String[] armor = gameLoader.getPlayerData().getArmor();
 		for(int i = 0; i < armor.length; i++) {
 			if(!armor[i].equals("")) {
-				Log.d("projekt", "armor" + i);
-				Log.d("projekt", "armor: '" + armor[i] + "'");
+//				Log.d("projekt", "armor" + i);
+//				Log.d("projekt", "armor: '" + armor[i] + "'");
 				
 				player.addArmor((Armor)controller.getItemByName(armor[i]));					
 			}
@@ -652,12 +651,12 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		}
 		
 		for(int i = 0; i < gameLoader.getClosedQuestList().size();i++) {
-			Log.d("projekt", "quest npcId: " + gameLoader.getClosedQuestList().get(i).getNpcID());
+//			Log.d("projekt", "quest npcId: " + gameLoader.getClosedQuestList().get(i).getNpcID());
 			controller.endQuest(gameLoader.getClosedQuestList().get(i).getNpcID());
 		}
 		
 		for(int i = 0; i < gameLoader.getOpenQuestList().size();i++) {
-			Log.d("projekt", "quest npcId: " + gameLoader.getOpenQuestList().get(i).getNpcID());
+//			Log.d("projekt", "quest npcId: " + gameLoader.getOpenQuestList().get(i).getNpcID());
 			controller.startQuest(gameLoader.getOpenQuestList().get(i).getNpcID(), gameLoader.getOpenQuestList().get(i).getProgress());
 		}
 		
@@ -859,7 +858,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 	 * @param destinationTile 
 	 */
 	private void startPath(final Path path, final TMXTile destinationTile) {
-		Log.d("RPG", "Run to: "+path.getCoordinatesX()[path.getSize()-1]+", "+path.getCoordinatesY()[path.getSize()-1]);
+//		Log.d("RPG", "Run to: "+path.getCoordinatesX()[path.getSize()-1]+", "+path.getCoordinatesY()[path.getSize()-1]);
 		int velocity;
 		if(fleeing) velocity = 75;
 		else velocity = 50;
@@ -995,7 +994,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 											
 										}
 									}
-									Log.d("RPG", player.getInventory().toString());
+//									Log.d("RPG", player.getInventory().toString());
 									
 								}
 							}
@@ -1051,7 +1050,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		this.runOnUpdateThread(new Runnable() {			
 			@Override
 			public void run() {
-				Log.d("RPG", "NEW LEVEL: "+nextIdString);
+//				Log.d("RPG", "NEW LEVEL: "+nextIdString);
 				int nextId = Integer.parseInt(nextIdString.substring(nextIdString.length()-1));
 				OurScene scene = controller.getCurrentScene();
 				int currentId = scene.getID();
@@ -1076,7 +1075,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 				camera.setCenterDirect(spawnX, spawnY);
 				int column = spawnTile.getTileColumn();
 				int row = spawnTile.getTileRow();
-				Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
+//				Log.d("RPG", "COLUMN: "+column+" ROW: "+row);
 				if(column==0) player.setCurrentTileIndex(5);
 				else if(row==0) player.setCurrentTileIndex(1);
 				else if(row==layer.getTileRows()-1) player.setCurrentTileIndex(9);
@@ -1167,7 +1166,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 							if(levelTextOpponent.hasParent()) hud.detachChild(levelTextOpponent);
 							startPath(path, destinationTile);
 						}
-						else Log.d("RPG", "path=null");
+//						else Log.d("RPG", "path=null");
 						break;
 					// action=talk
 					case 2:
@@ -1261,7 +1260,7 @@ public class LevelActivity extends SimpleBaseGameActivity implements IOnSceneTou
 		Path path = controller.getPath(startTile, endTile, controller.getCurrentScene().getMap());
 		fleeing = true;
 		if(path!=null) startPath(path, endTile);
-		else Log.d("RPG", "path=null");
+//		else Log.d("RPG", "path=null");
 		hud.detachChild(portraitEnemy);
 		hud.detachChild(levelTextOpponent);
 		hud.detachChild(redBarEnemy);

@@ -14,7 +14,6 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
-import android.util.Log;
 import de.apixelstory.game.LevelActivity;
 import de.apixelstory.save.LevelLoader;
 import de.apixelstory.save.LoadSavedGame;
@@ -122,17 +121,17 @@ public class OurScene extends Scene {
 					}
 					if(tile.getTMXTileProperties(tmxTiledMap)==null && !alreadySet){
 						if(i==spriteCount){
-							NPC npc = new NPC(tile.getTileX()+4, tile.getTileY(), 24, 32, npcTextureRegion, vertextBufferObjectManager, id); // TODO: bei mehr(weniger) als einem NPC pro Level id anpassen!!!
+							NPC npc = new NPC(tile.getTileX()+4, tile.getTileY(), 24, 32, npcTextureRegion, vertextBufferObjectManager, id);
 							npcInScene.add(npc);
 							attachChild(npc);
 							npc.setCurrentTileIndex(1+(rgen.nextInt(4)*4));
-							Log.d("RPG", "Level "+level+": NPC created.");
+//							Log.d("RPG", "Level "+level+": NPC created.");
 						}
 						else{
 							Opponent opponent = new Opponent(tile.getTileX()+4, tile.getTileY(), 24, 32, opponentTextureRegion, vertextBufferObjectManager, level, false);
 							attachChild(opponent);
 							opponent.setCurrentTileIndex(1+(rgen.nextInt(4)*4));
-							Log.d("RPG", "Level "+level+": Opponent "+i+" created.");
+//							Log.d("RPG", "Level "+level+": Opponent "+i+" created.");
 						}					
 						break;
 					}

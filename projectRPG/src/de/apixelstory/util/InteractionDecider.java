@@ -37,7 +37,7 @@ public class InteractionDecider {
 			if(entity instanceof NPC || entity instanceof Opponent){
 				float entityX = entity.getX();
 				float entityY = entity.getY();
-				TMXTile tile = tiledMap.getTMXLayers().get(0).getTMXTileAt(entityX+12, entityY+16); // TODO: 16 evtl durch PLAYER_WIDTH/HEUGHT ersetzen
+				TMXTile tile = tiledMap.getTMXLayers().get(0).getTMXTileAt(entityX+12, entityY+16);
 				if(destinationTile.equals(tile)){
 					collide = true;
 					break;

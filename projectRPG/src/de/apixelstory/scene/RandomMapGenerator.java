@@ -71,10 +71,8 @@ public class RandomMapGenerator {
 			InputStream fin = context.openFileInput(filename);
 			return fin;
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -96,13 +94,10 @@ public class RandomMapGenerator {
            
 	        serializer.endDocument();
         } catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         return writer.toString();

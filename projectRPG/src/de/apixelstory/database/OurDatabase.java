@@ -12,7 +12,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import de.apixelstory.quest.GetItemQuest;
 import de.apixelstory.quest.KillQuest;
 import de.apixelstory.quest.Quest;
@@ -29,7 +28,7 @@ import de.apixelstory.util.OurRandomGenerator;
 public class OurDatabase {
 
 	/** the path to the database in the project's file directory */
-    private static final String DB_PATH = "/data/data/de.projectrpg/databases/";
+    private static final String DB_PATH = "/data/data/de.apixelstory/databases/";
  
     /** the name of the database */
     private static final String DB_NAME = "androidprojectdatabase";
@@ -149,7 +148,7 @@ public class OurDatabase {
 						int weaponType = cursor.getInt(3);
 						Weapon weapon = new Weapon(name, levelNeeded, attackValue, weaponType);
 						objects[counter] = weapon;
-						Log.d("DB", "weapon");
+//						Log.d("DB", "weapon");
 					}					
 				} else if(itemType.contentEquals("armor")){
 					if (cursor.moveToFirst()) {
@@ -157,14 +156,14 @@ public class OurDatabase {
 						int armorType = cursor.getInt(3);
 						Armor armor = new Armor(name, levelNeeded, defenseValue, armorType);
 						objects[counter] = armor;
-						Log.d("DB", "armor");
+//						Log.d("DB", "armor");
 					}
 				} else if(itemType.contentEquals("healItem")){
 					if (cursor.moveToFirst()) {
 						int healValue = cursor.getInt(2);
 						HealItem item = new HealItem(name, levelNeeded, itemType, healValue);
 						objects[counter] = item;
-						Log.d("DB", "healItem");
+//						Log.d("DB", "healItem");
 					}
 				}
 				counter++;
@@ -369,9 +368,6 @@ public class OurDatabase {
 		int level = questCursor.getInt(6);
 		int specialItemID = questCursor.getInt(9);
 		Item specialReward = null;
-		if(specialItemID!=0){
-			// TODO: get item from database
-		}
 		String type = questCursor.getString(8);
 		String shortText = questCursor.getString(10);
 		if(type.contentEquals("talkTo")){
@@ -387,7 +383,7 @@ public class OurDatabase {
 			if(specificQuestCursor.moveToFirst()){
 				String enemyName = specificQuestCursor.getString(0);
 				int killCount = specificQuestCursor.getInt(1);
-				Log.d("projekt", "killcount: " + killCount);
+//				Log.d("projekt", "killcount: " + killCount);
 				quest = new KillQuest(questID, name, npcID, startText, duringText, endText, enemyName, killCount, level, specialReward, shortText);
 			}
 		}else{
@@ -459,7 +455,7 @@ public class OurDatabase {
 	    	}catch(SQLiteException e){
 	 
 	    		//database doesn't exist yet.
-	    		Log.d("RPG", "GOT IT!");
+//	    		Log.d("RPG", "GOT IT!");
 	    	}
 	 
 	    	if(checkDB != null){	 
@@ -491,7 +487,7 @@ public class OurDatabase {
 	    	while ((length = myInput.read(buffer))>0){
 	    		myOutput.write(buffer, 0, length);
 	    	}
-	    	Log.d("RPG", "db created");
+//	    	Log.d("RPG", "db created");
 	 
 	    	//Close the streams
 	    	myOutput.flush();

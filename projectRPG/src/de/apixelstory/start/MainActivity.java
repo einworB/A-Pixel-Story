@@ -184,7 +184,7 @@ public class MainActivity extends Activity {
 				startGameTable.setVisibility(View.VISIBLE);
 
 				
-				File file = new File("/data/data/de.projectrpg/files/slot1.xml");
+				File file = new File("/data/data/de.apixelstory/files/slot1.xml");
 				
 				if(file.exists()){
 					loadGameButton1.setTextColor(getResources().getColor(R.color.white));
@@ -205,7 +205,7 @@ public class MainActivity extends Activity {
 					savedGameSlot1.setText("Slot 1\n\nkein Spiel\ngespeichert");
 				}
 				
-				File file2 = new File("/data/data/de.projectrpg/files/slot2.xml");
+				File file2 = new File("/data/data/de.apixelstory/files/slot2.xml");
 				if(file2.exists()){
 					loadGameButton2.setTextColor(getResources().getColor(R.color.white));
 
@@ -283,7 +283,7 @@ public class MainActivity extends Activity {
 	private void showNewGameNotification(final int slotNumber) {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		dialogBuilder.setTitle("Achtung");
-		final File file = new File("/data/data/de.projectrpg/files/slot" + slotNumber + ".xml");
+		final File file = new File("/data/data/de.apixelstory/files/slot" + slotNumber + ".xml");
 		
 		if(file.exists()){
 			dialogBuilder.setMessage("Willst du wirklich ein neues Spiel beginnen? Zuvor gespeicherte Spielstände auf Slot " + slotNumber + " können überschrieben werden!");

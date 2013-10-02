@@ -10,7 +10,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.content.Context;
-import android.util.Log;
 
 /**
  * Load the saved game from xml file.
@@ -57,10 +56,10 @@ public class LoadSavedGame {
 	public void loadGame(int slot) {
 		try {
 			InputStream inputStream = context.openFileInput("slot" + slot + ".xml");
-			Log.d("projekt", "inputStream: " + inputStream);
+//			Log.d("projekt", "inputStream: " + inputStream);
 
 			parser = XmlPullParserFactory.newInstance().newPullParser();
-			Log.d("projekt", "parser");
+//			Log.d("projekt", "parser");
 
 			parser.setInput(inputStream, null);
 			int eventType = parser.getEventType();
@@ -73,9 +72,9 @@ public class LoadSavedGame {
                 case XmlPullParser.START_TAG:
 
                 	startTagName = parser.getName();
-        			Log.d("projekt", "startTag: " + startTagName);
+//        			Log.d("projekt", "startTag: " + startTagName);
                 	if(startTagName.equalsIgnoreCase("variables")) {
-            			Log.d("projekt", "variables");
+//            			Log.d("projekt", "variables");
             			
             			questCount = Integer.parseInt(parser.getAttributeValue(0));
                 		lastLevel = Integer.parseInt(parser.getAttributeValue(1));
@@ -121,7 +120,7 @@ public class LoadSavedGame {
 	 * @throws IOException
 	 */
 	private void loadOpenQuests(String startTagName) throws XmlPullParserException, IOException {
-		Log.d("projekt", "openquests");
+//		Log.d("projekt", "openquests");
 
 		parser.next();
 		parser.next();
@@ -153,7 +152,7 @@ public class LoadSavedGame {
 	 * @throws IOException
 	 */
 	private void loadClosedQuests(String startTagName) throws XmlPullParserException, IOException {
-		Log.d("projekt", "closedquests");
+//		Log.d("projekt", "closedquests");
 
 		parser.next();
 		parser.next();
@@ -181,7 +180,7 @@ public class LoadSavedGame {
 	 * @throws IOException
 	 */
 	private void loadPlayer(String startTagName) throws XmlPullParserException, IOException {
-		Log.d("projekt", "player");
+//		Log.d("projekt", "player");
 
 		int inLevel = Integer.parseInt(parser.getAttributeValue(null, "level"));
 		float positionX = Float.parseFloat(parser.getAttributeValue(null, "positionX"));
@@ -231,8 +230,8 @@ public class LoadSavedGame {
 		parser.next();
 		parser.next();
 		String startTagName2 = null;
-		Log.d("projekt", "level" + level);
-		Log.d("projekt", parser.getName());
+//		Log.d("projekt", "level" + level);
+//		Log.d("projekt", parser.getName());
 		
 		// if the same tag as the actual starttag appears it is the endtag of this block
 		while(!parser.getName().contentEquals(startTagName)){
@@ -243,7 +242,7 @@ public class LoadSavedGame {
         		levelLoader.setMapName(parser.getAttributeValue(0));
 			
 			} else if(startTagName2.equalsIgnoreCase("opponents")) {
-    			Log.d("projekt", "opponents");
+//    			Log.d("projekt", "opponents");
     			
 				parser.next();
 				parser.next();
@@ -267,7 +266,7 @@ public class LoadSavedGame {
         			
         		}
 			} else if(startTagName2.equalsIgnoreCase("npcs")) {
-    			Log.d("projekt", "npcs");
+//    			Log.d("projekt", "npcs");
 
     			parser.next();
     			parser.next();

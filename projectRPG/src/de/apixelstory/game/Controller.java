@@ -15,7 +15,6 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.util.Log;
 import de.apixelstory.algorithm.Algorithm;
 import de.apixelstory.database.Armor;
 import de.apixelstory.database.HealItem;
@@ -295,7 +294,7 @@ public class Controller {
 	 */
 	public TMXTiledMap loadTMXMap(AssetManager assets, Engine engine,
 			VertexBufferObjectManager vertexBufferObjectManager, int index, InputStream input, int slot) {
-		Log.d("projekt", "input: " + input);
+//		Log.d("projekt", "input: " + input);
 		if(input == null) {
 			input = getLevelPath(index, slot);
 		}
@@ -313,7 +312,7 @@ public class Controller {
 	 * @return the current Scene
 	 */
 	public OurScene getCurrentScene(){
-		Log.d("RPG", "level: "+level);
+//		Log.d("RPG", "level: "+level);
 		return sceneManager.getScene(level);
 	}
 

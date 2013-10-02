@@ -388,7 +388,7 @@ public class RandomMapArrayGenerator {
 	 * It only works if the gap is one or two tiles wide.
 	 */
 	private void checkForUnreachableTiles() {
-		//TODO nur setzen wenns nich genau vorm eingang ist...
+		
 		int countX;
 		int countY;
 

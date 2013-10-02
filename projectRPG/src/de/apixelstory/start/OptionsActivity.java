@@ -42,7 +42,6 @@ public class OptionsActivity extends Activity {
 			
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				// TODO Auto-generated method stub
 				if(!isChecked) {
 					controller.setMusicMuted(true);
 					OurMusicManager.pause();

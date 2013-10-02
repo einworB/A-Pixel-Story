@@ -17,7 +17,6 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
 import android.content.res.AssetManager;
-import android.util.Log;
 
 /**
  * This class loads the map form an input stream
@@ -49,13 +48,13 @@ public class TMXMapLoader {
 							float spawn[] = new float[2];
 							spawn[0] = (float) tmxTile.getTileX();
 							spawn[1] = (float) tmxTile.getTileY();
-							Log.d("RPG", "x "+spawn[0]+", y "+spawn[1]);
+//							Log.d("RPG", "x "+spawn[0]+", y "+spawn[1]);
 							spawns.put(tmxTileProperties.get(i).getValue(), spawn);
 						}
 					}
 				}
 			});
-			Log.d("RPG", "InputStream: "+inputStream.toString());
+//			Log.d("RPG", "InputStream: "+inputStream.toString());
 			this.tmxMap = tmxLoader.load(inputStream);
 		} catch (final TMXLoadException e) {
 			Debug.e(e);
@@ -68,7 +67,7 @@ public class TMXMapLoader {
 	 * @return all spawns of the game
 	 */
 	public HashMap<String, float[]> getSpawn(){
-		Log.d("RPG", "spawns: "+spawns);
+//		Log.d("RPG", "spawns: "+spawns);
 		return spawns;
 	}
 }
